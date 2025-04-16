@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 
 @JsonIgnoreProperties
-data class UsuarioDTO(
+data class CadastroUsuarioDTO(
 
     var nomeCompleto: String,
     var email: String,

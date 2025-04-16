@@ -1,5 +1,6 @@
 package com.lacos_preciosos.preciososLacos.repository
 
+import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
@@ -13,6 +14,16 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun AtualizarUsuarios(id: Int): Int
 
     fun findByNomeCompletoContains(nome: String): List<Usuario>
+
+    @Transactional
+    @Modifying
+    @Query("update Usuario u set u.autenticado = true where u.email = ?1 and u.senha = ?2")
+    fun autenticarUsuarioTRUE(email: String, senha: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("update Usuario u set u.autenticado = false where u.idUsuario = ?1")
+    fun autenticarUsuarioFALSE(id: Int): Int
 }
 
 

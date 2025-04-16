@@ -1,9 +1,8 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.UsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
-import com.lacos_preciosos.preciososLacos.service.UsuarioService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -13,7 +12,7 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
     // val usuariosList = mutableListOf<Usuario>();
 
-  /*  @PostMapping
+    /*  @PostMapping
     fun criarUsuario(@RequestBody usuarioDTO: UsuarioDTO): ResponseEntity<Usuario> {
         val usuario = usuarioService.criarUsuario(usuarioDTO);
         usuariosList.add(usuario);
@@ -30,13 +29,35 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
     //Listando todos os usuarios do banco de dados
     @GetMapping
-    fun listarUsuarios():ResponseEntity<List<Usuario>>{
+    fun listarUsuarios(): ResponseEntity<List<Usuario>> {
         val usuarios = repositorio.findAll()
-        return if(usuarios.isEmpty()){
+        return if (usuarios.isEmpty()) {
             ResponseEntity.status(204).build()
-        }else{
+        } else {
             ResponseEntity.status(200).body(usuarios)
         }
     }
-  
+
+    @PatchMapping("/login")
+    fun login(@RequestBody autenticacao: AutenticacaoUsuarioDTO): ResponseEntity<Void> {
+        val response = repositorio.autenticarUsuarioTRUE(autenticacao.email, autenticacao.senha)
+
+        return if (response == 1) {
+            ResponseEntity.status(200).build()
+        } else
+            ResponseEntity.status(404).build()
+    }
+
+
+    @PatchMapping("/{id}}")
+    fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
+        val response = repositorio.autenticarUsuarioFALSE(id)
+
+        return if (response == 1) {
+            ResponseEntity.status(200).build()
+        } else
+            ResponseEntity.status(404).build()
+
+    }
 }
+

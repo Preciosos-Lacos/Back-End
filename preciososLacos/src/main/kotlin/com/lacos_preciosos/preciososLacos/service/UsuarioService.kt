@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.UsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.CadastroUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 @Service
 class UsuarioService {
 
-    fun criarUsuario(usuarioDTO: UsuarioDTO): Usuario {
-        return Usuario(usuarioDTO)
+    fun criarUsuario(cadastroUsuarioDTO: CadastroUsuarioDTO): Usuario {
+        return Usuario(cadastroUsuarioDTO)
     }
 
     fun listarUsuarios(listaUsuario: List<Usuario>): ResponseEntity<List<Usuario>> {

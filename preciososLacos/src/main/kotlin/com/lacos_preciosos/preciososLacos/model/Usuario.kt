@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.lacos_preciosos.preciososLacos.dto.UsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.CadastroUsuarioDTO
 import jakarta.persistence.*
 import java.time.LocalDate
  @Entity
@@ -21,7 +21,8 @@ data class Usuario(
     var cpf: String,
     var telefone: String,
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    var data_cadastro: LocalDate = LocalDate.now()
+    var data_cadastro: LocalDate = LocalDate.now(),
+    var autenticado: Boolean = false
 ) {
      constructor() : this(
          idUsuario = null,
@@ -34,12 +35,12 @@ data class Usuario(
      )
 
 
-     constructor(usuarioDTO: UsuarioDTO): this(
-        nomeCompleto = usuarioDTO.nomeCompleto,
-        senha = usuarioDTO.senha,
-        telefone = usuarioDTO.telefone,
-        email = usuarioDTO.email,
-        cpf = usuarioDTO.cpf
+     constructor(cadastroUsuarioDTO: CadastroUsuarioDTO): this(
+        nomeCompleto = cadastroUsuarioDTO.nomeCompleto,
+        senha = cadastroUsuarioDTO.senha,
+        telefone = cadastroUsuarioDTO.telefone,
+        email = cadastroUsuarioDTO.email,
+        cpf = cadastroUsuarioDTO.cpf
     )
     override fun toString(): String {
         return "Usuario(nome='$nomeCompleto', email='$email', cpf='$cpf',senha = '$senha', telefone = '$telefone', data_cadastro = $data_cadastro)"
