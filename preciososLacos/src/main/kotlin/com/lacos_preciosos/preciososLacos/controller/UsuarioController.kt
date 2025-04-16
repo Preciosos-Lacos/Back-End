@@ -49,7 +49,7 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
     }
 
 
-    @PatchMapping("/{id}}")
+    @PatchMapping("/logoff/{id}")
     fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
         val response = repositorio.autenticarUsuarioFALSE(id)
 
