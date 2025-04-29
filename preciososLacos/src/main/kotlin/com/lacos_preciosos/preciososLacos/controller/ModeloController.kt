@@ -6,6 +6,7 @@ import com.lacos_preciosos.preciososLacos.dto.DadosDetalheModelo
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.service.ModeloService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +16,20 @@ import org.springframework.web.util.UriComponentsBuilder
 @RequestMapping("/modelos")
 class ModeloController(private val modeloService: ModeloService) {
 
+    @PostMapping
+    @Tag(name = "Cadastro de Modelo")
+    fun createModelo(
+        @RequestBody @Valid criacaoModeloDTO: CadastroModeloDTO,
+        uriBuilder: UriComponentsBuilder
+    ): ResponseEntity<DadosDetalheModelo> {
+
+        var modelo = modeloService.createModelo(criacaoModeloDTO)
+        var uri = uriBuilder.path("/modelos/{id}").buildAndExpand(modelo.idModelo).toUri()
+        return ResponseEntity.created(uri).body(modelo)
+    }
+
     @GetMapping
+    @Tag(name = "Listagem de modelo")
     fun getAllModelos(): ResponseEntity<List<Modelo>> {
 
         val modelos = modeloService.getAllModelos()
@@ -33,24 +47,15 @@ class ModeloController(private val modeloService: ModeloService) {
     }
 
     @GetMapping("/pesquisa-nome")
+    @Tag(name = "Pesquisar modelo")
     fun getModeloByName(@RequestParam nome: String): ResponseEntity<Modelo> {
         val modelo = modeloService.getModeloByNome(nome)
 
         return ResponseEntity.of(modelo)
     }
-
-    @PostMapping
-    fun createModelo(
-        @RequestBody @Valid criacaoModeloDTO: CadastroModeloDTO,
-        uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<DadosDetalheModelo> {
-
-        var modelo = modeloService.createModelo(criacaoModeloDTO)
-        var uri = uriBuilder.path("/modelos/{id}").buildAndExpand(modelo.idModelo).toUri()
-        return ResponseEntity.created(uri).body(modelo)
-    }
-
+    
     @PutMapping("/{id}")
+    @Tag(name = "Atualização de modelo")
     fun updateModelo(
         @PathVariable id: Int,
         @RequestBody @Valid criacaoModeloDTO: CadastroModeloDTO
@@ -64,6 +69,7 @@ class ModeloController(private val modeloService: ModeloService) {
     }
 
     @PatchMapping("/{id}")
+    @Tag(name = "Atualização de foto")
     fun updateFoto(@PathVariable id: Int, @RequestBody @Valid atualizacaoFotoDTO: AtualizacaoFotoDTO):
             ResponseEntity<DadosDetalheModelo> {
         try {
@@ -74,6 +80,7 @@ class ModeloController(private val modeloService: ModeloService) {
     }
 
     @DeleteMapping("/{id}")
+    @Tag(name = "Exclusão de modelo")
     fun deleteModelo(@PathVariable id: Int): ResponseEntity<Void> {
         try {
             modeloService.deleteModelo(id)

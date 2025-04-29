@@ -3,6 +3,7 @@ package com.lacos_preciosos.preciososLacos.controller
 import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -10,25 +11,17 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/usuarios")
 class UsuarioController(private val repositorio: UsuarioRepository) {
 
-    // val usuariosList = mutableListOf<Usuario>();
-
-    /*  @PostMapping
-    fun criarUsuario(@RequestBody usuarioDTO: UsuarioDTO): ResponseEntity<Usuario> {
-        val usuario = usuarioService.criarUsuario(usuarioDTO);
-        usuariosList.add(usuario);
-        return ResponseEntity.status(201).body(usuario)
-    }*/
-
     //Inserindo o usuario no banco de Dados
     @PostMapping
+    @Tag(name = "Cadastro de usuário")
     fun cadastrarUsuario(@RequestBody novoUsuario: Usuario): ResponseEntity<Usuario> {
         val usuario = repositorio.save(novoUsuario)
         return ResponseEntity.status(201).body(usuario)
     }
 
-
     //Listando todos os usuarios do banco de dados
     @GetMapping
+    @Tag(name = "Listagem de usuário")
     fun listarUsuarios(): ResponseEntity<List<Usuario>> {
         val usuarios = repositorio.findAll()
         return if (usuarios.isEmpty()) {
@@ -40,17 +33,20 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
 
     @GetMapping("/pesquisar")
-    fun listarPorNome(@RequestParam nomeCompleto: String ): ResponseEntity<List<Usuario>> {
+    @Tag(name = "Pesquisar usuário")
+    fun listarPorNome(@RequestParam nomeCompleto: String): ResponseEntity<List<Usuario>> {
         val usuarioEncontrado = repositorio.findByNomeCompletoContains(nomeCompleto)
 
-        return if(usuarioEncontrado.isEmpty()){
+        return if (usuarioEncontrado.isEmpty()) {
             ResponseEntity.status(204).build()
-        }else{
-            ResponseEntity.status(200).body(usuarioEncontrado)        }
+        } else {
+            ResponseEntity.status(200).body(usuarioEncontrado)
+        }
     }
 
     //Atualizar o usuario no banco de dados
     @PutMapping("/{nomeCompleto}")
+    @Tag(name = "Atualização de usuário")
     fun atualizarDados(@PathVariable nomeCompleto: String, @RequestBody usuario: Usuario): ResponseEntity<Usuario> {
         val usuarioEncontrado = repositorio.findByNomeCompletoContains(nomeCompleto)
 
@@ -66,6 +62,7 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
     //Deletando usuario no banco de dados
     @DeleteMapping("/{nomeCompleto}")
+    @Tag(name = "Exclusão de usuário")
     fun deletarUsuario(@PathVariable nomeCompleto: String): ResponseEntity<Void> {
         val usuariosEncontrados = repositorio.findByNomeCompletoContains(nomeCompleto)
         return if (usuariosEncontrados.isNotEmpty()) {
@@ -77,6 +74,7 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
     }
 
     @PatchMapping("/login")
+    @Tag(name = "Login de usuário")
     fun login(@RequestBody autenticacao: AutenticacaoUsuarioDTO): ResponseEntity<Void> {
         val response = repositorio.autenticarUsuarioTRUE(autenticacao.email, autenticacao.senha)
 
@@ -88,6 +86,7 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
 
     @PatchMapping("/logoff/{id}")
+    @Tag(name = "Logoff de usuário")
     fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
         val response = repositorio.autenticarUsuarioFALSE(id)
 
@@ -95,7 +94,6 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
             ResponseEntity.status(200).build()
         } else
             ResponseEntity.status(404).build()
-
     }
 }
 
