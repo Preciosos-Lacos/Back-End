@@ -1,4 +1,4 @@
-package com.lacos_preciosos.preciososLacos.dto
+package com.lacos_preciosos.preciososLacos.dto.produto
 
 data class CadastroProdutoDTO(
     val nome: String,

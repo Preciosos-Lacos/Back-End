@@ -1,4 +1,4 @@
-package com.lacos_preciosos.preciososLacos.dto
+package com.lacos_preciosos.preciososLacos.dto.modelo
 
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import lombok.NoArgsConstructor

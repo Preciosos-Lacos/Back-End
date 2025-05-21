@@ -1,6 +1,5 @@
 package com.lacos_preciosos.preciososLacos.repository
 
-import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository

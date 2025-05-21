@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroEnderecoDTO
+import com.lacos_preciosos.preciososLacos.dto.endereco.CadastroEnderecoDTO
 import com.lacos_preciosos.preciososLacos.model.Endereco
 import com.lacos_preciosos.preciososLacos.repository.EnderecoRepository
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository

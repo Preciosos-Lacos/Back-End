@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/produtos")
 class ProdutoController(val produtoService: ProdutoService) {
 
+
     @GetMapping
     fun getAllProdutos(): ResponseEntity<List<Produto>> {
         return ResponseEntity.ok(produtoService.getAllProdutos())
+
     }
 
 }
