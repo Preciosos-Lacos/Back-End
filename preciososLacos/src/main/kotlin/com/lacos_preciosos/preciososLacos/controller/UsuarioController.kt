@@ -1,5 +1,6 @@
 package com.lacos_preciosos.preciososLacos.controller
 
+import com.lacos_preciosos.preciososLacos.dto.AtualizacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
@@ -45,14 +46,20 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
     }
 
     //Atualizar o usuario no banco de dados
-    @PutMapping("/{nomeCompleto}")
+    @PutMapping("/{id}")
     @Tag(name = "Atualização de usuário")
-    fun atualizarDados(@PathVariable nomeCompleto: String, @RequestBody usuario: Usuario): ResponseEntity<Usuario> {
-        val usuarioEncontrado = repositorio.findByNomeCompletoContains(nomeCompleto)
+    fun atualizarDados(@PathVariable id: Int, @RequestBody dto: AtualizacaoUsuarioDTO): ResponseEntity<Usuario> {
+        val usuarioEncontrado = repositorio.findById(id)
 
-        return if (usuarioEncontrado.isNotEmpty()) {
-            usuarioEncontrado.forEach { it.nomeCompleto = usuario.nomeCompleto }
-            repositorio.saveAll(usuarioEncontrado)
+        return if (usuarioEncontrado.isPresent()) {
+
+            var usuario = usuarioEncontrado.get()
+
+            usuario.nomeCompleto = dto.nome
+            usuario.senha = dto.senha
+            usuario.telefone = dto.telefone
+
+            repositorio.save(usuario)
             ResponseEntity.status(200).body(usuario)
         } else {
             ResponseEntity.status(404).build()
@@ -61,13 +68,14 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
 
 
     //Deletando usuario no banco de dados
-    @DeleteMapping("/{nomeCompleto}")
+    @DeleteMapping("/{id}")
     @Tag(name = "Exclusão de usuário")
-    fun deletarUsuario(@PathVariable nomeCompleto: String): ResponseEntity<Void> {
-        val usuariosEncontrados = repositorio.findByNomeCompletoContains(nomeCompleto)
-        return if (usuariosEncontrados.isNotEmpty()) {
-            usuariosEncontrados.forEach { repositorio.delete(it) }
-            ResponseEntity.status(204).build()
+    fun deletarUsuario(@PathVariable id: Int): ResponseEntity<Void> {
+        val usuariosEncontrados = repositorio.findById(id)
+
+        return if (usuariosEncontrados.isPresent) {
+            repositorio.deleteById(id)
+            ResponseEntity.status(200).build()
         } else {
             ResponseEntity.status(404).build()
         }
