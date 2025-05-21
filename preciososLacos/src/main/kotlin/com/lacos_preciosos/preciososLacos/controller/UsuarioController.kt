@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.AtualizacaoUsuarioDTO
-import com.lacos_preciosos.preciososLacos.dto.AutenticacaoUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizacaoUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import io.swagger.v3.oas.annotations.tags.Tag

@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroEnderecoDTO
+import com.lacos_preciosos.preciososLacos.dto.endereco.CadastroEnderecoDTO
 import com.lacos_preciosos.preciososLacos.model.Endereco
 import com.lacos_preciosos.preciososLacos.service.EnderecoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException

@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service

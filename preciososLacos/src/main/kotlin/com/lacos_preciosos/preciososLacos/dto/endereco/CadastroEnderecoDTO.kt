@@ -1,4 +1,4 @@
-package com.lacos_preciosos.preciososLacos.dto
+package com.lacos_preciosos.preciososLacos.dto.endereco
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size

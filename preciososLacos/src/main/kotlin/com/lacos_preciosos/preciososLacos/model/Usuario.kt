@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.lacos_preciosos.preciososLacos.dto.CadastroUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import jakarta.persistence.*
 import java.time.LocalDate
  @Entity

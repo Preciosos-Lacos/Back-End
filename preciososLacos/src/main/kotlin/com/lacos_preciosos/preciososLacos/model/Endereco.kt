@@ -1,7 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroEnderecoDTO
-import com.lacos_preciosos.preciososLacos.dto.CadastroModeloDTO
+import com.lacos_preciosos.preciososLacos.dto.endereco.CadastroEnderecoDTO
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType

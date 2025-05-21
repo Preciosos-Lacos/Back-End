@@ -1,8 +1,8 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.AtualizacaoFotoDTO
-import com.lacos_preciosos.preciososLacos.dto.CadastroModeloDTO
-import com.lacos_preciosos.preciososLacos.dto.DadosDetalheModelo
+import com.lacos_preciosos.preciososLacos.dto.modelo.AtualizacaoFotoDTO
+import com.lacos_preciosos.preciososLacos.dto.modelo.CadastroModeloDTO
+import com.lacos_preciosos.preciososLacos.dto.modelo.DadosDetalheModelo
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.ModeloRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
