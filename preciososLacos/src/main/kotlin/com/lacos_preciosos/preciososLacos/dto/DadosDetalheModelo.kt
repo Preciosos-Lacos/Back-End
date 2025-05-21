@@ -8,14 +8,14 @@ data class DadosDetalheModelo(
     var idModelo : Int?,
     var nomeModelo: String,
     var preco: Double,
-    var descricao: String,
-    var foto: String
+    var descricao: String
+
 ) {
    constructor(modelo: Modelo): this(
        modelo.idModelo,
        modelo.nomeModelo,
        modelo.preco,
-       modelo.descricao,
-       modelo.foto
+       modelo.descricao
+
    )
 }

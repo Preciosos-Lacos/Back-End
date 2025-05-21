@@ -1,5 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
+import com.lacos_preciosos.preciososLacos.dto.CadastroProdutoDTO
 import jakarta.persistence.*
 
 @Entity
@@ -19,5 +20,16 @@ data class Produto(
     var acabamento: String,
 
     var preco: Double
+
 ) {
+
+    constructor(dto: CadastroProdutoDTO) : this(
+        null,
+        dto.tamanho,
+        dto.cor,
+        dto.material,
+        dto.acabamento,
+        dto.preco
+    )
+
 }
