@@ -17,7 +17,7 @@ data class Modelo(
 
     var descricao: String = "",
 
-    var foto: String = ""
+    var foto: ByteArray
 ) {
     constructor(dto: CadastroModeloDTO) : this(
         null,

@@ -20,7 +20,7 @@ class EnderecoController(private val enderecoService: EnderecoService) {
         @RequestBody @Valid dto: CadastroEnderecoDTO,
         uriBuilder: UriComponentsBuilder
     ): ResponseEntity<Endereco> {
-        val endereco = enderecoService.createEndereco(dto)
+        val endereco = enderecoService.createEndereco(dto, dto.usuarioId)
         val uri = uriBuilder.path("/enderecos/{id}").buildAndExpand(endereco.idEndereco).toUri()
         return ResponseEntity.created(uri).body(endereco)
     }
