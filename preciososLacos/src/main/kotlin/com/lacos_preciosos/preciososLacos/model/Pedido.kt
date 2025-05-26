@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroItemPedidoDTO
 import com.lacos_preciosos.preciososLacos.tipos.TipoPagamento
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -31,7 +31,7 @@ data class Pedido(
     @ManyToOne
     var statusPagamento: StatusPagamento?
 ) {
-    constructor(dto: CadastroPedidoDTO) : this(
+    constructor(dto: CadastroItemPedidoDTO, formaPagamento: TipoPagamento, total: Double, idUsuario: Int) : this(
         null,
         LocalDate.now(),
         dto.total,

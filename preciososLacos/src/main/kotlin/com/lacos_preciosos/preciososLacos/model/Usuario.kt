@@ -24,7 +24,7 @@ data class Usuario(
     var data_cadastro: LocalDate = LocalDate.now(),
     var autenticado: Boolean = false
 ) {
-     constructor() : this(
+     constructor(idUsuario: Int) : this(
          idUsuario = null,
          nomeCompleto = "",
          email = "",

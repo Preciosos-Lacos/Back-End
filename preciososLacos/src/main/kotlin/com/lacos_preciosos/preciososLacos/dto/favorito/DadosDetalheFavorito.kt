@@ -1,4 +1,4 @@
-package com.lacos_preciosos.preciososLacos.dto
+package com.lacos_preciosos.preciososLacos.dto.favorito
 
 import com.lacos_preciosos.preciososLacos.model.Produto
 import lombok.NoArgsConstructor

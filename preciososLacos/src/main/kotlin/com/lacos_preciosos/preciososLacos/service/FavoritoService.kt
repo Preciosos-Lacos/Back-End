@@ -1,21 +1,21 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.favorito.CadastroFavoritoDTO
+import com.lacos_preciosos.preciososLacos.dto.*
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import com.lacos_preciosos.preciososLacos.dto.produto.DadosDetalheProduto
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.repository.ProdutoRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryConfiguration
 import org.springframework.stereotype.Service
 
 @Service
-class ProdutoService(val produtoRepository: ProdutoRepository) {
+class FavoritoService(val produtoRepository: ProdutoRepository) {
 
     fun getAllProdutos(): List<Produto> {
         return produtoRepository.findAll();
     }
 
-    fun save(produtoDTO: CadastroFavoritoDTO): DadosDetalheProduto {
+    fun save(produtoDTO: CadastroProdutoDTO): DadosDetalheProduto {
         val produto = Produto(produtoDTO)
         produtoRepository.save(produto)
         return DadosDetalheProduto(produto)
@@ -31,7 +31,7 @@ class ProdutoService(val produtoRepository: ProdutoRepository) {
         }
     }
 
-    fun updateProduto(id: Int, dto: ServletWebServerFactoryConfiguration.EmbeddedTomcat): Produto {
+    fun updateProduto(id: Int, dto: CadastroProdutoDTO): Produto {
         val produto = produtoRepository.findById(id)
             .orElseThrow { ValidacaoException("Endereço não encontrado com ID: $id") }
 

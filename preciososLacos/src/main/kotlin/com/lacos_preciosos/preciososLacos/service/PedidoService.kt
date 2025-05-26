@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
+import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroItemPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Pedido
 import com.lacos_preciosos.preciososLacos.repository.PedidoRepository
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
@@ -12,15 +12,20 @@ import java.lang.RuntimeException
 @Service
 class PedidoService(val pedidoRepository: PedidoRepository, val usuarioRepository: UsuarioRepository) {
 
-    fun createPedido(cadastroPedidoDTO: CadastroPedidoDTO): DadosDetalhePedido {
+    fun createPedido(cadastroItemPedidoDTO: CadastroItemPedidoDTO): DadosDetalhePedido {
 
-      val usuario = usuarioRepository.findById(cadastroPedidoDTO.idUsuario)
+      val usuario = usuarioRepository.findById(cadastroItemPedidoDTO.idUsuario)
 
         if (usuario.isEmpty) {
             throw RuntimeException("Usuário com esse ID não foi encontrado")
         }
 
-        val pedido = Pedido(cadastroPedidoDTO)
+        val pedido = Pedido(
+            cadastroItemPedidoDTO,
+            tipoPagamento,
+            cadastroItemPedidoDTO.total as Double,
+            cadastroItemPedidoDTO.idUsuario
+        )
         pedido.usuario = usuario.get()
         return DadosDetalhePedido(pedido)
     }
@@ -45,14 +50,19 @@ class PedidoService(val pedidoRepository: PedidoRepository, val usuarioRepositor
         return DadosDetalhePedido(pedido.get())
     }
 
-    fun updatePedido(id: Int, dto: CadastroPedidoDTO): DadosDetalhePedido {
+    fun updatePedido(id: Int, dto: CadastroItemPedidoDTO): DadosDetalhePedido {
         var pedido = pedidoRepository.findById(id);
 
         if(pedido.isEmpty) {
             throw RuntimeException("Pedido com esse ID não encontrado")
         }
 
-        val pedidoAtualizado = Pedido(dto)
+        val pedidoAtualizado = Pedido(
+            dto,
+            tipoPagamento,
+            cadastroItemPedidoDTO.total as Double,
+            cadastroItemPedidoDTO.idUsuario
+        )
         pedidoAtualizado.idPedido = id
 
         return DadosDetalhePedido(pedidoRepository.save(pedidoAtualizado))

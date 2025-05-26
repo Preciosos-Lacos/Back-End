@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/pedidos")
-class PedidoController(private val pedidoService: PedidoService) {
+class FavoritoController(private val pedidoService: PedidoService) {
 
     @PostMapping
     @Tag(name = "Cadastro de Pedido")
