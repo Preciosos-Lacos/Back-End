@@ -68,16 +68,16 @@ class ModeloController(private val modeloService: ModeloService) {
         }
     }
 
-    @PatchMapping("/{id}")
-    @Tag(name = "Atualização de foto")
-    fun updateFoto(@PathVariable id: Int, @RequestBody @Valid atualizacaoFotoDTO: AtualizacaoFotoDTO):
-            ResponseEntity<DadosDetalheModelo> {
-        try {
-            return ResponseEntity.status(200).body(modeloService.updateFoto(id, atualizacaoFotoDTO))
-        } catch (ex: ValidacaoException) {
-            return ResponseEntity.status(404).build()
-        }
-    }
+//    @PatchMapping("/{id}")
+//    @Tag(name = "Atualização de foto")
+//    fun updateFoto(@PathVariable id: Int, @RequestBody @Valid atualizacaoFotoDTO: AtualizacaoFotoDTO):
+//            ResponseEntity<DadosDetalheModelo> {
+//        try {
+//            return ResponseEntity.status(200).body(modeloService.updateFoto(id, atualizacaoFotoDTO))
+//        } catch (ex: ValidacaoException) {
+//            return ResponseEntity.status(404).build()
+//        }
+//    }
 
     @DeleteMapping("/{id}")
     @Tag(name = "Exclusão de modelo")

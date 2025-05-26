@@ -17,14 +17,12 @@ data class Modelo(
 
     var descricao: String = "",
 
-    var foto: ByteArray
 ) {
     constructor(dto: CadastroModeloDTO) : this(
         null,
         dto.nome,
         dto.preco,
-        dto.descricao,
-        dto.foto
+        dto.descricao
     )
 
 

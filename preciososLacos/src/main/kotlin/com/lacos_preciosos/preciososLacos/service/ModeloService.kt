@@ -44,18 +44,18 @@ class ModeloService(private val modeloRepository: ModeloRepository) {
         }
     }
 
-    fun updateFoto(id: Int, fotoDTO: AtualizacaoFotoDTO): DadosDetalheModelo {
-        var existe = modeloRepository.findById(id)
-
-        if (existe.isEmpty) {
-            throw ValidacaoException("Modelo não encontrado")
-        } else {
-            val modelo = existe.get()
-            modeloRepository.updateFoto(id, fotoDTO.foto)
-            modelo.foto = fotoDTO.foto
-            return DadosDetalheModelo(modelo)
-        }
-    }
+//    fun updateFoto(id: Int, fotoDTO: AtualizacaoFotoDTO): DadosDetalheModelo {
+//        var existe = modeloRepository.findById(id)
+//
+//        if (existe.isEmpty) {
+//            throw ValidacaoException("Modelo não encontrado")
+//        } else {
+//            val modelo = existe.get()
+//            modeloRepository.updateFoto(id, fotoDTO.foto)
+//            modelo.foto = fotoDTO.foto
+//            return DadosDetalheModelo(modelo)
+//        }
+//    }
 
     fun deleteModelo(id: Int) {
         var existe = modeloRepository.existsById(id)
