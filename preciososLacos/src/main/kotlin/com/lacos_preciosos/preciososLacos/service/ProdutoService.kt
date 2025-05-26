@@ -6,6 +6,7 @@ import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.repository.ProdutoRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import org.springframework.stereotype.Service
 
 @Service

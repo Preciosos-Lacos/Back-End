@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroEnderecoDTO
-import com.lacos_preciosos.preciososLacos.dto.CadastroProdutoDTO
+import com.lacos_preciosos.preciososLacos.dto.endereco.CadastroEnderecoDTO
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import com.lacos_preciosos.preciososLacos.model.Endereco
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.model.Usuario

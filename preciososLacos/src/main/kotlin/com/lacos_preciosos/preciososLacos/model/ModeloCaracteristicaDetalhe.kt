@@ -10,7 +10,7 @@ data class ModeloCaracteristicaDetalhe(
     @Id
     @field:NotBlank
     @ManyToOne
-    var fkModelo: Modelo? = null,
+    var modelo: Modelo? = null,
 
 
     @field:NotBlank

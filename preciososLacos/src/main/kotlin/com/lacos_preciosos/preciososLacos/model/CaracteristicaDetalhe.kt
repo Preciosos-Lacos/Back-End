@@ -14,7 +14,7 @@ data class CaracteristicaDetalhe(
     var descricao: String? = null,
     
     @ManyToOne
-    var fkCaracteristica: Caracteristica? = null
+    var caracteristica: Caracteristica? = null
 
     
 ) {

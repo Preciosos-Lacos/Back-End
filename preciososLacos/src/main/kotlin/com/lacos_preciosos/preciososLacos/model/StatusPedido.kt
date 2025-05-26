@@ -10,7 +10,7 @@ data class StatusPedido(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var idStatusPedido: Int? = null,
+    var statusPedido: Int? = null,
 
     var status: String
 )

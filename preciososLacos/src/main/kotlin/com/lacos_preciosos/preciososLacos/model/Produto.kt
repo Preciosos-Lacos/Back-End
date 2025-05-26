@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroProdutoDTO
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import jakarta.persistence.*
 
 @Entity
