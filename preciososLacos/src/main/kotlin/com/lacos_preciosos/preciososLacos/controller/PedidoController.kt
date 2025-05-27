@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
+import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.service.PedidoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag

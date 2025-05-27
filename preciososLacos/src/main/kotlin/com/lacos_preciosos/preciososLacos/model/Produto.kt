@@ -19,7 +19,10 @@ data class Produto(
 
     var acabamento: String = "",
 
-    var preco: Double = 0.0
+    var preco: Double = 0.0,
+
+    @ManyToOne
+    var modelo: Modelo? = null
 
 ) {
 
@@ -29,9 +32,9 @@ data class Produto(
         dto.cor,
         dto.material,
         dto.acabamento,
-        dto.preco
+        dto.preco,
+        null
     )
-
 
 
 }

@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.service
 
+import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Pedido
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.repository.*

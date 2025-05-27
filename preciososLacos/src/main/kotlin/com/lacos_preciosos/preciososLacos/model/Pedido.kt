@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroItemPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.tipos.TipoPagamento
 import jakarta.persistence.*
 import java.time.LocalDate
@@ -36,7 +36,7 @@ data class Pedido(
 
     var produtos: List<Produto>? = null
 ) {
-    constructor(dto: CadastroItemPedidoDTO, formaPagamento: TipoPagamento, total: Double, idUsuario: Int) : this(
+    constructor(dto: CadastroPedidoDTO) : this(
         null,
         LocalDate.now(),
         dto.total,

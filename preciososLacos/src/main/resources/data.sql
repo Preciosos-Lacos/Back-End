@@ -12,7 +12,7 @@ INSERT INTO status_pedido (id_status_pedido, status) VALUES
     (DEFAULT, 'Iniciado'),
     (DEFAULT, 'Concluído');
 
-INSERT INTO caracteristica (idCaracteristica, descricao) VALUES
+INSERT INTO caracteristica (id_caracteristica, descricao) VALUES
     (DEFAULT, 'COR'),
     (DEFAULT, 'TAMANHO'),
     (DEFAULT, 'ACABAMENTO'),

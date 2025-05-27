@@ -11,8 +11,8 @@ interface ModeloRepository : JpaRepository<Modelo, Int> {
 
     fun findByNomeModeloContainingIgnoreCase(nomeModelo: String): Optional<Modelo>
 
-    @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
-    @Transactional
-    @Modifying
-    fun updateFoto(idModelo: Int?, foto: ByteArray): Int
+//    @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
+//    @Transactional
+//    @Modifying
+//    fun updateFoto(idModelo: Int?, foto: ByteArray): Int
 }
