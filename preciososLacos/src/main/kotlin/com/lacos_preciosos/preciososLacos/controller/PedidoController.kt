@@ -1,19 +1,13 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.modelo.AtualizacaoFotoDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.CadastroModeloDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.DadosDetalheModelo
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
-import com.lacos_preciosos.preciososLacos.model.Modelo
-import com.lacos_preciosos.preciososLacos.service.ModeloService
 import com.lacos_preciosos.preciososLacos.service.PedidoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/pedidos")
@@ -26,7 +20,7 @@ class PedidoController(private val pedidoService: PedidoService) {
         try {
             var pedido = pedidoService.createPedido(criacaoPedidoDTO)
             return ResponseEntity.status(201).body(pedido)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(404).build()
         }
     }
@@ -38,7 +32,7 @@ class PedidoController(private val pedidoService: PedidoService) {
         try {
             var pedidos = pedidoService.getAllPedidos()
             return ResponseEntity.status(200).body(pedidos)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(204).build()
         }
     }
@@ -48,7 +42,7 @@ class PedidoController(private val pedidoService: PedidoService) {
         try {
             var pedido = pedidoService.getOnePedido(id)
             return ResponseEntity.status(200).body(pedido)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(404).build()
         }
     }

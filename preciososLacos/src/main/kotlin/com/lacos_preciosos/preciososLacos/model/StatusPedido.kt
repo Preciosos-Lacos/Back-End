@@ -12,5 +12,5 @@ data class StatusPedido(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var idStatusPedido: Int? = null,
 
-    var status: String
+    var status: String = ""
 )

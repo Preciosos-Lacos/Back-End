@@ -1,6 +1,7 @@
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.*
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import com.lacos_preciosos.preciososLacos.model.Endereco
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.model.Produto

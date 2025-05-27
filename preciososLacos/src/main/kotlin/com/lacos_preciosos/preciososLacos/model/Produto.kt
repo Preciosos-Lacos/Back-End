@@ -1,6 +1,6 @@
 package com.lacos_preciosos.preciososLacos.model
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroProdutoDTO
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import jakarta.persistence.*
 
 @Entity
@@ -8,18 +8,18 @@ data class Produto(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var idProduto: Int?,
+    var idProduto: Int? = null,
 
-    var tamanho: String,
+    var tamanho: String = "",
 
-    var cor: String,
+    var cor: String = "",
 
     @Column(name = "tipo_laco")
-    var tipoLaco: String,
+    var tipoLaco: String = "",
 
-    var acabamento: String,
+    var acabamento: String = "",
 
-    var preco: Double
+    var preco: Double = 0.0
 
 ) {
 
@@ -31,5 +31,7 @@ data class Produto(
         dto.acabamento,
         dto.preco
     )
+
+
 
 }

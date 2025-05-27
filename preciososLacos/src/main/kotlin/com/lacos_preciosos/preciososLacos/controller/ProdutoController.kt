@@ -1,10 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.CadastroEnderecoDTO
-import com.lacos_preciosos.preciososLacos.dto.CadastroProdutoDTO
-import com.lacos_preciosos.preciososLacos.model.Endereco
+import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
 import com.lacos_preciosos.preciososLacos.model.Produto
-import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.service.ProdutoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -20,7 +17,7 @@ class ProdutoController(val produtoService: ProdutoService) {
 // Criando um produto
     @PostMapping
     @Tag(name = "Cadastro de produto")
-    fun cadastrarProduto(@RequestBody novoProduto:  CadastroProdutoDTO): ResponseEntity<CadastroProdutoDTO> {
+    fun cadastrarProduto(@RequestBody novoProduto: CadastroProdutoDTO): ResponseEntity<CadastroProdutoDTO> {
         val produto = produtoService.save(novoProduto)
         return ResponseEntity.status(201).body(novoProduto)
     }
