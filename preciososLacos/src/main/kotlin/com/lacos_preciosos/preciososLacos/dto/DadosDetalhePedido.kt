@@ -1,4 +1,4 @@
-package com.lacos_preciosos.preciososLacos.dto.pedido
+package com.lacos_preciosos.preciososLacos.dto
 
 import com.lacos_preciosos.preciososLacos.model.Pedido
 

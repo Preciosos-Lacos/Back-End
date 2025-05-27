@@ -4,13 +4,16 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.validation.constraints.NotBlank
 
 @Entity
-data class StatusPedido(
-
+data class TipoUsuario(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var statusPedido: Int? = null,
+    var idTipoUsuario: Int? = null,
 
-    var status: String = ""
-)
+    @field:NotBlank
+    var tipoUsuario: String? = null
+
+) {
+}
