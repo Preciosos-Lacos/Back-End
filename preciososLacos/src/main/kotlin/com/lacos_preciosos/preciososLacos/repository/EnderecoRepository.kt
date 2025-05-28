@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.Query
 interface EnderecoRepository : JpaRepository<Endereco, Int> {
 
     // Create a new Endereco
-    @Transactional
-    fun criarEndereco(endereco: Endereco): Endereco {
-        return save(endereco)
-    }
+//    @Transactional
+//    fun criarEndereco(endereco: Endereco): Endereco {
+//        return save(endereco)
+//    }
 
     // Update an existing Endereco
     @Transactional

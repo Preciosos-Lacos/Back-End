@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank
 
 @Entity
 data class TipoUsuario(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var idTipoUsuario: Int? = null,

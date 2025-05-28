@@ -14,12 +14,12 @@ data class Usuario(
     var idUsuario: Int? = null,
 
     @Column(name = "nome_completo")
-    var nomeCompleto: String,
+    var nomeCompleto: String = "",
 
-    var email: String,
-    var senha: String,
-    var cpf: String,
-    var telefone: String,
+    var email: String = "",
+    var senha: String = "",
+    var cpf: String = "",
+    var telefone: String = "",
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     var data_cadastro: LocalDate = LocalDate.now(),
     var autenticado: Boolean = false

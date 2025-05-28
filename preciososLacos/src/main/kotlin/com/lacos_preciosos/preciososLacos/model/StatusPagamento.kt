@@ -12,5 +12,5 @@ data class StatusPagamento(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var idStatusPagamento: Int? = null,
 
-    var status: String
+    var status: String = ""
 )

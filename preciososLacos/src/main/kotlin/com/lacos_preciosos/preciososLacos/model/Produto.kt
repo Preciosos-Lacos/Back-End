@@ -8,18 +8,21 @@ data class Produto(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var idProduto: Int?,
+    var idProduto: Int? = null,
 
-    var tamanho: String,
+    var tamanho: String = "",
 
-    var cor: String,
+    var cor: String = "",
 
     @Column(name = "tipo_laco")
-    var tipoLaco: String,
+    var tipoLaco: String = "",
 
-    var acabamento: String,
+    var acabamento: String = "",
 
-    var preco: Double
+    var preco: Double = 0.0,
+
+    @ManyToOne
+    var modelo: Modelo? = null
 
 ) {
 
@@ -29,7 +32,9 @@ data class Produto(
         dto.cor,
         dto.material,
         dto.acabamento,
-        dto.preco
+        dto.preco,
+        null
     )
+
 
 }

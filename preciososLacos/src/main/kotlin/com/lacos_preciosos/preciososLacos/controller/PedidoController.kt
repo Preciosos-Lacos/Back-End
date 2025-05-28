@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroItemPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
+import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.service.PedidoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -15,12 +15,12 @@ class PedidoController(private val pedidoService: PedidoService) {
 
     @PostMapping
     @Tag(name = "Cadastro de Pedido")
-    fun createPedido(@RequestBody @Valid criacaoPedidoDTO: CadastroItemPedidoDTO): ResponseEntity<DadosDetalhePedido> {
+    fun createPedido(@RequestBody @Valid criacaoPedidoDTO: CadastroPedidoDTO): ResponseEntity<DadosDetalhePedido> {
 
         try {
             var pedido = pedidoService.createPedido(criacaoPedidoDTO)
             return ResponseEntity.status(201).body(pedido)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(404).build()
         }
     }
@@ -32,7 +32,7 @@ class PedidoController(private val pedidoService: PedidoService) {
         try {
             var pedidos = pedidoService.getAllPedidos()
             return ResponseEntity.status(200).body(pedidos)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(204).build()
         }
     }
@@ -42,14 +42,14 @@ class PedidoController(private val pedidoService: PedidoService) {
         try {
             var pedido = pedidoService.getOnePedido(id)
             return ResponseEntity.status(200).body(pedido)
-        } catch (e: RuntimeException){
+        } catch (e: RuntimeException) {
             return ResponseEntity.status(404).build()
         }
     }
 
     @PutMapping("/{id}")
     @Tag(name = "Atualização de Pedido")
-    fun updateModelo(@PathVariable id: Int, @RequestBody @Valid atualizacaoPedidoDTO: CadastroItemPedidoDTO):
+    fun updateModelo(@PathVariable id: Int, @RequestBody @Valid atualizacaoPedidoDTO: CadastroPedidoDTO):
             ResponseEntity<DadosDetalhePedido> {
 
         try {
