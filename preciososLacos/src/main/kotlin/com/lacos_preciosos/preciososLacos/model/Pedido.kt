@@ -16,22 +16,22 @@ data class Pedido(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var idPedido: Int? = null,
 
-    var dataPedido: LocalDate,
+    var dataPedido: LocalDate = LocalDate.now(),
 
-    var total: Double,
+    var total: Double = 0.0,
 
-    var formaPagamento: TipoPagamento,
-
-    @ManyToOne
-    var usuario: Usuario?,
+    var formaPagamento: TipoPagamento? = null,
 
     @ManyToOne
-    var statusPedido: StatusPedido?,
+    var usuario: Usuario? = null,
 
     @ManyToOne
-    var statusPagamento: StatusPagamento?
+    var statusPedido: StatusPedido? = null,
+
+    @ManyToOne
+    var statusPagamento: StatusPagamento? = null
 ) {
-    constructor(dto: CadastroItemPedidoDTO, formaPagamento: TipoPagamento, total: Double, idUsuario: Int) : this(
+    constructor(dto: CadastroItemPedidoDTO) : this(
         null,
         LocalDate.now(),
         dto.total,
