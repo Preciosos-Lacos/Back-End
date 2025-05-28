@@ -1,11 +1,12 @@
 package com.lacos_preciosos.preciososLacos.dto.endereco
 
 interface EnderecoDTO {
-    val cep: Int
+    val cep: String
     val logradouro: String
     val bairro: String
     val numero: Int
     val complemento: String?
-    val localidade: String
-    val uf: String
+    val cidade: String
+    val estado: String
+    val usuarioId: Int
 }
