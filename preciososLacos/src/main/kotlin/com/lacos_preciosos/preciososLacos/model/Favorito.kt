@@ -1,25 +1,44 @@
 package com.lacos_preciosos.preciososLacos.model
 
+import com.lacos_preciosos.preciososLacos.dto.favorito.CadastroFavoritoDTO
 import jakarta.persistence.*
-import jakarta.validation.constraints.NotBlank
 
 @Entity
+@Table(name = "favorito")
 data class Favorito(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var idFavorito: Int? = null,
+    var id: Int? = null,
 
-    @field:NotBlank
-    @ManyToOne
-    var idProduto: Produto? = null,
+    var tamanho: String = "",
 
+    var cor: String = "",
 
-    @field:NotBlank
-    @ManyToOne
-    var idUsuario: Usuario? = null,
+    @Column(name = "tipo_laco")
+    var tipoLaco: String = "",
 
-    @field:NotBlank
-    var favorito: String? = null,
-) {
+    var acabamento: String = "",
+
+    var preco: Double = 0.0,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("usuarioId")
+    @JoinColumn(name = "usuario_id")
+    var usuario: Usuario? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("produtoId")
+    @JoinColumn(name = "produto_id")
+    var produto: Produto? = null,
+    var idFavorito: Int
+){
+    constructor(dto: CadastroFavoritoDTO) : this(
+        id = if (dto.idFavorito != 0) dto.idFavorito else null,
+        tamanho = dto.tamanho,
+        cor = dto.cor,
+        tipoLaco = dto.tipoLaco,
+        acabamento = dto.acabamento,
+        preco = dto.preco,
+    )
 }

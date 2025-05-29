@@ -22,7 +22,10 @@ data class Produto(
     var preco: Double = 0.0,
 
     @ManyToOne
-    var modelo: Modelo? = null
+    var modelo: Modelo? = null,
+    val nome: String,
+    val material: String,
+    val idModelo: Int
 
 ) {
 
@@ -33,7 +36,7 @@ data class Produto(
         dto.material,
         dto.acabamento,
         dto.preco,
-        null
+        null,
     )
 
 

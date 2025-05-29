@@ -1,23 +1,17 @@
 package com.lacos_preciosos.preciososLacos.dto.favorito
 
-import com.lacos_preciosos.preciososLacos.model.Produto
-import lombok.NoArgsConstructor
-
-@NoArgsConstructor
-data class DadosDetalheProduto(
-    var tamanho: String,
-    var cor: String,
-    var tipoLaco: String,
-    var acabamento: String,
-    var preco: Double
-
-) {
-    constructor(produto: Produto) : this(
-        produto.tamanho,
-        produto.cor,
-        produto.tipoLaco,
-        produto.acabamento,
-        produto.preco
-    )
+    data class DadosDetalheFavorito(
+        val idFavorito: Int,
+        val nome: String,
+        val material: String,
+        val tamanho: String,
+        val cor: String,
+        val tipoLaco: String,
+        val acabamento: String,
+        val preco: Double,
+        val idModelo: Int,
+        val idUsuario: Int? = null
+)
+{
 
 }
