@@ -15,77 +15,47 @@ class FavoritoService(
     val usuarioRepository: UsuarioRepository,
     val produtoRepository: ProdutoRepository
 ) {
-
-    fun createFavorito(dto: CadastroFavoritoDTO): DadosDetalheFavorito {
+    fun adicionarFavorito(dto: CadastroFavoritoDTO) {
         val usuario = usuarioRepository.findById(dto.idUsuario)
             .orElseThrow { RuntimeException("Usuário com esse ID não foi encontrado") }
 
         val produto = produtoRepository.findById(dto.idModelo)
             .orElseThrow { RuntimeException("Produto (Modelo) com esse ID não foi encontrado") }
 
-        // Verifica se já existe um favorito com o mesmo idFavorito
-        if (favoritoRepository.existsById(dto.idFavorito)) {
-            throw ValidacaoException("Favorito com esse ID já existe")
+        val favoritoJaExiste = favoritoRepository.existsByUsuarioIdAndProdutoId(dto.idUsuario, dto.idModelo)
+
+        if (favoritoJaExiste) {
+            throw ValidacaoException("Esse produto já está nos favoritos do usuário")
         }
 
-        val favorito = Favorito(dto).apply {
+        val novoFavorito = Favorito(
+            idFavorito = dto.idFavorito
+        ).apply {
             this.usuario = usuario
             this.produto = produto
         }
 
-        favoritoRepository.save(favorito)
-
-        return mapFavoritoToDto(favorito)
+        favoritoRepository.save(novoFavorito)
     }
 
-    fun getAllFavoritosDoUsuario(idUsuario: Int): List<DadosDetalheFavorito> {
-        if (!usuarioRepository.existsById(idUsuario)) {
+
+    fun removerFavorito(idFavorito: Int) {
+        val favorito = favoritoRepository.findById(idFavorito)
+            .orElseThrow { ValidacaoException("Favorito com esse ID não foi encontrado") }
+
+        favoritoRepository.delete(favorito)
+    }
+
+    fun listarFavoritosDoUsuario(usuarioId: Int): List<DadosDetalheFavorito> {
+        if (!usuarioRepository.existsById(usuarioId)) {
             throw RuntimeException("Usuário com esse ID não foi encontrado")
         }
 
-        val favoritos = favoritoRepository.findAllByUsuarioId(idUsuario)
+        val favoritos = favoritoRepository.findAllByUsuarioId(usuarioId)
 
-        if (favoritos.isEmpty()) {
-            throw RuntimeException("Nenhum favorito encontrado para o usuário")
+        return favoritos.map { favorito ->
+            mapFavoritoToDto(favorito)
         }
-
-        return favoritos.map { mapFavoritoToDto(it) }
-    }
-
-    fun getFavoritoById(idFavorito: Int): DadosDetalheFavorito {
-        val favorito = favoritoRepository.findById(idFavorito)
-            .orElseThrow { RuntimeException("Favorito com esse ID não foi encontrado") }
-
-        return mapFavoritoToDto(favorito)
-    }
-
-    fun updateFavorito(idFavorito: Int, dto: CadastroFavoritoDTO): DadosDetalheFavorito {
-        val favoritoExistente = favoritoRepository.findById(idFavorito)
-            .orElseThrow { RuntimeException("Favorito com esse ID não foi encontrado") }
-
-        val usuario = usuarioRepository.findById(dto.idUsuario)
-            .orElseThrow { RuntimeException("Usuário com esse ID não foi encontrado") }
-
-        val produto = produtoRepository.findById(dto.idModelo)
-            .orElseThrow { RuntimeException("Produto (Modelo) com esse ID não foi encontrado") }
-
-        val favoritoAtualizado = Favorito(dto).apply {
-            this.idFavorito = idFavorito
-            this.usuario = usuario
-            this.produto = produto
-        }
-
-        favoritoRepository.save(favoritoAtualizado)
-
-        return mapFavoritoToDto(favoritoAtualizado)
-    }
-
-    fun deleteFavorito(idFavorito: Int) {
-        if (!favoritoRepository.existsById(idFavorito)) {
-            throw ValidacaoException("Favorito não encontrado")
-        }
-
-        favoritoRepository.deleteById(idFavorito)
     }
 
     private fun mapFavoritoToDto(favorito: Favorito): DadosDetalheFavorito {
@@ -105,4 +75,5 @@ class FavoritoService(
             idUsuario = usuario.idUsuario
         )
     }
+    
 }
