@@ -1,7 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroItemPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Pedido
 import com.lacos_preciosos.preciososLacos.repository.PedidoRepository
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository

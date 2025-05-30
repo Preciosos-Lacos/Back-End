@@ -37,15 +37,15 @@ class FavoritoController(private val favoritoService: FavoritoService) {
             ResponseEntity.internalServerError().build()
         }
     }
-
-    @GetMapping("/{usuarioId}")
-    @Tag(name = "Listar Favoritos do Usuário")
-    fun listarFavoritos(@PathVariable usuarioId: Int): ResponseEntity<List<DadosDetalheFavorito>> {
-        return try {
-            val favoritos = favoritoService.listarFavoritosDoUsuario(usuarioId)
-            ResponseEntity.ok(favoritos)
-        } catch (e: Exception) {
-            ResponseEntity.status(404).build()
-        }
-    }
+//
+//    @GetMapping("/{usuarioId}")
+//    @Tag(name = "Listar Favoritos do Usuário")
+//    fun listarFavoritos(@PathVariable usuarioId: Int): ResponseEntity<List<DadosDetalheFavorito>> {
+//        return try {
+//            val favoritos = favoritoService.listarFavoritosDoUsuario(usuarioId)
+//            ResponseEntity.ok(favoritos)
+//        } catch (e: Exception) {
+//            ResponseEntity.status(404).build()
+//        }
+//    }
 }

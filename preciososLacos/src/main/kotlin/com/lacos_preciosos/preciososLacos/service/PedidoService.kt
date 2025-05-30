@@ -1,7 +1,7 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Pedido
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.repository.*
@@ -38,7 +38,7 @@ class PedidoService(
         pedido.statusPagamento = statusPagamentoRepository.findById(1).get()
         pedidoRepository.save(pedido)
 
-        return DadosDetalhePedido(pedido)
+        return DadosDetalhePedido(pedido.total, pedido.formaPagamento.toString())
     }
 
     fun getAllPedidos(): List<DadosDetalhePedido> {
@@ -48,7 +48,7 @@ class PedidoService(
             throw RuntimeException("Nenhum pedido encontrado")
         }
 
-        return listaPedidos.stream().map { p -> DadosDetalhePedido(p) }.toList()
+        return listaPedidos.stream().map { p -> DadosDetalhePedido(p.total, p.formaPagamento.toString()) }.toList()
     }
 
     fun getOnePedido(id: Int): DadosDetalhePedido {
@@ -58,7 +58,7 @@ class PedidoService(
             throw RuntimeException("Pedido com esse ID não encontrado")
         }
 
-        return DadosDetalhePedido(pedido.get())
+        return DadosDetalhePedido(pedido.get().total, pedido.get().formaPagamento.toString())
     }
 
     fun updatePedido(id: Int, dto: CadastroPedidoDTO): DadosDetalhePedido {
@@ -71,7 +71,8 @@ class PedidoService(
         val pedidoAtualizado = Pedido(dto)
         pedidoAtualizado.idPedido = id
 
-        return DadosDetalhePedido(pedidoRepository.save(pedidoAtualizado))
+        var pedido1 = pedidoRepository.save(pedidoAtualizado)
+        return DadosDetalhePedido(pedido1.total, pedido1.formaPagamento.toString())
     }
 
     fun deletePedido(id: Int) {
