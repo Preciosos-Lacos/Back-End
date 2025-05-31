@@ -36,7 +36,6 @@ class PedidoController(private val pedidoService: PedidoService) {
             return ResponseEntity.status(204).build()
         }
     }
-
     @GetMapping("/{id}")
     fun getOneModelo(@PathVariable id: Int): ResponseEntity<DadosDetalhePedido> {
         try {
