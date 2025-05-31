@@ -17,6 +17,15 @@ data class Modelo(
 
     var descricao: String = "",
 
+    @ManyToMany
+    @JoinTable(
+        name = "favorito_Modelo",
+        joinColumns = [JoinColumn(name = "idModelo")],
+        inverseJoinColumns = [JoinColumn(name = "idUsuario")]
+    )
+
+    var listaUsuario: List<Usuario>? = null
+
 ) {
     constructor(dto: CadastroModeloDTO) : this(
         null,

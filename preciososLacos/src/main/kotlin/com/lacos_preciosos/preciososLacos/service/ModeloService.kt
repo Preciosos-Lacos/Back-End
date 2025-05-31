@@ -1,16 +1,17 @@
 package com.lacos_preciosos.preciososLacos.service
 
-import com.lacos_preciosos.preciososLacos.dto.modelo.AtualizacaoFotoDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.CadastroModeloDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.DadosDetalheModelo
+import com.lacos_preciosos.preciososLacos.dto.modelo.*
+import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.ModeloRepository
+import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class ModeloService(private val modeloRepository: ModeloRepository) {
+class ModeloService(private val modeloRepository: ModeloRepository, val usuarioRepository: UsuarioRepository) {
 
     fun getAllModelos(): List<Modelo> {
         return modeloRepository.findAll()
@@ -65,5 +66,35 @@ class ModeloService(private val modeloRepository: ModeloRepository) {
         } else {
             throw ValidacaoException("Modelo não encontrado")
         }
+    }
+
+    fun adicionarFavorito(dto: CadastroFavoritoDTO):DadosDetalheModelo{
+        var usuarioOptional = usuarioRepository.findById(dto.idUsuario)
+
+        if (usuarioOptional.isEmpty) {
+            throw RuntimeException("Usuário com esse ID não foi encontrado")
+        }
+
+        if (modeloRepository.existsById(dto.idModelo) == false){
+            throw RuntimeException("Modelo com esse ID não foi encontrado")
+        }
+
+        modeloRepository.adicionarFavorito(dto.idModelo,dto.idUsuario)
+
+        return DadosDetalheModelo(modeloRepository.findById(dto.idModelo).get())
+    }
+
+    fun deleteFavorito(dto: DeleteFavoritoDTO){
+        var usuarioOptional = usuarioRepository.findById(dto.idUsuario)
+
+        if (usuarioOptional.isEmpty) {
+            throw RuntimeException("Usuário com esse ID não foi encontrado")
+        }
+
+        if (modeloRepository.existsById(dto.idModelo) == false){
+            throw RuntimeException("Modelo com esse ID não foi encontrado")
+        }
+
+        modeloRepository.deleteFavorito(dto.idModelo,dto.idUsuario)
     }
 }

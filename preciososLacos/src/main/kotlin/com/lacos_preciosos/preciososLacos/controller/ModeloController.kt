@@ -1,8 +1,6 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.modelo.AtualizacaoFotoDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.CadastroModeloDTO
-import com.lacos_preciosos.preciososLacos.dto.modelo.DadosDetalheModelo
+import com.lacos_preciosos.preciososLacos.dto.modelo.*
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.service.ModeloService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
@@ -84,6 +82,28 @@ class ModeloController(private val modeloService: ModeloService) {
     fun deleteModelo(@PathVariable id: Int): ResponseEntity<Void> {
         try {
             modeloService.deleteModelo(id)
+            return ResponseEntity.status(204).build()
+        } catch (ex: ValidacaoException) {
+            return ResponseEntity.status(404).build()
+        }
+    }
+
+    @PostMapping("/favorito")
+    @Tag(name = "Adicionando favorito")
+    fun adicionarFavorito(@RequestBody dto: CadastroFavoritoDTO):ResponseEntity<DadosDetalheModelo>{
+        try {
+            var modelo = modeloService.adicionarFavorito(dto)
+            return ResponseEntity.status(201).body(modelo)
+        } catch (e: RuntimeException) {
+            return ResponseEntity.status(404).build()
+        }
+    }
+
+    @DeleteMapping("/favorito")
+    @Tag(name = "Exclusão de favorito")
+    fun deleteFavorito(@RequestBody dto: DeleteFavoritoDTO): ResponseEntity<Void> {
+        try {
+            modeloService.deleteFavorito(dto)
             return ResponseEntity.status(204).build()
         } catch (ex: ValidacaoException) {
             return ResponseEntity.status(404).build()
