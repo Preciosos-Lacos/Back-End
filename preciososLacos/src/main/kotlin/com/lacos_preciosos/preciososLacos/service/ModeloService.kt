@@ -1,8 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.modelo.*
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.ModeloRepository
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
@@ -26,7 +24,7 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
     }
 
     fun createModelo(modeloDTO: CadastroModeloDTO): DadosDetalheModelo {
-        val modelo = Modelo(modeloDTO)
+        val modelo = Modelo(modeloDTO, 1, "Laço Simples", 10.0, "Descrição")
         modeloRepository.save(modelo)
         return DadosDetalheModelo(modelo)
     }
@@ -36,7 +34,7 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
         var existe = modeloRepository.existsById(id)
 
         if (existe) {
-            var modelo = Modelo(modeloDto)
+            var modelo = Modelo(modeloDto, 1, "Laço Simples", 10.0, "Descrição")
             modelo.idModelo = id
             modeloRepository.save(modelo)
             return DadosDetalheModelo(modelo)

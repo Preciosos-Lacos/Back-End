@@ -29,7 +29,7 @@ data class Modelo(
     var listaUsuario: List<Usuario>? = null
 
 ) {
-    constructor(dto: CadastroModeloDTO) : this(
+    constructor(dto: CadastroModeloDTO, idModelo: Int, nomeModelo: String, preco: Double, descricao: String) : this(
         null,
         dto.nome,
         dto.preco,

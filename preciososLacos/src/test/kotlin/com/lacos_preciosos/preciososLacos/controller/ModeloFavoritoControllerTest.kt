@@ -55,7 +55,7 @@ class ModeloFavoritoControllerTest {
     }
 
     @Test
-    @DisplayName("A exclusão de favorito existente deve retornar status 20")
+    @DisplayName("A exclusão de favorito existente deve retornar status 204")
     fun testDeleteFavoritoExistente() {
         val dto = com.lacos_preciosos.preciososLacos.dto.modelo.DeleteFavoritoDTO(999,1)
         doNothing().`when`(service).deleteFavorito(dto)
