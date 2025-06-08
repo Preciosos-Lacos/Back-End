@@ -17,6 +17,8 @@ data class Modelo(
 
     var descricao: String = "",
 
+    var favorito: Boolean?,
+
     @ManyToMany
     @JoinTable(
         name = "favorito_Modelo",
@@ -31,7 +33,8 @@ data class Modelo(
         null,
         dto.nome,
         dto.preco,
-        dto.descricao
+        dto.descricao,
+        dto.favorito
     )
 
 
