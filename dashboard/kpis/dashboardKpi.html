@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard KPIs</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #FAFBF5;
+      color: #3B3B3B;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #BC6680;
+      color: #FCFCFC;
+      padding: 15px 30px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(188, 102, 128, 0.4);
+    }
+
+    header h1 {
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    #dashboard{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+
+    .kpi-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-between;
+    }
+
+    .kpi-card {
+      background-color: #FCFCFC;
+      border: 1px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 20px;
+      flex: 1 1 220px;
+      min-width: 220px;
+      max-width: 260px;
+      box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: scale(1.02);
+    }
+
+    .kpi-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #BC6680;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .kpi-variation {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .kpi-variation.up {
+      color: #2E8B57;
+    }
+
+    .kpi-variation.down {
+      color: #C62828;
+    }
+
+    .arrow {
+      margin-right: 6px;
+      font-size: 1.2rem;
+    }
+
+    .kpi-description {
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Dashboard - Preciosos Laços</h1>
+  </header>
+  <div class="dashboard" id="dashboard"></div>
+
+  <script>
+    const dashboard = document.getElementById('dashboard');
+
+    function createKpiCard(title, value, variation, description) {
+      const card = document.createElement('div');
+      card.className = 'kpi-card';
+
+      const isUp = variation.includes('↑');
+      const varClass = isUp ? 'up' : 'down';
+
+      card.innerHTML = `
+        <div class="kpi-title">${title}</div>
+        <div class="kpi-value">${value}</div>
+        <div class="kpi-variation ${varClass}">
+          <span class="arrow">${isUp ? '▲' : '▼'}</span> ${variation.replace(/[↑↓]/g, '').trim()}
+        </div>
+        <div class="kpi-description">${description}</div>
+      `;
+
+      return card;
+    }
+
+    function getDescription(kpiKey, variation) {
+      const isPositive = variation.includes('↑');
+
+      switch (kpiKey) {
+        case 'total_vendas':
+          return isPositive
+            ? 'Aumento nas vendas indica maior volume de negócios e receita.'
+            : 'Queda nas vendas pode indicar menor demanda ou problemas comerciais.';
+        case 'novos_clientes':
+          return isPositive
+            ? 'Mais clientes novos chegam, ampliando a base de consumidores.'
+            : 'Menos novos clientes podem significar necessidade de reforçar marketing.';
+        case 'total_pedidos':
+          return isPositive
+            ? 'Mais pedidos realizados mostram maior movimentação no negócio.'
+            : 'Redução no número de pedidos pode impactar o faturamento.';
+        case 'clientes_recompra_percentual':
+          return isPositive
+            ? 'Maior % de clientes com compras repetidas demonstra fidelização.'
+            : 'Queda na recompra pode indicar insatisfação ou perda de interesse.';
+        default:
+          return '';
+      }
+    }
+
+    async function loadKpis() {
+      try {
+        const res = await fetch('http://localhost:3000/api/kpis');
+        const data = await res.json();
+
+        dashboard.innerHTML = '';
+
+        dashboard.appendChild(createKpiCard(
+          'Total em Vendas',
+          data.total_vendas,
+          data.variacao_total_vendas,
+          getDescription('total_vendas', data.variacao_total_vendas)
+        ));
+
+        dashboard.appendChild(createKpiCard(
+          'Novos Clientes',
+          data.novos_clientes,
+          data.variacao_novos_clientes,
+          getDescription('novos_clientes', data.variacao_novos_clientes)
+        ));
+
+        dashboard.appendChild(createKpiCard(
+          'Total de Pedidos',
+          data.total_pedidos,
+          data.variacao_total_pedidos,
+          getDescription('total_pedidos', data.variacao_total_pedidos)
+        ));
+
+        dashboard.appendChild(createKpiCard(
+          'Clientes com Compras Repetidas (%)',
+          data.clientes_recompra_percentual,
+          data.variacao_clientes_recompra_percentual,
+          getDescription('clientes_recompra_percentual', data.variacao_clientes_recompra_percentual)
+        ));
+
+      } catch (err) {
+        dashboard.innerHTML = '<p>Erro ao carregar KPIs.</p>';
+        console.error(err);
+      }
+    }
+
+    loadKpis();
+  </script>
+</body>
+
+</html>

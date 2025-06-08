@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard - Preciosos Laços</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #FAFBF5;
+      color: #333;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background-color: #BC6680;
+      color: #FCFCFC;
+      padding: 15px 30px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(188, 102, 128, 0.4);
+    }
+
+    header h1 {
+      font-weight: 700;
+      font-size: 2rem;
+    }
+
+    section.charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+    }
+
+    .chart-card {
+      background-color: #FCFCFC;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(178, 123, 148, 0.15);
+      padding: 20px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .chart-card:hover {
+      box-shadow: 0 6px 18px rgba(178, 123, 148, 0.3);
+    }
+
+    .chart-card h2 {
+      color: #BC6680;
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-size: 1.25rem;
+      border-bottom: 2px solid #F29DC3;
+      padding-bottom: 6px;
+    }
+
+    button {
+      background-color: #F29DC3;
+      border: none;
+      color: #FCFCFC;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+    }
+
+    button:hover {
+      background-color: #BC6680;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table thead {
+      background-color: #F29DC3;
+      color: #FCFCFC;
+    }
+
+    table th,
+    table td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    table tbody tr:nth-child(even) {
+      background-color: #FAFBF5;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      section.charts {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Dashboard - Preciosos Laços</h1>
+    </header>
+
+    <section class="charts">
+      <div class="chart-card" id="chart-lacos-mais-vendidos">
+        <h2>5 Laços Mais Vendidos</h2>
+        <div id="lacosMaisVendidos">
+          <canvas id="chartTop5Lacos"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" id="chart-total-vendas">
+        <h2>Total em Vendas (Últimos 6 meses)</h2>
+        <div id="totalVendas">
+          <canvas id="chartVendasMensais"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" id="chart-novos-clientes">
+        <h2>Novos Clientes (Últimos 6 meses)</h2>
+        <div id="novosClientes">
+          <canvas id="chartClientesNovos"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" id="chart-clientes-recompra">
+        <h2>Clientes com Recompra (Últimos 6 meses)</h2>
+        <div id="clientesRecompra">
+          <canvas id="chartClientesRecompra"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" id="chart-formas-pagamento">
+        <h2>Formas de Pagamento Mais Utilizadas (Últimos 6 meses)</h2>
+        <div id="formasPagamento">
+          <canvas id="chartFormasPagamento"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card" id="chart-total-pedidos">
+        <h2>Total de Pedidos por Status</h2>
+        <div id="totalPedidos">
+          <canvas id="chartPedidosStatus"></canvas>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    async function fetchData(endpoint) {
+      const res = await fetch(`/api/${endpoint}`);
+      return await res.json();
+    }
+
+    async function renderTop5Lacos() {
+      const data = await fetchData('top5-lacos');
+      const labels = data.map(d => d.modelo_nome);
+      const vendas = data.map(d => Number(d.total_vendido));
+      new Chart(document.getElementById('chartTop5Lacos'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Total Vendido',
+            data: vendas,
+            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    async function renderVendasMensais() {
+      const data = await fetchData('vendas-mensais');
+      const labels = data.map(d => d.mes_ano);
+      const valores = data.map(d => Number(d.total_vendas));
+      new Chart(document.getElementById('chartVendasMensais'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Total Vendas',
+            data: valores,
+            fill: false,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            tension: 0.1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    async function renderClientesNovos() {
+      const data = await fetchData('clientes-novos');
+      const labels = data.map(d => d.mes_ano);
+      const valores = data.map(d => Number(d.novos_clientes));
+      new Chart(document.getElementById('chartClientesNovos'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Novos Clientes',
+            data: valores,
+            fill: false,
+            borderColor: 'rgba(255, 159, 64, 1)',
+            tension: 0.1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    async function renderClientesRecompra() {
+      const data = await fetchData('clientes-recompra');
+      const labels = data.map(d => d.mes_ano);
+      const valores = data.map(d => Number(d.clientes_recompraram));
+      new Chart(document.getElementById('chartClientesRecompra'), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Clientes com Recompra',
+            data: valores,
+            fill: false,
+            borderColor: 'rgba(153, 102, 255, 1)',
+            tension: 0.1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    }
+
+    async function renderFormasPagamento() {
+      const data = await fetchData('formas-pagamento');
+      const meses = [...new Set(data.map(d => d.mes_ano))].sort();
+      const formas = [...new Set(data.map(d => d.forma_pagamento))].sort();
+
+      const datasets = formas.map((forma, i) => {
+        const cor = `hsl(${i * 60}, 70%, 50%)`;
+        return {
+          label: forma,
+          data: meses.map(mes => {
+            const item = data.find(d => d.mes_ano === mes && d.forma_pagamento === forma);
+            return item ? Number(item.total_forma) : 0;
+          }),
+          backgroundColor: cor
+        };
+      });
+
+      new Chart(document.getElementById('chartFormasPagamento'), {
+        type: 'bar',
+        data: {
+          labels: meses,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+            x: { stacked: true },
+            y: { stacked: true }
+          }
+        }
+      });
+    }
+
+    async function renderPedidosStatus() {
+      const data = await fetchData('pedidos-status');
+      const meses = [...new Set(data.map(d => d.mes_ano))].sort();
+      const status = [...new Set(data.map(d => d.status_nome))].sort();
+
+      const datasets = status.map((st, i) => {
+        const cor = `hsl(${i * 120}, 70%, 50%)`;
+        return {
+          label: st,
+          data: meses.map(mes => {
+            const item = data.find(d => d.mes_ano === mes && d.status_nome === st);
+            return item ? Number(item.total_pedidos) : 0;
+          }),
+          backgroundColor: cor
+        };
+      });
+
+      new Chart(document.getElementById('chartPedidosStatus'), {
+        type: 'bar',
+        data: {
+          labels: meses,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true },
+            x: { stacked: true },
+            y: { stacked: true }
+          }
+        }
+      });
+    }
+
+    Promise.all([
+      renderTop5Lacos(),
+      renderVendasMensais(),
+      renderClientesNovos(),
+      renderClientesRecompra(),
+      renderFormasPagamento(),
+      renderPedidosStatus()
+    ]);
+  </script>
+
+</body>
+
+</html>
