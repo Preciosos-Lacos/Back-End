@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 class ProdutoService(val produtoRepository: ProdutoRepository, val modeloRepository: ModeloRepository) {
 
     fun getAllProdutos(): List<Produto> {
-        return produtoRepository.findAll();
+        return produtoRepository.findAll()
     }
 
     fun save(produtoDTO: CadastroProdutoDTO): DadosDetalheProduto {
