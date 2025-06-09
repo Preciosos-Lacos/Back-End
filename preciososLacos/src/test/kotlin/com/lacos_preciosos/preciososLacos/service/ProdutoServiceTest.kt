@@ -1,0 +1,148 @@
+package com.lacos_preciosos.preciososLacos.service
+
+import com.lacos_preciosos.preciososLacos.model.Produto
+import com.lacos_preciosos.preciososLacos.repository.ProdutoRepository
+//import org.hamcrest.CoreMatchers.any
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.ArgumentMatchers.any
+import java.util.*
+
+class ProdutoServiceTest {
+
+    private val produtoRepository = mock(ProdutoRepository::class.java)
+    private val modeloRepository = mock(com.lacos_preciosos.preciososLacos.repository.ModeloRepository::class.java)
+
+    private val dto = com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO(
+        "Azul",
+        "G",
+        "Cetim",
+        "Azul Claro",
+        "Bico de Pato",
+        10.0,
+        1 // ID do modelo
+    )
+
+    private lateinit var service: com.lacos_preciosos.preciososLacos.service.ProdutoService
+    @BeforeEach
+
+    fun setup() {
+        service = com.lacos_preciosos.preciososLacos.service.ProdutoService(produtoRepository, modeloRepository)
+    }
+
+    @Test
+    @DisplayName ("Testar se retorna todos os produtos")
+    fun testGetAllProdutos() {
+        val produto = Produto(dto)
+
+        `when`(produtoRepository.findAll()).thenReturn(listOf(produto))
+
+        val resultado = service.getAllProdutos()
+
+        assertEquals(1, resultado.size)
+        assertEquals("Azul", resultado[0].cor)
+
+    }
+    @Test
+    @DisplayName("Testar se salva um produto corretamente")
+    fun testSaveProduto() {
+
+        val produto = Produto(dto)
+//        `when`(modeloRepository.findById(dto.idModelo)).thenReturn(java.util.Optional.of(com.lacos_preciosos.preciososLacos.model.Modelo(1, "Azul")))
+        `when`(modeloRepository.findById(dto.idModelo)).thenReturn(
+            Optional.of(com.lacos_preciosos.preciososLacos.model.Modelo(
+                idModelo = 1,
+                nomeModelo = "Azul",
+                preco = 10.0,
+                descricao = "Descrição do modelo",
+                favorito = null,
+                listaUsuario = null
+            ))
+        )
+        `when`(produtoRepository.save(produto)).thenReturn(produto)
+
+        val resultado = service.save(dto)
+
+        assertEquals("Azul", resultado.cor)
+        assertEquals("G", resultado.tamanho)
+        assertEquals("Cetim", resultado.tipoLaco)
+        assertEquals("Azul Claro", resultado.acabamento)
+        assertEquals(10.0, resultado.preco)
+    }
+
+    @Test
+    @DisplayName("A consulta de todos os produtos sem dados deve lançar exceção")
+    fun testGetAllProdutosSemDados() {
+        `when`(produtoRepository.findAll()).thenReturn(emptyList())
+
+        assertThrows(Exception::class.java) {
+            service.listarProdutos()
+        }
+    }
+
+
+    @Test
+    @DisplayName("Salvar produto com modelo existente deve funcionar corretamente")
+    fun testSaveProdutoComModeloExistente() {
+        val modelo = mock(com.lacos_preciosos.preciososLacos.model.Modelo::class.java)
+        `when`(modeloRepository.findById(1)).thenReturn(Optional.of(modelo))
+
+        val produtoSalvo = Produto(dto)
+        produtoSalvo.modelo = modelo
+        `when`(produtoRepository.save(any(Produto::class.java))).thenReturn(produtoSalvo)
+
+        val resultado = service.save(dto)
+
+        assertEquals("Azul", resultado.cor)
+        assertEquals("G", resultado.tamanho)
+    }
+    @Test
+    @DisplayName("Salvar produto com modelo inexistente deve lançar exceção")
+    fun testSaveProdutoComModeloInexistente() {
+        `when`(modeloRepository.findById(dto.idModelo)).thenReturn(Optional.empty())
+
+        assertThrows(RuntimeException::class.java) {
+            service.save(dto)
+        }
+    }
+
+
+
+
+    //GITHUB COPILOT SUGGESTIONS
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
