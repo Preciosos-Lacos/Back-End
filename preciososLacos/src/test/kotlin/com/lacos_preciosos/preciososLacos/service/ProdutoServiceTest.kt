@@ -28,11 +28,11 @@ class ProdutoServiceTest {
         1 // ID do modelo
     )
 
-    private lateinit var service: com.lacos_preciosos.preciososLacos.service.ProdutoService
+    private lateinit var service: ProdutoService
     @BeforeEach
 
     fun setup() {
-        service = com.lacos_preciosos.preciososLacos.service.ProdutoService(produtoRepository, modeloRepository)
+        service = ProdutoService(produtoRepository, modeloRepository)
     }
 
     @Test
@@ -114,35 +114,56 @@ class ProdutoServiceTest {
 
 
 
-    //GITHUB COPILOT SUGGESTIONS
+    //GITHUB COPILOT SUGGESTIONS // CHATGPT SUGGESTIONS
 
 
     
+@Test
+    @DisplayName("Atualizar produto existente deve funcionar corretamente")
+    fun testUpdateProduto() {
+        val produtoExistente = Produto(dto)
+        `when`(produtoRepository.findById(1)).thenReturn(Optional.of(produtoExistente))
+
+        val dtoAtualizado = com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO(
+            "Vermelho",
+            "M",
+            "Seda",
+            "Vermelho Claro",
+            "Laço de Cabelo",
+            15.0,
+            1
+        )
+
+        val produtoAtualizado = service.updateProduto(1, dtoAtualizado)
+
+        assertEquals("Vermelho", produtoAtualizado.cor)
+        assertEquals("M", produtoAtualizado.tamanho)
+        assertEquals("Seda", produtoAtualizado.tipoLaco)
+        assertEquals("Vermelho Claro", produtoAtualizado.acabamento)
+        assertEquals(15.0, produtoAtualizado.preco)
+    }
+
+    @Test
+    @DisplayName("Deletar produto existente deve funcionar corretamente")
+    fun testDeleteProduto() {
+        `when`(produtoRepository.existsById(1)).thenReturn(true)
+
+        service.deleteModelo(1)
+
+        // Verifica se o método deleteById foi chamado
+        org.mockito.Mockito.verify(produtoRepository).deleteById(1)
+    }
+
+    @Test
+    @DisplayName ("Buscar produto por ID existente deve retornar os dados corretamente")
+    fun testGetProdutoPorIdExistente() {
+        val produto = Produto(dto)
+        `when`(produtoRepository.findById(1)).thenReturn(Optional.of(produto))
+
+        val resultado = service.getAllProdutos().find { it.idProduto == 1 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        assertEquals("Azul", resultado?.cor)
+        assertEquals("G", resultado?.tamanho)
+    }
 }
