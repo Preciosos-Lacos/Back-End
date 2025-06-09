@@ -20,7 +20,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
     }
 
@@ -48,7 +48,6 @@
       background-color: #FCFCFC;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(178, 123, 148, 0.15);
-      padding: 20px;
       transition: box-shadow 0.3s ease;
     }
 
@@ -183,6 +182,7 @@
       const data = await fetchData('top5-lacos');
       const labels = data.map(d => d.modelo_nome);
       const vendas = data.map(d => Number(d.total_vendido));
+
       new Chart(document.getElementById('chartTop5Lacos'), {
         type: 'bar',
         data: {
@@ -190,12 +190,21 @@
           datasets: [{
             label: 'Total Vendido',
             data: vendas,
-            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+            backgroundColor: '#BC6686'
           }]
         },
-        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          scales: {
+            x: {
+              beginAtZero: true
+            }
+          }
+        }
       });
     }
+
 
     async function renderVendasMensais() {
       const data = await fetchData('vendas-mensais');
@@ -263,33 +272,43 @@
       const formas = [...new Set(data.map(d => d.forma_pagamento))].sort();
 
       const datasets = formas.map((forma, i) => {
-        const cor = `hsl(${i * 60}, 70%, 50%)`;
+        const hue = i * 60; 
+        const corLinha = `hsl(${hue}, 70%, 50%)`;
+        const corFundo = `hsla(${hue}, 70%, 50%, 0.3)`; 
+
         return {
           label: forma,
           data: meses.map(mes => {
             const item = data.find(d => d.mes_ano === mes && d.forma_pagamento === forma);
             return item ? Number(item.total_forma) : 0;
           }),
-          backgroundColor: cor
+          borderColor: corLinha,
+          backgroundColor: corFundo,
+          fill: false,
+          tension: 0.4 
         };
       });
 
       new Chart(document.getElementById('chartFormasPagamento'), {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: meses,
           datasets: datasets
         },
         options: {
           responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          stacked: false,
           scales: {
-            y: { beginAtZero: true },
-            x: { stacked: true },
-            y: { stacked: true }
+            y: { beginAtZero: true }
           }
         }
       });
     }
+
 
     async function renderPedidosStatus() {
       const data = await fetchData('pedidos-status');
@@ -317,9 +336,11 @@
         options: {
           responsive: true,
           scales: {
-            y: { beginAtZero: true },
-            x: { stacked: true },
-            y: { stacked: true }
+            y: { 
+              beginAtZero: true,
+              stacked: false
+             },
+            x: { stacked: false },
           }
         }
       });

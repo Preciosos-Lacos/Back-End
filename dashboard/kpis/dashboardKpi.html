@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard KPIs</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -28,18 +30,13 @@
       font-size: 2rem;
     }
 
-    #dashboard{
+    #dashboard {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-evenly;
-    }
-
-    .kpi-container {
-      display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      justify-content: space-between;
     }
 
     .kpi-card {
@@ -77,6 +74,7 @@
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 12px;
+      gap: 6px;
     }
 
     .kpi-variation.up {
@@ -88,7 +86,6 @@
     }
 
     .arrow {
-      margin-right: 6px;
       font-size: 1.2rem;
     }
 
@@ -97,6 +94,70 @@
       color: #555;
       line-height: 1.4;
     }
+
+    .info-icon {
+      margin-left: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #BC6680;
+      position: relative;
+      display: inline-block;
+      transition: color 0.3s ease;
+    }
+
+    .info-icon:hover {
+      color: #a55a6f;
+    }
+
+    .tooltip-box {
+      width: 140px;
+      height: auto;
+      position: absolute;
+      top: 51px;
+      left: 170%;
+      transform: translateY(-10%);
+      background-color: #fff;
+      color: #BC6680;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      line-height: 1.3;
+      max-width: 240px;
+      box-shadow: 0 2px 8px rgba(188, 102, 128, 0.35);
+      display: none;
+      pointer-events: auto;
+      user-select: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 15px;
+      left: -3px;
+      transform: translateY(-10%);
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent #BC6680 transparent transparent;
+    }
+
+    .info-icon.active .tooltip-box {
+      display: block;
+      animation: fadeInRight 0.15s ease-out forwards;
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+      }
+    }
   </style>
 </head>
 
@@ -104,7 +165,7 @@
   <header>
     <h1>Dashboard - Preciosos Laços</h1>
   </header>
-  <div class="dashboard" id="dashboard"></div>
+  <div id="dashboard"></div>
 
   <script>
     const dashboard = document.getElementById('dashboard');
@@ -116,14 +177,31 @@
       const isUp = variation.includes('↑');
       const varClass = isUp ? 'up' : 'down';
 
+      const tooltipId = `tooltip-${Math.random().toString(36).substring(2, 10)}`;
+
       card.innerHTML = `
         <div class="kpi-title">${title}</div>
         <div class="kpi-value">${value}</div>
         <div class="kpi-variation ${varClass}">
-          <span class="arrow">${isUp ? '▲' : '▼'}</span> ${variation.replace(/[↑↓]/g, '').trim()}
+          <span class="arrow">${isUp ? '▲' : '▼'}</span>
+          ${variation.replace(/[↑↓]/g, '').trim()}
+          <i class="fas fa-circle-info info-icon" id="${tooltipId}">
+            <div class="tooltip-box">${description}</div>
+          </i>
         </div>
-        <div class="kpi-description">${description}</div>
       `;
+
+      setTimeout(() => {
+        const infoIcon = card.querySelector(`#${tooltipId}`);
+        infoIcon.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Fecha outros tooltips abertos
+          document.querySelectorAll('.info-icon.active').forEach(icon => {
+            if (icon !== infoIcon) icon.classList.remove('active');
+          });
+          infoIcon.classList.toggle('active');
+        });
+      }, 0);
 
       return card;
     }
@@ -139,7 +217,7 @@
         case 'novos_clientes':
           return isPositive
             ? 'Mais clientes novos chegam, ampliando a base de consumidores.'
-            : 'Menos novos clientes podem significar necessidade de reforçar marketing.';
+            : 'Queda do índice de novos clientes pode significar necessidade de reforçar marketing.';
         case 'total_pedidos':
           return isPositive
             ? 'Mais pedidos realizados mostram maior movimentação no negócio.'
@@ -193,6 +271,13 @@
         console.error(err);
       }
     }
+
+    // Fecha tooltip ao clicar fora
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.info-icon.active').forEach(icon => {
+        icon.classList.remove('active');
+      });
+    });
 
     loadKpis();
   </script>
