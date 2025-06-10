@@ -4,6 +4,7 @@ import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
+import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import com.lacos_preciosos.preciososLacos.service.UsuarioService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/usuarios")
-class UsuarioController(private val repositorio: UsuarioService) {
+class UsuarioController(private val repositorio: UsuarioRepository) {
 
     //Inserindo o usuario no banco de Dados
     @PostMapping
     @Tag(name = "Cadastro de usuário")
     fun cadastrarUsuario(@RequestBody novoUsuario: CadastroUsuarioDTO): ResponseEntity<Usuario> {
-        val usuario = repositorio.save(novoUsuario)
+        val usuario = repositorio.save(Usuario(novoUsuario))
         return ResponseEntity.status(201).body(usuario)
     }
 
@@ -76,7 +77,7 @@ class UsuarioController(private val repositorio: UsuarioService) {
 
         return if (usuariosEncontrados.isPresent) {
             repositorio.deleteById(id)
-            ResponseEntity.status(200).build()
+            ResponseEntity.status(204).build()
         } else {
             ResponseEntity.status(404).build()
         }

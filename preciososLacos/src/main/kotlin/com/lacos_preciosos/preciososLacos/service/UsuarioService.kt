@@ -5,6 +5,7 @@ import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.util.Optional
 
 @Service
 class UsuarioService(private val usuarioRepository: UsuarioRepository) {
@@ -13,7 +14,9 @@ class UsuarioService(private val usuarioRepository: UsuarioRepository) {
         return Usuario(cadastroUsuarioDTO)
     }
 
-    fun listarUsuarios(listaUsuario: List<Usuario>): ResponseEntity<List<Usuario>> {
-        return ResponseEntity.status(200).body(listaUsuario);
+    fun listarUsuarios(): List<Usuario> {
+        return usuarioRepository.findAll();
     }
+
+
 }

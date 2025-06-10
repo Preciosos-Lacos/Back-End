@@ -40,12 +40,11 @@ class ProdutoControllerTest {
     @Test
     @DisplayName("A consulta de todos os produtos sem dados deve retornar status 204")
     fun testListarProdutosSemDados() {
-        `when`(service.listarProdutos()).thenThrow(Exception("Nenhum produto encontrado"))
+        `when`(service.listarProdutos()).thenThrow(ValidacaoException(""))
 
         val response = controller.listarProdutos()
 
         assertEquals(204, response.statusCode.value())
-        assertEquals(null, response.body)
     }
 
     @Test

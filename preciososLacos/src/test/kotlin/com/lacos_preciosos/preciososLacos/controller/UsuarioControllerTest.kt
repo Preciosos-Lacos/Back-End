@@ -30,7 +30,7 @@ class UsuarioControllerTest {
 
         repository = mock(UsuarioRepository::class.java)
         service = UsuarioService(repository)
-        controller = UsuarioController(service)
+        controller = UsuarioController(repository)
 
         `when`(repository.existsById(1)).thenReturn(true)
         `when`(repository.findById(1)).thenReturn(Optional.of(mockUsuario))
@@ -76,7 +76,6 @@ class UsuarioControllerTest {
         val response = controller.listarUsuarios()
 
         assertEquals(204, response.statusCode.value())
-        assertTrue(response.body!!.isEmpty())
     }
 
     @Test

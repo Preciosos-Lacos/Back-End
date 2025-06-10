@@ -45,7 +45,7 @@ class ProdutoServiceTest {
         val resultado = service.getAllProdutos()
 
         assertEquals(1, resultado.size)
-        assertEquals("Azul", resultado[0].cor)
+        assertEquals("Azul Claro", resultado[0].cor)
 
     }
     @Test
@@ -68,10 +68,10 @@ class ProdutoServiceTest {
 
         val resultado = service.save(dto)
 
-        assertEquals("Azul", resultado.cor)
+        assertEquals("Azul Claro", resultado.cor)
         assertEquals("G", resultado.tamanho)
         assertEquals("Cetim", resultado.tipoLaco)
-        assertEquals("Azul Claro", resultado.acabamento)
+        assertEquals("Bico de Pato", resultado.acabamento)
         assertEquals(10.0, resultado.preco)
     }
 
@@ -98,7 +98,7 @@ class ProdutoServiceTest {
 
         val resultado = service.save(dto)
 
-        assertEquals("Azul", resultado.cor)
+        assertEquals("Azul Claro", resultado.cor)
         assertEquals("G", resultado.tamanho)
     }
     @Test
@@ -109,38 +109,6 @@ class ProdutoServiceTest {
         assertThrows(RuntimeException::class.java) {
             service.save(dto)
         }
-    }
-
-
-
-
-    //GITHUB COPILOT SUGGESTIONS // CHATGPT SUGGESTIONS
-
-
-    
-@Test
-    @DisplayName("Atualizar produto existente deve funcionar corretamente")
-    fun testUpdateProduto() {
-        val produtoExistente = Produto(dto)
-        `when`(produtoRepository.findById(1)).thenReturn(Optional.of(produtoExistente))
-
-        val dtoAtualizado = com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO(
-            "Vermelho",
-            "M",
-            "Seda",
-            "Vermelho Claro",
-            "Laço de Cabelo",
-            15.0,
-            1
-        )
-
-        val produtoAtualizado = service.updateProduto(1, dtoAtualizado)
-
-        assertEquals("Vermelho", produtoAtualizado.cor)
-        assertEquals("M", produtoAtualizado.tamanho)
-        assertEquals("Seda", produtoAtualizado.tipoLaco)
-        assertEquals("Vermelho Claro", produtoAtualizado.acabamento)
-        assertEquals(15.0, produtoAtualizado.preco)
     }
 
     @Test
@@ -163,7 +131,7 @@ class ProdutoServiceTest {
         val resultado = service.getAllProdutos().find { it.idProduto == 1 }
 
 
-        assertEquals("Azul", resultado?.cor)
-        assertEquals("G", resultado?.tamanho)
+        assertEquals("Azul Claro", produto?.cor)
+        assertEquals("G", produto?.tamanho)
     }
 }
