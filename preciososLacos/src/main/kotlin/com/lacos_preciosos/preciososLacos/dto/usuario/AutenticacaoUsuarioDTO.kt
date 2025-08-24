@@ -8,7 +8,5 @@ data class AutenticacaoUsuarioDTO(
     val email: String,
 
     @field:Size(min = 8)
-    val senha: String,
-
-    val autenticacao: Boolean,
+    val senha: String
 )

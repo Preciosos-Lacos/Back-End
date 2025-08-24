@@ -5,19 +5,29 @@ import com.lacos_preciosos.preciososLacos.dto.usuario.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
+import com.lacos_preciosos.preciososLacos.service.TokenService
 import com.lacos_preciosos.preciososLacos.service.UsuarioService
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/usuarios")
-class UsuarioController(private val repositorio: UsuarioRepository) {
+class UsuarioController(
+    private val repositorio: UsuarioRepository,
+    private val manager: AuthenticationManager,
+    private val tokenService: TokenService,
+    private val passwordEncoder: PasswordEncoder
+) {
 
     //Inserindo o usuario no banco de Dados
     @PostMapping
     @Tag(name = "Cadastro de usuário")
     fun cadastrarUsuario(@RequestBody novoUsuario: CadastroUsuarioDTO): ResponseEntity<Usuario> {
+        novoUsuario.senha = passwordEncoder.encode(novoUsuario.senha)
         val usuario = repositorio.save(Usuario(novoUsuario))
         return ResponseEntity.status(201).body(usuario)
     }
@@ -83,27 +93,32 @@ class UsuarioController(private val repositorio: UsuarioRepository) {
         }
     }
 
-    @PatchMapping("/login")
+    @PostMapping("/login")
     @Tag(name = "Login de usuário")
-    fun login(@RequestBody autenticacao: AutenticacaoUsuarioDTO): ResponseEntity<Void> {
-        val response = repositorio.autenticarUsuarioTRUE(autenticacao.email, autenticacao.senha)
+    fun login(@RequestBody autenticacao: AutenticacaoUsuarioDTO): ResponseEntity<String> {
 
-        return if (response == 1) {
-            ResponseEntity.status(200).build()
-        } else
-            ResponseEntity.status(404).build()
+        var authenticationToken: UsernamePasswordAuthenticationToken =
+            UsernamePasswordAuthenticationToken(autenticacao.email, autenticacao.senha);
+
+        var authentication = manager.authenticate(authenticationToken)
+
+        val usuarioAutenticado = authentication.principal as Usuario
+
+        var tokenJWT: String? = tokenService.gerarToken(usuarioAutenticado);
+
+        return ResponseEntity.ok(tokenJWT)
     }
 
 
-    @PatchMapping("/logoff/{id}")
-    @Tag(name = "Logoff de usuário")
-    fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
-        val response = repositorio.autenticarUsuarioFALSE(id)
+    /*  @PatchMapping("/logoff/{id}")
+      @Tag(name = "Logoff de usuário")
+      fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
+          val response = repositorio.autenticarUsuarioFALSE(id)
 
-        return if (response == 1) {
-            ResponseEntity.status(200).build()
-        } else
-            ResponseEntity.status(404).build()
-    }
+          return if (response == 1) {
+              ResponseEntity.status(200).build()
+          } else
+              ResponseEntity.status(404).build()
+      }*/
 }
 
