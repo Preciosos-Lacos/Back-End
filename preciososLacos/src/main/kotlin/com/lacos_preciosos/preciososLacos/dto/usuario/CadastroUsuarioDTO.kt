@@ -12,6 +12,6 @@ data class CadastroUsuarioDTO(
     var senha: String,
     var cpf: String,
     var telefone: String,
-    @JsonIgnore var data_cadastro: LocalDate
+    @JsonIgnore var data_cadastro: LocalDate = LocalDate.now()
 
 )

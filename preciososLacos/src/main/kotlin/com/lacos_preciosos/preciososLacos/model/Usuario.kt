@@ -56,7 +56,7 @@ data class Usuario(
     )
 
     override fun toString(): String {
-        return "Usuario(nome='$nomeCompleto', email='$login', cpf='$cpf',senha = '$password', telefone = '$telefone', data_cadastro = $data_cadastro)"
+        return "Usuario(nome='$nomeCompleto', email='$login', cpf='$cpf',senha = '$senha', telefone = '$telefone', data_cadastro = $data_cadastro)"
     }
 
         override fun getAuthorities(): Collection<GrantedAuthority?>? {
@@ -67,7 +67,7 @@ data class Usuario(
         }
 
         override fun getPassword(): String? {
-            return this.password;
+            return this.senha;
         }
 
         override fun getUsername(): String? {

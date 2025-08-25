@@ -22,15 +22,8 @@ class SecurityFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        // Verifica se a requisição é para uma rota que não precisa de autenticação.
-        // As rotas de login e cadastro são públicas.
-        val requestUri = request.requestURI
-
-        if ((requestUri == "/usuarios" && request.method.equals("POST")) ||
-            (requestUri == "/usuarios/login" && request.method.equals("POST"))) {
-            filterChain.doFilter(request, response)
-            return
-        }
+        // Remover a verificação de rotas públicas aqui, pois isso já é feito no SecurityConfigurations
+        // A configuração de segurança já está permitindo acesso às rotas públicas
 
         val tokenJWT = recuperarToken(request)
 
