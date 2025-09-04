@@ -30,4 +30,11 @@ class CaracteristicaDetalheRepository(
     fun delete(id: Int) {
         jpaRepository.deleteById(id)
     }
+
+    // Adicionar este método à classe CaracteristicaDetalheRepository
+    
+/*    @Transactional
+    @Modifying
+    @Query("UPDATE CaracteristicaDetalhe cd SET cd.imagem = :imagem WHERE cd.idCaracteristicaDetalhe = :id")
+    fun updateImagem(id: Int, imagem: ByteArray): Int*/
 }

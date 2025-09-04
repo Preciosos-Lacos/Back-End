@@ -1,9 +1,12 @@
 package com.lacos_preciosos.preciososLacos.controller
 
+import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaRepository
 import com.lacos_preciosos.preciososLacos.service.CaracteristicaDetalheService
+import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
@@ -41,4 +44,17 @@ class CaracteristicaDetalheController(val repository: CaracteristicaDetalheRepos
         repository.delete(id)
         return ResponseEntity.status(404).build()
     }
+
+/*    @PatchMapping("/{id}/imagem")
+    @Tag(name = "Atualização de imagem")
+    fun updateImagem(@PathVariable id: Int, @RequestBody @Valid imagemDTO: ImagemDTO): ResponseEntity<CaracteristicaDetalhe> {
+        try {
+            val detalhe = repository.findById(id).orElseThrow()
+            detalhe.adicionarImagem(imagemDTO.imagemBase64)
+            repository.jpaRepository.save(detalhe)
+            return ResponseEntity.ok(detalhe)
+        } catch (ex: Exception) {
+            return ResponseEntity.notFound().build()
+        }
+    }*/
 }

@@ -43,18 +43,19 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
         }
     }
 
-//    fun updateFoto(id: Int, fotoDTO: AtualizacaoFotoDTO): DadosDetalheModelo {
-//        var existe = modeloRepository.findById(id)
-//
-//        if (existe.isEmpty) {
-//            throw ValidacaoException("Modelo não encontrado")
-//        } else {
-//            val modelo = existe.get()
-//            modeloRepository.updateFoto(id, fotoDTO.foto)
-//            modelo.foto = fotoDTO.foto
-//            return DadosDetalheModelo(modelo)
-//        }
-//    }
+    fun updateFoto(id: Int, foto: String): DadosDetalheModelo {
+        var existe = modeloRepository.findById(id)
+
+        if (existe.isEmpty) {
+            throw ValidacaoException("Modelo não encontrado")
+        } else {
+            val modelo = existe.get()
+            // Converter a String Base64 para ByteArray antes de chamar o repositório
+            val fotoBytes = java.util.Base64.getDecoder().decode(foto)
+            modeloRepository.updateFoto(id, fotoBytes)
+            return DadosDetalheModelo(modelo)
+        }
+    }
 
     fun deleteModelo(id: Int) {
         var existe = modeloRepository.existsById(id)
@@ -94,5 +95,17 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
         }
 
         modeloRepository.deleteFavorito(dto.idModelo,dto.idUsuario)
+    }
+
+    // Método para obter apenas a foto do modelo como Base64
+    fun getFotoModelo(id: Int): String? {
+        val modeloOptional = modeloRepository.findById(id)
+        
+        if (modeloOptional.isEmpty) {
+            throw ValidacaoException("Modelo não encontrado")
+        }
+        
+        val modelo = modeloOptional.get()
+        return modelo.getFotoBase64()
     }
 }

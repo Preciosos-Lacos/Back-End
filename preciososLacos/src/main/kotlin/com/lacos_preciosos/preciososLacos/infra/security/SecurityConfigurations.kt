@@ -27,7 +27,7 @@ class SecurityConfigurations(
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/logout").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().authenticated();
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build();

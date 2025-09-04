@@ -120,5 +120,18 @@ class UsuarioController(
           } else
               ResponseEntity.status(404).build()
       }*/
+
+   /* @PatchMapping("/{id}/foto-perfil")
+    @Tag(name = "Atualização de foto de perfil")
+    fun updateFotoPerfil(@PathVariable id: Int, @RequestBody @Valid imagemDTO: ImagemDTO): ResponseEntity<Usuario> {
+        try {
+            val usuario = repositorio.findById(id).orElseThrow { RuntimeException("Usuário não encontrado") }
+            usuario.adicionarFotoPerfil(imagemDTO.imagemBase64)
+            repositorio.save(usuario)
+            return ResponseEntity.ok(usuario)
+        } catch (ex: RuntimeException) {
+            return ResponseEntity.notFound().build()
+        }
+    }*/
 }
 

@@ -29,8 +29,10 @@ interface ModeloRepository : JpaRepository<Modelo, Int> {
     )
     fun deleteFavorito(idModelo: Int, idUsuario: Int)
 
-//    @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
-//    @Transactional
-//    @Modifying
-//    fun updateFoto(idModelo: Int?, foto: ByteArray): Int
+    // Adicionar este método ao ModeloRepository
+    
+    @Transactional
+    @Modifying
+    @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
+    fun updateFoto(idModelo: Int?, foto: ByteArray): Int
 }

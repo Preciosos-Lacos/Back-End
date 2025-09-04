@@ -18,6 +18,12 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
 
     fun findByNomeCompletoContains(nome: String): List<Usuario>
 
+    // Adicionar este método ao UsuarioRepository
+    
+    @Transactional
+    @Modifying
+    @Query("UPDATE Usuario u SET u.fotoPerfil = :foto WHERE u.idUsuario = :idUsuario")
+    fun updateFotoPerfil(idUsuario: Int?, foto: ByteArray): Int
 }
 
 

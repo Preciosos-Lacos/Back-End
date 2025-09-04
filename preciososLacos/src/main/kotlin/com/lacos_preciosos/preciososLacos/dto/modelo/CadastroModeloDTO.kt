@@ -14,8 +14,7 @@ data class CadastroModeloDTO(
     @field:NotBlank(message = "A descrição do modelo não pode ser vazia")
     val descricao: String,
 
-    @field:NotBlank(message = "A opção de favorito do modelo não pode ser vazia")
-    val favorito: Boolean,
+    val favorito: Boolean
 
     ) {
 }

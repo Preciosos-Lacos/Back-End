@@ -22,8 +22,6 @@ class SecurityFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        // Remover a verificação de rotas públicas aqui, pois isso já é feito no SecurityConfigurations
-        // A configuração de segurança já está permitindo acesso às rotas públicas
 
         val tokenJWT = recuperarToken(request)
 
