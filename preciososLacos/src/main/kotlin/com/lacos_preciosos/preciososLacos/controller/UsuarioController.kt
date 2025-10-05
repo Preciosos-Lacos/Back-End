@@ -97,16 +97,21 @@ class UsuarioController(
     @Tag(name = "Login de usuário")
     fun login(@RequestBody autenticacao: AutenticacaoUsuarioDTO): ResponseEntity<String> {
 
-        var authenticationToken: UsernamePasswordAuthenticationToken =
-            UsernamePasswordAuthenticationToken(autenticacao.email, autenticacao.senha);
+        try {
+            var authenticationToken: UsernamePasswordAuthenticationToken =
+                UsernamePasswordAuthenticationToken(autenticacao.email, autenticacao.senha);
 
-        var authentication = manager.authenticate(authenticationToken)
+            var authentication = manager.authenticate(authenticationToken)
 
-        val usuarioAutenticado = authentication.principal as Usuario
+            val usuarioAutenticado = authentication.principal as Usuario
 
-        var tokenJWT: String? = tokenService.gerarToken(usuarioAutenticado);
+            var tokenJWT: String? = tokenService.gerarToken(usuarioAutenticado);
 
-        return ResponseEntity.ok(tokenJWT)
+            return ResponseEntity.ok(tokenJWT)
+        } catch (e: Exception){
+            System.out.println(e.message);
+            return ResponseEntity.status(403).body(e.message);
+        }
     }
 
 

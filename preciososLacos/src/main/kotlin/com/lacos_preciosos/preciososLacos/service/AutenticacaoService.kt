@@ -5,14 +5,15 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 
-@Service
-class AutenticacaoService(
-    private val usuarioRepository: UsuarioRepository
-) : UserDetailsService {
+    @Service
+    class AutenticacaoService(
+        private val usuarioRepository: UsuarioRepository
+    ) : UserDetailsService {
 
-    override fun loadUserByUsername(username: String?): UserDetails? {
-        return usuarioRepository.findByLogin(username!!);
+        override fun loadUserByUsername(username: String?): UserDetails? {
+            return usuarioRepository.findByLogin(username!!)
+                ?: throw RuntimeException("Usuário não encontrado");
+        }
+
+
     }
-
-
-}

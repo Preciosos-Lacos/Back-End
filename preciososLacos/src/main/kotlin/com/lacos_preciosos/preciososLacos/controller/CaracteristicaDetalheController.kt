@@ -45,16 +45,14 @@ class CaracteristicaDetalheController(val repository: CaracteristicaDetalheRepos
         return ResponseEntity.status(404).build()
     }
 
-/*    @PatchMapping("/{id}/imagem")
+    @PatchMapping("/{id}/imagem")
     @Tag(name = "Atualização de imagem")
     fun updateImagem(@PathVariable id: Int, @RequestBody @Valid imagemDTO: ImagemDTO): ResponseEntity<CaracteristicaDetalhe> {
         try {
-            val detalhe = repository.findById(id).orElseThrow()
-            detalhe.adicionarImagem(imagemDTO.imagemBase64)
-            repository.jpaRepository.save(detalhe)
+            val detalhe = repository.subirImagem(id, java.util.Base64.getDecoder().decode(imagemDTO.imagemBase64))
             return ResponseEntity.ok(detalhe)
         } catch (ex: Exception) {
             return ResponseEntity.notFound().build()
         }
-    }*/
+    }
 }

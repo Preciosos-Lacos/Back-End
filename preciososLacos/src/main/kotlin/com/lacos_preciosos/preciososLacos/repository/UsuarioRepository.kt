@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 interface UsuarioRepository: JpaRepository<Usuario, Int> {
 
-    fun findByLogin(login: String?): UserDetails
+    fun findByLogin(login: String?): UserDetails?
 
     @Transactional
     @Modifying

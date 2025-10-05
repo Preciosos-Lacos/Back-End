@@ -1,12 +1,21 @@
 package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
+import jakarta.transaction.Transactional
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Component
 
 @Repository
-interface CaracteristicaDetalheJpaRepository : JpaRepository<CaracteristicaDetalhe, Int>
+interface CaracteristicaDetalheJpaRepository : JpaRepository<CaracteristicaDetalhe, Int>{
+    @Transactional
+    @Modifying
+    @Query("UPDATE CaracteristicaDetalhe c SET c.imagem = :imagem WHERE c.idCaracteristicaDetalhe = :id")
+    fun updateImagem(id: Int?, imagem: ByteArray): Int
+}
+
 
 @Component
 class CaracteristicaDetalheRepository(
@@ -31,10 +40,10 @@ class CaracteristicaDetalheRepository(
         jpaRepository.deleteById(id)
     }
 
-    // Adicionar este método à classe CaracteristicaDetalheRepository
-    
-/*    @Transactional
-    @Modifying
-    @Query("UPDATE CaracteristicaDetalhe cd SET cd.imagem = :imagem WHERE cd.idCaracteristicaDetalhe = :id")
-    fun updateImagem(id: Int, imagem: ByteArray): Int*/
+    fun subirImagem(id: Int, imagemBase64: ByteArray): CaracteristicaDetalhe {
+        val detalhe = jpaRepository.findById(id).orElseThrow { RuntimeException("Característica detalhe não encontrada") }
+        jpaRepository.updateImagem(id, imagemBase64)
+        detalhe.imagem = imagemBase64 // Atualiza o objeto em memória
+        return detalhe
+    }
 }

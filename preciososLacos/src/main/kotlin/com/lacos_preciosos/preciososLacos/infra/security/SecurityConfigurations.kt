@@ -15,31 +15,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfigurations(
-    private val securityFilter: SecurityFilter,
-) {
+class SecurityConfigurations(private val securityFilter: SecurityFilter) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         return http.csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            .cors { }
             .authorizeHttpRequests {
+                // Rotas públicas
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-                it.requestMatchers(HttpMethod.POST, "/logout").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
-                    .anyRequest().authenticated();
+                it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Todas as outras precisam de autenticação
+                it.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
-            .build();
+            .build()
     }
 
     @Bean
     fun authenticationManager(configuration: AuthenticationConfiguration): AuthenticationManager {
-        return configuration.authenticationManager;
+        return configuration.authenticationManager
     }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder();
+        return BCryptPasswordEncoder()
     }
 }
