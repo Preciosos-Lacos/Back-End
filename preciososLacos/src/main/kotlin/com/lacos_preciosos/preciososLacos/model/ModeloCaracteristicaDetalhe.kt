@@ -12,7 +12,7 @@ data class ModeloCaracteristicaDetalhe(
     @ManyToOne
     var modelo: Modelo? = null,
 
-
+    @Id
     @field:NotBlank
     @ManyToOne
     var caracteristica: CaracteristicaDetalhe? = null
