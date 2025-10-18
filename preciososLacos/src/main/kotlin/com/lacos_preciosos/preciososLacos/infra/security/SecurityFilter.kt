@@ -17,7 +17,7 @@ class SecurityFilter(
     private val usuarioRepository: UsuarioRepository
 ) : OncePerRequestFilter() {
 
-    private val rotasPublicas = listOf("/usuarios/login", "/usuarios")
+    private val rotasPublicas = listOf("/usuarios/login", "/usuarios", "/caracteristica-detalhe/cor")
 
     override fun doFilterInternal(
         request: HttpServletRequest,

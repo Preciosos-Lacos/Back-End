@@ -26,9 +26,10 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 // Rotas públicas
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/cor").permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Todas as outras precisam de autenticação
-                it.anyRequest().authenticated()
+                it.anyRequest().permitAll()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()

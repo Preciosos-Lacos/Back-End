@@ -6,6 +6,7 @@ import java.util.Base64
 
 @Entity
 data class CaracteristicaDetalhe(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @field:NotBlank
@@ -19,10 +20,13 @@ data class CaracteristicaDetalhe(
 
     @Lob
     @Column(name = "imagem", columnDefinition = "LONGBLOB")
-    var imagem: ByteArray? = null
-    
+    var imagem: ByteArray? = null,
+
+    var hexaDecimal: String? = null,
+
+    var preco: Double = 0.0
 ) {
-    // Método para adicionar/atualizar imagem
+
     fun adicionarImagem(imagemBase64: String) {
         this.imagem = Base64.getDecoder().decode(imagemBase64)
     }
