@@ -108,4 +108,8 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
         val modelo = modeloOptional.get()
         return modelo.getFotoBase64()
     }
+
+    fun getFavoritosByUsuario(idUsuario: Int): List<Modelo> {
+        return modeloRepository.findFavoritosByUsuario(idUsuario)
+    }
 }

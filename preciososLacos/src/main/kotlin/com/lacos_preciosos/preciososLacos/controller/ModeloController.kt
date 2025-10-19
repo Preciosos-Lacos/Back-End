@@ -129,4 +129,11 @@ class ModeloController(private val modeloService: ModeloService) {
             return ResponseEntity.notFound().build()
         }
     }
+
+    @GetMapping("/favoritos/{idUsuario}")
+    @Tag(name = "Favoritos do usuário")
+    fun getFavoritosByUsuario(@PathVariable idUsuario: Int): ResponseEntity<List<Modelo>> {
+        val favoritos = modeloService.getFavoritosByUsuario(idUsuario)
+        return if (favoritos.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(favoritos)
+    }
 }

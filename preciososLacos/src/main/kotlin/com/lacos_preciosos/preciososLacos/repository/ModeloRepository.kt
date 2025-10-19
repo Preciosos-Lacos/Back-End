@@ -35,4 +35,10 @@ interface ModeloRepository : JpaRepository<Modelo, Int> {
     @Modifying
     @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
     fun updateFoto(idModelo: Int?, foto: ByteArray): Int
+
+    @Query(
+        value = "SELECT m.* FROM modelo m JOIN favorito_modelo f ON m.id_modelo = f.id_modelo WHERE f.id_usuario = :idUsuario",
+        nativeQuery = true
+    )
+    fun findFavoritosByUsuario(idUsuario: Int): List<Modelo>
 }
