@@ -7,5 +7,4 @@ data class CadastroCorDTO(@field:NotBlank
                         val hexaDecimal: String,
                         val preco: Double,
                         val listaModelos: List<String>){
-
 }
