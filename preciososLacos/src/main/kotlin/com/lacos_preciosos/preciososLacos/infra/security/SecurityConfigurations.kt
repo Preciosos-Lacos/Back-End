@@ -26,6 +26,8 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 // Rotas públicas
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/modelos").permitAll()
+                it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/corModelo").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/cor").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}").permitAll()

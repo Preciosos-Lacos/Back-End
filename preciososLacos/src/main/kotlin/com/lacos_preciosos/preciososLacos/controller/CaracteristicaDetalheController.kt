@@ -1,6 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
+import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
@@ -34,6 +35,22 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         } catch (ex: ValidacaoException) {
             return ResponseEntity.status(404).build()
         }
+    }
+
+    @PostMapping("/corModelo")
+    fun associarCorModelo(@RequestBody cadastroCorDTO: CadastroCorModeloDTO): ResponseEntity<String> {
+        return try {
+            val msg = caracteristicaDetalheService.associateColor(cadastroCorDTO)
+            ResponseEntity.ok(msg)
+        } catch (ex: Exception) {
+            ResponseEntity.status(500).body("Erro ao associar modelos à cor: ${ex.message}")
+        }
+    }
+
+    @DeleteMapping("/corModelo/{idCor}")
+    fun deletarPorCaracteristica(@PathVariable idCor: Int): ResponseEntity<String> {
+        caracteristicaDetalheService.deleteByCaracteristicaId(idCor)
+        return ResponseEntity.ok("Registros deletados com sucesso")
     }
 
     @PutMapping("/cor/{id}")

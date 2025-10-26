@@ -1,14 +1,16 @@
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
+import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
+import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorModeloDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
-import com.lacos_preciosos.preciososLacos.repository.CaracteristicaRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import kotlin.collections.map
 
 @Service
 class CaracteristicaDetalheService(
@@ -29,6 +31,18 @@ class CaracteristicaDetalheService(
         return ""
     }
 
+    fun associateColor(dto: CadastroCorModeloDTO): String {
+        dto.listaModelos.forEach { idModelo ->
+            caracteristicaDetalheRepository.insertModeloCor(idModelo, dto.id)
+        }
+        return "Associação entre cor ${dto.id} e modelos realizada com sucesso!"
+    }
+
+    fun deleteByCaracteristicaId(idCor: Int) {
+        caracteristicaDetalheRepository.deleteByCaracteristicaId(idCor)
+    }
+
+
     fun updateCor(id: Int, updateCorDTO: UpdateCorDTO): String {
         val cor = caracteristicaDetalheRepository.findById(id)
             .orElseThrow { ValidacaoException("Cor com ID $id não encontrada") }
@@ -40,8 +54,18 @@ class CaracteristicaDetalheService(
         return "Cor atualizada com sucesso!"
     }
 
-    fun getTodasAsCores(): List<CaracteristicaDetalhe> {
-        return caracteristicaDetalheRepository.findAll()
+    fun getTodasAsCores(): List<CadastroCorDTO> {
+
+        val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAll();
+        val listaCores = ArrayList<CadastroCorDTO>()
+
+        listaCaracteristicas.forEach {
+            cor ->
+            var listModels: List<Modelo> = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe);
+            var cor: CadastroCorDTO = CadastroCorDTO(cor.idCaracteristicaDetalhe, cor.descricao, cor.hexaDecimal, cor.preco, listModels);
+            listaCores.add(cor);
+        }
+        return listaCores
     }
 
     fun getCorById(Id: Int): CaracteristicaDetalhe {
