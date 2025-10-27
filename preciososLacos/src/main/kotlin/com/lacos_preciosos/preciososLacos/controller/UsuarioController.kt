@@ -1,6 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizacaoUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizarSenhaDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
@@ -20,7 +21,8 @@ class UsuarioController(
     private val repositorio: UsuarioRepository,
     private val manager: AuthenticationManager,
     private val tokenService: TokenService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val usuarioService: UsuarioService
 ) {
 
     //Inserindo o usuario no banco de Dados
@@ -114,29 +116,15 @@ class UsuarioController(
         }
     }
 
-
-    /*  @PatchMapping("/logoff/{id}")
-      @Tag(name = "Logoff de usuário")
-      fun logoff(@PathVariable id: Int): ResponseEntity<Void> {
-          val response = repositorio.autenticarUsuarioFALSE(id)
-
-          return if (response == 1) {
-              ResponseEntity.status(200).build()
-          } else
-              ResponseEntity.status(404).build()
-      }*/
-
-   /* @PatchMapping("/{id}/foto-perfil")
-    @Tag(name = "Atualização de foto de perfil")
-    fun updateFotoPerfil(@PathVariable id: Int, @RequestBody @Valid imagemDTO: ImagemDTO): ResponseEntity<Usuario> {
+    @PatchMapping("/atualizar_senha")
+    fun atualizarSenha (@RequestBody atualizarSenhaDTO: AtualizarSenhaDTO): ResponseEntity<Any> {
         try {
-            val usuario = repositorio.findById(id).orElseThrow { RuntimeException("Usuário não encontrado") }
-            usuario.adicionarFotoPerfil(imagemDTO.imagemBase64)
-            repositorio.save(usuario)
-            return ResponseEntity.ok(usuario)
-        } catch (ex: RuntimeException) {
-            return ResponseEntity.notFound().build()
+            return ResponseEntity.ok(usuarioService.atualizarSenha(atualizarSenhaDTO))
+        } catch (e: Exception){
+            return ResponseEntity.status(404).build()
         }
-    }*/
+    }
+
+
 }
 
