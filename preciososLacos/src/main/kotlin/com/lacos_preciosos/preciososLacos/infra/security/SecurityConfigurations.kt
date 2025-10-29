@@ -34,6 +34,7 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.PATCH, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.DELETE, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/pedidos/{id}").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/dashboard").permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // Todas as outras precisam de autenticação
                 it.anyRequest().permitAll()

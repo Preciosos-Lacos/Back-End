@@ -2,6 +2,7 @@ package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import jakarta.transaction.Transactional
+import jakarta.validation.constraints.Email
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -22,6 +23,15 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     @Modifying
     @Query("UPDATE Usuario u SET u.fotoPerfil = :foto WHERE u.idUsuario = :idUsuario")
     fun updateFotoPerfil(idUsuario: Int?, foto: ByteArray): Int
+
+    @Query("SELECT * FROM usuario WHERE login = :email", nativeQuery = true)
+    fun findByEmail(email: String): Usuario
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.password = :senha WHERE u.login = :email", nativeQuery = true)
+    fun atualizarSenha(email: String, senha: String): Int
+
 }
 
 
