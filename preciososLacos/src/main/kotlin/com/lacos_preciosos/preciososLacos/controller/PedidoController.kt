@@ -37,12 +37,12 @@ class PedidoController(private val pedidoService: PedidoService) {
         }
     }
     @GetMapping("/{id}")
-    fun getOneModelo(@PathVariable id: Int): ResponseEntity<DadosDetalhePedido> {
-        try {
-            var pedido = pedidoService.getOnePedido(id)
-            return ResponseEntity.status(200).body(pedido)
-        } catch (e: RuntimeException) {
-            return ResponseEntity.status(404).build()
+    fun getOneModelo(@PathVariable id: Int): ResponseEntity<Any> {
+        val pedido = pedidoService.getOnePedido(id)
+        return if (pedido != null) {
+            ResponseEntity.ok(pedido)
+        } else {
+            ResponseEntity.status(404).body("Pedido não encontrado.")
         }
     }
 

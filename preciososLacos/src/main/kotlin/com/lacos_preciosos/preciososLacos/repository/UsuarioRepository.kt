@@ -17,8 +17,6 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     fun AtualizarUsuarios(id: Int): Int
 
     fun findByNomeCompletoContains(nome: String): List<Usuario>
-
-    // Adicionar este método ao UsuarioRepository
     
     @Transactional
     @Modifying
