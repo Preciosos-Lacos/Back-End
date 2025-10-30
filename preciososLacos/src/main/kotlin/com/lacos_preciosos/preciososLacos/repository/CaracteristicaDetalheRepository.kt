@@ -22,6 +22,9 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     @Query("SELECT * FROM caracteristica_detalhe c WHERE c.id_caracteristica_detalhe = :id", nativeQuery = true)
     fun findCorById(id: Int): CaracteristicaDetalhe
 
+    @Query("SELECT * FROM caracteristica_detalhe WHERE caracteristica_id_caracteristica = 1", nativeQuery = true)
+    fun findAllCores(): List<CaracteristicaDetalhe>
+
     @Query(
         value = """
         SELECT mo.* 
