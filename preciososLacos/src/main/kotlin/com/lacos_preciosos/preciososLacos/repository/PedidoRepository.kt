@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PedidoRepository : JpaRepository<Pedido, Int> {
+interface PedidoRepository : JpaRepository<Pedido, Int>{
 
     @Query(
         value = """
@@ -52,4 +52,20 @@ interface PedidoRepository : JpaRepository<Pedido, Int> {
         nativeQuery = true
     )
     fun buscaResumoPedido(idPedido: Int): List<Map<String, Any>>
+
+    @Query(
+        """
+     SELECT 
+        p.id_pedido,
+        u.nome_completo AS cliente,
+        sp.status AS status,
+        DATE_ADD(p.data_pedido, INTERVAL 7 DAY) AS previsao_entrega
+        FROM pedido p
+        JOIN usuario u ON u.id_usuario = p.usuario_id_usuario
+        JOIN status_pedido sp ON sp.id_status_pedido = p.status_pedido_id_status_pedido
+        WHERE DATE_ADD(p.data_pedido, INTERVAL 7 DAY) = CURDATE();
+    """
+    , nativeQuery = true)
+    fun listarEntregasDoDia(): List<Map<String, Any>>
+
 }

@@ -56,7 +56,7 @@ class CaracteristicaDetalheService(
 
     fun getTodasAsCores(): List<CadastroCorDTO> {
 
-        val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAll();
+        val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAllCores();
         val listaCores = ArrayList<CadastroCorDTO>()
 
         listaCaracteristicas.forEach {

@@ -20,4 +20,13 @@ class DashboardController(private val dashboardService: DashboardService) {
         }
     }
 
+    @GetMapping("/entregasDoDia")
+    fun listarEntregasDoDia(): ResponseEntity<List<Map<String, Any>>> {
+        return try {
+            ResponseEntity.ok(dashboardService.listarEntregasDoDia())
+        } catch (ex: Exception) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
 }
