@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PedidoRepository : JpaRepository<Pedido, Int>{
+interface PedidoRepository : JpaRepository<Pedido, Int> {
 
     @Query(
         value = """
@@ -32,4 +32,24 @@ interface PedidoRepository : JpaRepository<Pedido, Int>{
     )
     fun findAllPedidos(): List<Map<String, Any>>
 
+    @Query(
+        value = """
+        SELECT 
+            p.id_pedido AS id,
+            CONCAT('R$', FORMAT(p.total, 2, 'pt_BR')) AS total,
+            CASE p.forma_pagamento 
+                WHEN 1 THEN 'Débito'
+                WHEN 2 THEN 'Crédito'
+                WHEN 3 THEN 'Pix'
+                ELSE 'Outro'
+            END AS formaPagamento,
+            'Vendedor' AS formaEnvio,
+            e.cep AS cepEntrega
+        FROM pedido p
+        JOIN endereco e ON e.usuario_id_usuario = p.usuario_id_usuario
+        WHERE p.id_pedido = :idPedido
+    """,
+        nativeQuery = true
+    )
+    fun buscaResumoPedido(idPedido: Int): List<Map<String, Any>>
 }

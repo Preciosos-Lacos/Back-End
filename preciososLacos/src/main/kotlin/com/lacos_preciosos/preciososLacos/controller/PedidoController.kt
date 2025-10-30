@@ -1,5 +1,6 @@
 package com.lacos_preciosos.preciososLacos.controller
 
+import com.lacos_preciosos.preciososLacos.dto.PedidoResumoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.service.PedidoService
@@ -36,6 +37,7 @@ class PedidoController(private val pedidoService: PedidoService) {
             return ResponseEntity.status(204).build()
         }
     }
+
     @GetMapping("/{id}")
     fun getOneModelo(@PathVariable id: Int): ResponseEntity<Any> {
         val pedido = pedidoService.getOnePedido(id)
@@ -43,6 +45,20 @@ class PedidoController(private val pedidoService: PedidoService) {
             ResponseEntity.ok(pedido)
         } else {
             ResponseEntity.status(404).body("Pedido não encontrado.")
+        }
+    }
+
+    @GetMapping("/resumo/{idPedido}")
+    @Tag(name = "Buscar resumo de Pedido")
+    fun buscaResumoPedido(@PathVariable idPedido: Int): ResponseEntity<Any> {
+        return try {
+            val resumo = pedidoService.buscaResumoPedido(idPedido)
+            if (resumo != null)
+                ResponseEntity.ok(resumo)
+            else
+                ResponseEntity.noContent().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(500).body("Erro ao buscar resumo do pedido: ${e.message}")
         }
     }
 

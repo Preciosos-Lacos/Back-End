@@ -1,5 +1,6 @@
 package com.lacos_preciosos.preciososLacos.service
 
+import com.lacos_preciosos.preciososLacos.dto.PedidoResumoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
 import com.lacos_preciosos.preciososLacos.model.Pedido
@@ -59,6 +60,22 @@ class PedidoService(
         }
 
         return DadosDetalhePedido(pedido.get().total, pedido.get().formaPagamento.toString())
+    }
+
+    fun buscaResumoPedido(idPedido: Int): PedidoResumoDTO? {
+        val resultado = pedidoRepository.buscaResumoPedido(idPedido)
+
+        if (resultado.isEmpty()) return null
+
+        val r = resultado.first()
+
+        return PedidoResumoDTO(
+            id = (r["id"] as Number).toInt(),
+            total = r["total"]?.toString() ?: "R$0,00",
+            formaPagamento = r["formaPagamento"]?.toString() ?: "Desconhecida",
+            formaEnvio = r["formaEnvio"]?.toString() ?: "Vendedor",
+            cepEntrega = r["cepEntrega"]?.toString() ?: "00000000"
+        )
     }
 
     fun updatePedido(id: Int, dto: CadastroPedidoDTO): DadosDetalhePedido {
