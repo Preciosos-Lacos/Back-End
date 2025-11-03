@@ -24,6 +24,8 @@ data class CaracteristicaDetalhe(
 
     var hexaDecimal: String? = null,
 
+    var favorito: Boolean?,
+
     var preco: Double = 0.0
 ) {
 

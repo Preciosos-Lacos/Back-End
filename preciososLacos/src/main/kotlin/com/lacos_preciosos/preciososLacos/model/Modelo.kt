@@ -20,6 +20,8 @@ data class Modelo(
 
     var favorito: Boolean?,
 
+    var ativo: Boolean?,
+
     @Lob
     @Column(name = "foto", columnDefinition = "LONGBLOB")
     var foto: ByteArray? = null,
@@ -39,7 +41,8 @@ data class Modelo(
         dto.nome,
         dto.preco,
         dto.descricao,
-        dto.favorito
+        dto.favorito,
+        true
     )
 
     constructor() : this(
@@ -49,7 +52,8 @@ data class Modelo(
         descricao = "",
         favorito = null,
         foto = null,
-        listaUsuario = null
+        listaUsuario = null,
+        ativo = true
     )
 
     // Método para adicionar/atualizar foto
