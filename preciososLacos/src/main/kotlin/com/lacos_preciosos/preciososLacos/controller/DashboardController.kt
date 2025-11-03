@@ -29,4 +29,14 @@ class DashboardController(private val dashboardService: DashboardService) {
         }
     }
 
+    @GetMapping("/vendas7dias")
+    fun listarVendasUltimos7Dias(): ResponseEntity<List<Map<String, Any>>> {
+        return try {
+            ResponseEntity.ok(dashboardService.listarVendasUltimos7Dias())
+        } catch (ex: Exception) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+
 }

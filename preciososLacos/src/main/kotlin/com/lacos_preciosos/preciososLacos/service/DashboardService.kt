@@ -20,4 +20,11 @@ class DashboardService(val pedidoRepository: PedidoRepository) {
         if (listaPedidos.isEmpty()) throw RuntimeException("Nenhuma Entrega Encontrada")
         return listaPedidos
     }
+
+    fun listarVendasUltimos7Dias(): List<Map<String, Any>> {
+        val vendas = pedidoRepository.listarVendasUltimos7Dias()
+        if (vendas.isEmpty()) throw RuntimeException("Nenhuma venda encontrada nos últimos 7 dias")
+        return vendas
+    }
+
 }

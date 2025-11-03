@@ -68,4 +68,19 @@ interface PedidoRepository : JpaRepository<Pedido, Int>{
     , nativeQuery = true)
     fun listarEntregasDoDia(): List<Map<String, Any>>
 
+    @Query(
+        value = """
+        SELECT 
+    DATE_FORMAT(p.data_pedido, '%a') AS dia_semana,
+    SUM(p.total) AS total
+FROM pedido p
+WHERE p.data_pedido >= CURDATE() - INTERVAL 6 DAY
+GROUP BY DATE(p.data_pedido), DATE_FORMAT(p.data_pedido, '%a')
+ORDER BY DATE(p.data_pedido)
+
+    """,
+        nativeQuery = true
+    )
+    fun listarVendasUltimos7Dias(): List<Map<String, Any>>
+
 }
