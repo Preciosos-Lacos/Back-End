@@ -15,23 +15,35 @@ class DashboardService(val pedidoRepository: PedidoRepository) {
     }
 
     fun resumoGeral(): Map<String, Any> {
-        val pedidosUltimas24h = pedidoRepository.countPedidosUltimas24h()
+        val pedidos24hHoje = pedidoRepository.countPedidosUltimas24h()
+        val pedidos24hOntem = pedidoRepository.countPedidosOntem()
         val entregasProgramadas = pedidoRepository.countEntregasProgramadas()
         val entregasAtrasadas = pedidoRepository.countEntregasAtrasadas()
+        val atrasoMedioDias = pedidoRepository.atrasoMedioDias()
         val pedidosPendentes = pedidoRepository.countPedidosPendentes()
-        val totalVendasDia = pedidoRepository.totalVendasDia()
+        val vendasDia = pedidoRepository.totalVendasDia()
+        val vendasOntem = pedidoRepository.totalVendasOntem()
         val ticketMedio = pedidoRepository.ticketMedio()
+        val ticketSemana = pedidoRepository.ticketMedioSemanaPassada()
+
+        fun variacaoPercentual(atual: Double, anterior: Double): Double {
+            return if (anterior == 0.0) 100.0 else ((atual - anterior) / anterior) * 100
+        }
 
         return mapOf(
-            "pedidos24h" to pedidosUltimas24h,
+            "pedidos24h" to pedidos24hHoje,
+            "variacaoPedidos" to variacaoPercentual(pedidos24hHoje.toDouble(), pedidos24hOntem.toDouble()),
             "entregasProgramadas" to entregasProgramadas,
             "entregasAtrasadas" to entregasAtrasadas,
+            "atrasoMedioDias" to atrasoMedioDias,
             "pedidosPendentes" to pedidosPendentes,
-            "vendasDia" to totalVendasDia,
-            "ticketMedio" to ticketMedio
+            "vendasDia" to vendasDia,
+            "variacaoVendas" to variacaoPercentual(vendasDia, vendasOntem),
+            "ticketMedio" to ticketMedio,
+            "ticketSemana" to ticketSemana,
+            "variacaoTicket" to variacaoPercentual(ticketMedio, ticketSemana)
         )
     }
-
 
     fun listarEntregasDoDia(): List<Map<String, Any>> {
 

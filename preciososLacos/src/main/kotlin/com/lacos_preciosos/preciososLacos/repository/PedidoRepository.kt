@@ -77,7 +77,6 @@ FROM pedido p
 WHERE p.data_pedido >= CURDATE() - INTERVAL 6 DAY
 GROUP BY DATE(p.data_pedido), DATE_FORMAT(p.data_pedido, '%a')
 ORDER BY DATE(p.data_pedido)
-
     """,
         nativeQuery = true
     )
@@ -92,32 +91,50 @@ ORDER BY DATE(p.data_pedido)
     )
     fun countPedidosUltimas24h(): Int
 
-    @Query(
-        """
+    @Query("""
     SELECT COUNT(*) 
     FROM pedido 
-    WHERE status_pedido_id_status_pedido = 1
-""", nativeQuery = true
+    WHERE DATE(data_pedido) = CURDATE() - INTERVAL 1 DAY
+""", nativeQuery = true)
+    fun countPedidosOntem(): Int
+
+    @Query("""
+    SELECT COUNT(*) 
+    FROM pedido 
+    WHERE status_pedido_id_status_pedido = (
+        SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
     )
+    AND DATEDIFF(CURDATE(), data_pedido) <= 7
+""", nativeQuery = true)
     fun countEntregasProgramadas(): Int
 
-    @Query(
-        """
+    @Query("""
     SELECT COUNT(*) 
     FROM pedido 
-    WHERE status_pedido_id_status_pedido = 1
-      AND data_pedido < CURDATE() - INTERVAL 1 DAY
-""", nativeQuery = true
+    WHERE status_pedido_id_status_pedido = (
+        SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
     )
+    AND DATEDIFF(CURDATE(), data_pedido) > 7
+""", nativeQuery = true)
     fun countEntregasAtrasadas(): Int
 
-    @Query(
-        """
+    @Query("""
+    SELECT IFNULL(AVG(DATEDIFF(CURDATE(), data_pedido) - 7), 0)
+    FROM pedido 
+    WHERE status_pedido_id_status_pedido = (
+        SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
+    )
+    AND DATEDIFF(CURDATE(), data_pedido) > 7
+""", nativeQuery = true)
+    fun atrasoMedioDias(): Double
+
+    @Query("""
     SELECT COUNT(*) 
     FROM pedido 
-    WHERE status_pagamento_id_status_pagamento = 1 -- Pendente
-""", nativeQuery = true
+    WHERE status_pagamento_id_status_pagamento = (
+        SELECT id_status_pagamento FROM status_pagamento WHERE status = 'Pendente'
     )
+""", nativeQuery = true)
     fun countPedidosPendentes(): Int
 
     @Query(
@@ -129,6 +146,13 @@ ORDER BY DATE(p.data_pedido)
     )
     fun totalVendasDia(): Double
 
+    @Query("""
+    SELECT IFNULL(SUM(total), 0)
+    FROM pedido 
+    WHERE DATE(data_pedido) = CURDATE() - INTERVAL 1 DAY
+""", nativeQuery = true)
+    fun totalVendasOntem(): Double
+
     @Query(
         """
     SELECT IFNULL(AVG(total), 0)
@@ -137,5 +161,12 @@ ORDER BY DATE(p.data_pedido)
 """, nativeQuery = true
     )
     fun ticketMedio(): Double
+
+    @Query("""
+    SELECT IFNULL(AVG(total), 0)
+    FROM pedido 
+    WHERE DATE(data_pedido) BETWEEN CURDATE() - INTERVAL 13 DAY AND CURDATE() - INTERVAL 7 DAY
+""", nativeQuery = true)
+    fun ticketMedioSemanaPassada(): Double
 
 }
