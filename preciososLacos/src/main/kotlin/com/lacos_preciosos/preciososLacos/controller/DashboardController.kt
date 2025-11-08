@@ -20,6 +20,16 @@ class DashboardController(private val dashboardService: DashboardService) {
         }
     }
 
+    @GetMapping("/resumo")
+    fun resumoGeral(): ResponseEntity<Map<String, Any>> {
+        return try {
+            ResponseEntity.ok(dashboardService.resumoGeral())
+        } catch (ex: Exception) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+
     @GetMapping("/entregasDoDia")
     fun listarEntregasDoDia(): ResponseEntity<List<Map<String, Any>>> {
         return try {

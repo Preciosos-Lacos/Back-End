@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface PedidoRepository : JpaRepository<Pedido, Int>{
+interface PedidoRepository : JpaRepository<Pedido, Int> {
 
     @Query(
         value = """
@@ -64,8 +64,8 @@ interface PedidoRepository : JpaRepository<Pedido, Int>{
         JOIN usuario u ON u.id_usuario = p.usuario_id_usuario
         JOIN status_pedido sp ON sp.id_status_pedido = p.status_pedido_id_status_pedido
         WHERE DATE_ADD(p.data_pedido, INTERVAL 7 DAY) = CURDATE();
-    """
-    , nativeQuery = true)
+    """, nativeQuery = true
+    )
     fun listarEntregasDoDia(): List<Map<String, Any>>
 
     @Query(
@@ -82,5 +82,60 @@ ORDER BY DATE(p.data_pedido)
         nativeQuery = true
     )
     fun listarVendasUltimos7Dias(): List<Map<String, Any>>
+
+    @Query(
+        """
+    SELECT COUNT(*) 
+    FROM pedido 
+    WHERE data_pedido >= NOW() - INTERVAL 1 DAY
+""", nativeQuery = true
+    )
+    fun countPedidosUltimas24h(): Int
+
+    @Query(
+        """
+    SELECT COUNT(*) 
+    FROM pedido 
+    WHERE status_pedido_id_status_pedido = 1
+""", nativeQuery = true
+    )
+    fun countEntregasProgramadas(): Int
+
+    @Query(
+        """
+    SELECT COUNT(*) 
+    FROM pedido 
+    WHERE status_pedido_id_status_pedido = 1
+      AND data_pedido < CURDATE() - INTERVAL 1 DAY
+""", nativeQuery = true
+    )
+    fun countEntregasAtrasadas(): Int
+
+    @Query(
+        """
+    SELECT COUNT(*) 
+    FROM pedido 
+    WHERE status_pagamento_id_status_pagamento = 1 -- Pendente
+""", nativeQuery = true
+    )
+    fun countPedidosPendentes(): Int
+
+    @Query(
+        """
+    SELECT IFNULL(SUM(total), 0)
+    FROM pedido 
+    WHERE DATE(data_pedido) = CURDATE()
+""", nativeQuery = true
+    )
+    fun totalVendasDia(): Double
+
+    @Query(
+        """
+    SELECT IFNULL(AVG(total), 0)
+    FROM pedido 
+    WHERE DATE(data_pedido) = CURDATE()
+""", nativeQuery = true
+    )
+    fun ticketMedio(): Double
 
 }

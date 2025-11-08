@@ -14,6 +14,25 @@ class DashboardService(val pedidoRepository: PedidoRepository) {
         return listaPedidos
     }
 
+    fun resumoGeral(): Map<String, Any> {
+        val pedidosUltimas24h = pedidoRepository.countPedidosUltimas24h()
+        val entregasProgramadas = pedidoRepository.countEntregasProgramadas()
+        val entregasAtrasadas = pedidoRepository.countEntregasAtrasadas()
+        val pedidosPendentes = pedidoRepository.countPedidosPendentes()
+        val totalVendasDia = pedidoRepository.totalVendasDia()
+        val ticketMedio = pedidoRepository.ticketMedio()
+
+        return mapOf(
+            "pedidos24h" to pedidosUltimas24h,
+            "entregasProgramadas" to entregasProgramadas,
+            "entregasAtrasadas" to entregasAtrasadas,
+            "pedidosPendentes" to pedidosPendentes,
+            "vendasDia" to totalVendasDia,
+            "ticketMedio" to ticketMedio
+        )
+    }
+
+
     fun listarEntregasDoDia(): List<Map<String, Any>> {
 
         val listaPedidos = pedidoRepository.listarEntregasDoDia()
