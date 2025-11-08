@@ -58,4 +58,25 @@ class DashboardService(val pedidoRepository: PedidoRepository) {
         return vendas
     }
 
+    fun listarDashboardFiltrada(dataInicio: String?, dataFim: String?, statusPagamento: String?, statusPedido: String?
+    ): Map<String, Any> {
+
+        val inicio = if (dataInicio.isNullOrBlank()) null else dataInicio
+        val fim = if (dataFim.isNullOrBlank()) null else dataFim
+        val pagamento = if (statusPagamento.isNullOrBlank()) null else statusPagamento
+        val pedido = if (statusPedido.isNullOrBlank()) null else statusPedido
+
+        val pedidos = pedidoRepository.listarPedidosFiltrados(inicio, fim, pagamento, pedido)
+        val resumo = pedidoRepository.resumoFiltrado(inicio, fim, pagamento, pedido)
+        val entregas = pedidoRepository.listarEntregasFiltradas(inicio, fim, pagamento, pedido)
+        val vendas7dias = pedidoRepository.listarVendasFiltradas(inicio, fim, pagamento, pedido)
+
+        return mapOf(
+            "pedidos" to pedidos,
+            "resumo" to resumo,
+            "entregas" to entregas,
+            "vendas7dias" to vendas7dias
+        )
+    }
+
 }

@@ -169,4 +169,112 @@ ORDER BY DATE(p.data_pedido)
 """, nativeQuery = true)
     fun ticketMedioSemanaPassada(): Double
 
+
+    @Query(
+        value = """
+        SELECT 
+            u.nome_completo AS nomeCliente,
+            u.telefone AS telefone,
+            DATE_FORMAT(p.data_pedido, '%d/%m/%Y') AS dataPedido,
+            p.total AS total,
+            CASE p.forma_pagamento 
+                WHEN 1 THEN 'Débito'
+                WHEN 2 THEN 'Crédito'
+                WHEN 3 THEN 'Pix'
+                ELSE 'Outro'
+            END AS formaPagamento,
+            sp.status AS statusPagamento,
+            st.status AS statusPedido
+        FROM pedido p
+        JOIN usuario u ON u.id_usuario = p.usuario_id_usuario
+        JOIN status_pagamento sp ON sp.id_status_pagamento = p.status_pagamento_id_status_pagamento
+        JOIN status_pedido st ON st.id_status_pedido = p.status_pedido_id_status_pedido
+        WHERE (:dataInicio IS NULL OR :dataInicio = '' OR DATE(p.data_pedido) >= STR_TO_DATE(:dataInicio, '%Y-%m-%d'))
+          AND (:dataFim IS NULL OR :dataFim = '' OR DATE(p.data_pedido) <= STR_TO_DATE(:dataFim, '%Y-%m-%d'))
+          AND (:statusPagamento IS NULL OR :statusPagamento = '' OR sp.status = :statusPagamento)
+          AND (:statusPedido IS NULL OR :statusPedido = '' OR st.status = :statusPedido)
+        ORDER BY p.id_pedido DESC
+    """,
+        nativeQuery = true
+    )
+    fun listarPedidosFiltrados(
+        dataInicio: String?,
+        dataFim: String?,
+        statusPagamento: String?,
+        statusPedido: String?
+    ): List<Map<String, Any>>
+
+    @Query(
+        value = """
+        SELECT 
+            COUNT(*) AS pedidos24h,
+            IFNULL(SUM(p.total), 0) AS totalVendas,
+            IFNULL(AVG(p.total), 0) AS ticketMedio
+        FROM pedido p
+        JOIN status_pagamento sp ON sp.id_status_pagamento = p.status_pagamento_id_status_pagamento
+        JOIN status_pedido st ON st.id_status_pedido = p.status_pedido_id_status_pedido
+        WHERE (:dataInicio IS NULL OR :dataInicio = '' OR DATE(p.data_pedido) >= STR_TO_DATE(:dataInicio, '%Y-%m-%d'))
+          AND (:dataFim IS NULL OR :dataFim = '' OR DATE(p.data_pedido) <= STR_TO_DATE(:dataFim, '%Y-%m-%d'))
+          AND (:statusPagamento IS NULL OR :statusPagamento = '' OR sp.status = :statusPagamento)
+          AND (:statusPedido IS NULL OR :statusPedido = '' OR st.status = :statusPedido)
+    """,
+        nativeQuery = true
+    )
+    fun resumoFiltrado(
+        dataInicio: String?,
+        dataFim: String?,
+        statusPagamento: String?,
+        statusPedido: String?
+    ): Map<String, Any>
+
+
+    @Query(
+        value = """
+        SELECT 
+            p.id_pedido,
+            u.nome_completo AS cliente,
+            st.status AS status,
+            DATE_ADD(p.data_pedido, INTERVAL 7 DAY) AS previsao_entrega
+        FROM pedido p
+        JOIN usuario u ON u.id_usuario = p.usuario_id_usuario
+        JOIN status_pedido st ON st.id_status_pedido = p.status_pedido_id_status_pedido
+        WHERE (:dataInicio IS NULL OR :dataInicio = '' OR DATE(p.data_pedido) >= STR_TO_DATE(:dataInicio, '%Y-%m-%d'))
+          AND (:dataFim IS NULL OR :dataFim = '' OR DATE(p.data_pedido) <= STR_TO_DATE(:dataFim, '%Y-%m-%d'))
+          AND (:statusPagamento IS NULL OR :statusPagamento = '' OR p.status_pagamento_id_status_pagamento IN 
+              (SELECT id_status_pagamento FROM status_pagamento WHERE status = :statusPagamento))
+          AND (:statusPedido IS NULL OR :statusPedido = '' OR st.status = :statusPedido)
+    """,
+        nativeQuery = true
+    )
+    fun listarEntregasFiltradas(
+        dataInicio: String?,
+        dataFim: String?,
+        statusPagamento: String?,
+        statusPedido: String?
+    ): List<Map<String, Any>>
+
+    @Query(
+    value = """
+        SELECT 
+            DATE_FORMAT(p.data_pedido, '%a') AS dia_semana,
+            SUM(p.total) AS total
+        FROM pedido p
+        JOIN status_pagamento sp ON sp.id_status_pagamento = p.status_pagamento_id_status_pagamento
+        JOIN status_pedido st ON st.id_status_pedido = p.status_pedido_id_status_pedido
+        WHERE (:dataInicio IS NULL OR :dataInicio = '' OR DATE(p.data_pedido) >= STR_TO_DATE(:dataInicio, '%Y-%m-%d'))
+          AND (:dataFim IS NULL OR :dataFim = '' OR DATE(p.data_pedido) <= STR_TO_DATE(:dataFim, '%Y-%m-%d'))
+          AND (:statusPagamento IS NULL OR :statusPagamento = '' OR sp.status = :statusPagamento)
+          AND (:statusPedido IS NULL OR :statusPedido = '' OR st.status = :statusPedido)
+        GROUP BY DATE_FORMAT(p.data_pedido, '%a')
+        ORDER BY MIN(p.data_pedido)
+    """,
+    nativeQuery = true
+    )
+    fun listarVendasFiltradas(
+        dataInicio: String?,
+        dataFim: String?,
+        statusPagamento: String?,
+        statusPedido: String?
+    ): List<Map<String, Any>>
+
 }
