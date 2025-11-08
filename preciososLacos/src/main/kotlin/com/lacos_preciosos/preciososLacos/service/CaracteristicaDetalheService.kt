@@ -59,12 +59,18 @@ class CaracteristicaDetalheService(
         val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAllCores();
         val listaCores = ArrayList<CadastroCorDTO>()
 
-        listaCaracteristicas.forEach {
-            cor ->
-            var listModels: List<Modelo> = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe);
-            var cor: CadastroCorDTO = CadastroCorDTO(cor.idCaracteristicaDetalhe, cor.descricao, cor.hexaDecimal, cor.preco, listModels);
-            listaCores.add(cor);
+        listaCaracteristicas.forEach { cor ->
+            val listModels = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe)
+            val dto = CadastroCorDTO(
+                cor.idCaracteristicaDetalhe,
+                cor.descricao,
+                cor.hexaDecimal,
+                cor.preco ?: 0.0, // previne erro de null
+                listModels
+            )
+            listaCores.add(dto)
         }
+
         return listaCores
     }
 

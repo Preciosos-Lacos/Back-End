@@ -28,7 +28,7 @@ data class CaracteristicaDetalhe(
 
     var preco: Double = 0.0
 ) {
-
+    constructor() : this(null, null, null, null, null, null, 0.0)
     fun adicionarImagem(imagemBase64: String) {
         this.imagem = Base64.getDecoder().decode(imagemBase64)
     }
