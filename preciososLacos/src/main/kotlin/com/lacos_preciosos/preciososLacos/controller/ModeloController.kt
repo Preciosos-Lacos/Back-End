@@ -29,16 +29,15 @@ class ModeloController(private val modeloService: ModeloService) {
 
     @GetMapping
     @Tag(name = "Listagem de modelo")
-    fun getAllModelos(): ResponseEntity<List<Modelo>> {
-
+    fun getAllModelos(): ResponseEntity<List<DadosDetalheModelo>> {
         val modelos = modeloService.getAllModelos()
-
         return if (modelos.isEmpty()) {
-            ResponseEntity.status(204).build()
+            ResponseEntity.noContent().build()
         } else {
-            ResponseEntity.status(200).body(modelos)
+            ResponseEntity.ok(modelos)
         }
     }
+
 
     @GetMapping("/{id}")
     fun getOneModelo(@PathVariable id: Int): ResponseEntity<Modelo> {
@@ -52,7 +51,7 @@ class ModeloController(private val modeloService: ModeloService) {
 
         return ResponseEntity.of(modelo)
     }
-    
+
     @PutMapping("/{id}")
     @Tag(name = "Atualização de modelo")
     fun updateModelo(
@@ -69,11 +68,14 @@ class ModeloController(private val modeloService: ModeloService) {
 
     @PatchMapping("/{id}/foto")
     @Tag(name = "Atualização de foto")
-    fun updateFoto(@PathVariable id: Int, @RequestBody @Valid imagemDTO: ImagemDTO): ResponseEntity<DadosDetalheModelo> {
+    fun updateFoto(
+        @PathVariable id: Int,
+        @RequestBody @Valid imagemDTO: ImagemDTO
+    ): ResponseEntity<DadosDetalheModelo> {
         try {
             val modelo = modeloService.getOneModelo(id).orElseThrow { ValidacaoException("Modelo não encontrado") }
             modelo.adicionarFoto(imagemDTO.imagemBase64)
-            modeloService.updateFoto( id, imagemDTO.imagemBase64)
+            modeloService.updateFoto(id, imagemDTO.imagemBase64)
             return ResponseEntity.ok(DadosDetalheModelo(modelo))
         } catch (ex: ValidacaoException) {
             return ResponseEntity.notFound().build()
@@ -93,7 +95,7 @@ class ModeloController(private val modeloService: ModeloService) {
 
     @PostMapping("/favorito")
     @Tag(name = "Adicionando favorito")
-    fun adicionarFavorito(@RequestBody dto: CadastroFavoritoDTO):ResponseEntity<DadosDetalheModelo>{
+    fun adicionarFavorito(@RequestBody dto: CadastroFavoritoDTO): ResponseEntity<DadosDetalheModelo> {
         try {
             var modelo = modeloService.adicionarFavorito(dto)
             return ResponseEntity.status(201).body(modelo)
@@ -118,11 +120,11 @@ class ModeloController(private val modeloService: ModeloService) {
     fun getFotoModelo(@PathVariable id: Int): ResponseEntity<Map<String, String>> {
         try {
             val fotoBase64 = modeloService.getFotoModelo(id)
-            
+
             if (fotoBase64 == null) {
                 return ResponseEntity.noContent().build()
             }
-            
+
             val response = mapOf("foto" to fotoBase64)
             return ResponseEntity.ok(response)
         } catch (ex: ValidacaoException) {

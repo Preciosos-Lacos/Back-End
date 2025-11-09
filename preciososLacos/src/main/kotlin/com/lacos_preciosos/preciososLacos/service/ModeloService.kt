@@ -11,8 +11,8 @@ import java.util.*
 @Service
 class ModeloService(private val modeloRepository: ModeloRepository, val usuarioRepository: UsuarioRepository) {
 
-    fun getAllModelos(): List<Modelo> {
-        return modeloRepository.findAll()
+    fun getAllModelos(): List<DadosDetalheModelo> {
+        return modeloRepository.findAll().map { DadosDetalheModelo(it) }
     }
 
     fun getOneModelo(id: Int): Optional<Modelo> {

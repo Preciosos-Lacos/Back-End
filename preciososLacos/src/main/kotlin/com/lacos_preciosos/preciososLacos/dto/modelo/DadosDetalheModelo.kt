@@ -1,21 +1,24 @@
 package com.lacos_preciosos.preciososLacos.dto.modelo
 
 import com.lacos_preciosos.preciososLacos.model.Modelo
-import lombok.NoArgsConstructor
+import java.util.Base64
 
-@NoArgsConstructor
 data class DadosDetalheModelo(
-    var idModelo : Int?,
-    var nomeModelo: String,
-    var preco: Double,
-    var descricao: String
-
+    val idModelo: Int?,
+    val nomeModelo: String,
+    val preco: Double,
+    val descricao: String,
+    val favorito: Boolean?,
+    val ativo: Boolean?,
+    val fotoBase64: String?
 ) {
-   constructor(modelo: Modelo): this(
-       modelo.idModelo,
-       modelo.nomeModelo,
-       modelo.preco,
-       modelo.descricao
-
-   )
+    constructor(modelo: Modelo) : this(
+        idModelo = modelo.idModelo,
+        nomeModelo = modelo.nomeModelo,
+        preco = modelo.preco,
+        descricao = modelo.descricao,
+        favorito = modelo.favorito,
+        ativo = modelo.ativo,
+        fotoBase64 = modelo.foto?.let { Base64.getEncoder().encodeToString(it) }
+    )
 }
