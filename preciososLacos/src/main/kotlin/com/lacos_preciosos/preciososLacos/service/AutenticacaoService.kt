@@ -14,6 +14,4 @@ import org.springframework.stereotype.Service
             return usuarioRepository.findByLogin(username!!)
                 ?: throw RuntimeException("Usuário não encontrado");
         }
-
-
     }
