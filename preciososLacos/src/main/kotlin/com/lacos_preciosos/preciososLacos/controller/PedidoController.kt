@@ -62,6 +62,20 @@ class PedidoController(private val pedidoService: PedidoService) {
         }
     }
 
+    @GetMapping("/resumo-completo/{idPedido}")
+    @Tag(name = "Buscar resumo completo de Pedido")
+    fun buscaResumoCompletoPedido(@PathVariable idPedido: Int): ResponseEntity<Any> {
+        return try {
+            val resumo = pedidoService.buscaResumoCompletoPedido(idPedido)
+            if (resumo != null)
+                ResponseEntity.ok(resumo)
+            else
+                ResponseEntity.noContent().build()
+        } catch (e: Exception) {
+            ResponseEntity.status(500).body("Erro ao buscar resumo completo do pedido: ${e.message}")
+        }
+    }
+
     @PutMapping("/{id}")
     @Tag(name = "Atualização de Pedido")
     fun updateModelo(@PathVariable id: Int, @RequestBody @Valid atualizacaoPedidoDTO: CadastroPedidoDTO):
