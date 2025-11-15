@@ -101,6 +101,19 @@ class UsuarioController(
         }
     }
 
+    @PutMapping("/atualizar/{login}")
+    fun updateDados(
+        @RequestParam(required = false) nome: String?, @RequestParam(required = false) telefone: String?,
+        @RequestParam(required = false) cpf: String?, @RequestParam(required = false) email: String?,
+        @RequestParam(required = false) senha: String?, @PathVariable login: String): ResponseEntity<Int?> {
+
+        return try{
+            ResponseEntity.ok(usuarioService.updateDados(nome, telefone, cpf,  email, senha, login))
+        }
+        catch (ex: Exception){
+            ResponseEntity.notFound().build()
+        }
+    }
 
     //Deletando usuario no banco de dados
     @DeleteMapping("/{id}")

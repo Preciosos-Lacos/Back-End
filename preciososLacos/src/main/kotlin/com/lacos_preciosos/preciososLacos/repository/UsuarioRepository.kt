@@ -32,6 +32,35 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     @Query("UPDATE usuario u SET u.password = :senha WHERE u.login = :email", nativeQuery = true)
     fun atualizarSenha(email: String, senha: String): Int
 
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.nome_completo = :nome, u.telefone = :telefone, u.cpf = :cpf, u.login = :email, u.password = :senha WHERE u.login = :login", nativeQuery = true)
+    fun updateDados(nome: String, telefone: String, cpf: String, email: String, senha: String, login: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.nome_completo = :nome WHERE u.login = :email", nativeQuery = true)
+    fun updateNome(nome: String, email: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.telefone = :telefone WHERE u.login = :email", nativeQuery = true)
+    fun updateTelefone(telefone: String, email: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.cpf = :cpf WHERE u.login = :email", nativeQuery = true)
+    fun updateCpf(cpf: String, email: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.login = :email WHERE u.login = :login", nativeQuery = true)
+    fun updateEmail(email: String, login: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.password = :senha WHERE u.login = :login", nativeQuery = true)
+    fun updateSenha(senha: String, login: String): Int
 }
 
 
