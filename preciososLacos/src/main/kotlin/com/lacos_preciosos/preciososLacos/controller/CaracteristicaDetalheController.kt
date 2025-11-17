@@ -143,4 +143,10 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
             return ResponseEntity.notFound().build()
         }
     }
+
+    @GetMapping("/modelo/{idModelo}")
+    fun getDetalhesPorModelo(@PathVariable idModelo: Int): ResponseEntity<List<CaracteristicaDetalhe>> {
+        val lista = caracteristicaDetalheService.getDetalhesPorModelo(idModelo)
+        return if (lista.isEmpty()) ResponseEntity.status(204).build() else ResponseEntity.ok(lista)
+    }
 }

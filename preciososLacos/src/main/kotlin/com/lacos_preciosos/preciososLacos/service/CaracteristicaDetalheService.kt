@@ -122,4 +122,8 @@ class CaracteristicaDetalheService(
         return detalhe
     }
 
+    fun getDetalhesPorModelo(idModelo: Int): List<CaracteristicaDetalhe> {
+        return caracteristicaDetalheRepository.findAllByModelo(idModelo)
+    }
+
 }

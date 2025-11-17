@@ -79,4 +79,10 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     )
     fun deleteByCaracteristicaId(idCor: Int)
 
+    @Query(
+        value = "SELECT cd.* FROM caracteristica_detalhe cd JOIN modelo_caracteristica_detalhe mcd ON cd.id_caracteristica_detalhe = mcd.caracteristica_id_caracteristica_detalhe WHERE mcd.modelo_id_modelo = :idModelo",
+        nativeQuery = true
+    )
+    fun findAllByModelo(idModelo: Int): List<CaracteristicaDetalhe>
+
 }

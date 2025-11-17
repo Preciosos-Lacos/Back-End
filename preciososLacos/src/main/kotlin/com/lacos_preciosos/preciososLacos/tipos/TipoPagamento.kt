@@ -3,7 +3,8 @@ package com.lacos_preciosos.preciososLacos.tipos
 enum class TipoPagamento {
 
     DEBITO("debito"),
-    CREDITO("credito");
+    CREDITO("credito"),
+    PIX("pix");
 
     var tipo: String = "";
 
