@@ -1,3 +1,4 @@
+
 package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.Pedido
@@ -7,6 +8,29 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PedidoRepository : JpaRepository<Pedido, Int> {
+
+    @Query(
+        value = """
+        SELECT p.* FROM pedido p
+        JOIN usuario u ON p.usuario_id_usuario = u.id_usuario
+        JOIN status_pagamento sp ON p.status_pagamento_id_status_pagamento = sp.id_status_pagamento
+        JOIN status_pedido st ON p.status_pedido_id_status_pedido = st.id_status_pedido
+        WHERE (:searchTerm IS NULL OR u.nome_completo LIKE CONCAT('%', :searchTerm, '%'))
+          AND (:statusPagamento IS NULL OR sp.status = :statusPagamento)
+          AND (:statusPedido IS NULL OR st.status = :statusPedido)
+          AND (:startDate IS NULL OR p.data_pedido >= :startDate)
+          AND (:endDate IS NULL OR p.data_pedido <= :endDate)
+        ORDER BY p.id_pedido
+        """,
+        nativeQuery = true
+    )
+    fun buscarPedidosFiltrados(
+        searchTerm: String?,
+        startDate: String?,
+        endDate: String?,
+        statusPagamento: String?,
+        statusPedido: String?
+    ): List<Pedido>
 
     @Query(
         value = """

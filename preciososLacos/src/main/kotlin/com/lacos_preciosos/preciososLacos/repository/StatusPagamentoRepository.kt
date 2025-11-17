@@ -4,4 +4,5 @@ import com.lacos_preciosos.preciososLacos.model.StatusPagamento
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface StatusPagamentoRepository: JpaRepository<StatusPagamento, Int> {
+	fun findByStatusIgnoreCase(status: String): StatusPagamento?
 }
