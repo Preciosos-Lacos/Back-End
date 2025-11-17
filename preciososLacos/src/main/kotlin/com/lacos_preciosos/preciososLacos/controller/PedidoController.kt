@@ -1,8 +1,8 @@
 package com.lacos_preciosos.preciososLacos.controller
 
-import com.lacos_preciosos.preciososLacos.dto.PedidoResumoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
+import com.lacos_preciosos.preciososLacos.dto.pedido.PedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.ItemPedidoDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.StatusPagamentoDTO
 import com.lacos_preciosos.preciososLacos.service.PedidoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -16,35 +16,63 @@ class PedidoController(private val pedidoService: PedidoService) {
 
     @PostMapping
     @Tag(name = "Cadastro de Pedido")
-    fun createPedido(@RequestBody @Valid criacaoPedidoDTO: CadastroPedidoDTO): ResponseEntity<DadosDetalhePedido> {
-
-        try {
-            var pedido = pedidoService.createPedido(criacaoPedidoDTO)
-            return ResponseEntity.status(201).body(pedido)
+    fun criarPedido(@RequestBody pedidoDTO: PedidoDTO): ResponseEntity<PedidoDTO> {
+        return try {
+            val pedido = pedidoService.criarPedido(pedidoDTO)
+            ResponseEntity.status(201).body(pedido)
         } catch (e: RuntimeException) {
-            return ResponseEntity.status(404).build()
+            ResponseEntity.status(404).build()
         }
     }
 
-    @GetMapping
-    @Tag(name = "Listagem de Pedido")
-    fun getAllPedidos(): ResponseEntity<List<DadosDetalhePedido>> {
 
-        try {
-            var pedidos = pedidoService.getAllPedidos()
-            return ResponseEntity.status(200).body(pedidos)
-        } catch (e: RuntimeException) {
-            return ResponseEntity.status(204).build()
+    @PutMapping("/{id}/status")
+    fun atualizarStatusPedido(@PathVariable id: Int, @RequestBody body: Map<String, String>): ResponseEntity<PedidoDTO> {
+        val novoStatus = body["statusPedido"] ?: return ResponseEntity.badRequest().build()
+        return try {
+            val pedidoAtualizado = pedidoService.atualizarStatusPedido(id, novoStatus)
+            ResponseEntity.ok(pedidoAtualizado)
+        } catch (e: Exception) {
+            ResponseEntity.status(404).build()
         }
+    }
+
+    @PutMapping("/{id}/pagamento")
+    fun atualizarStatusPagamento(@PathVariable id: Int, @RequestBody body: StatusPagamentoDTO): ResponseEntity<Any> {
+        return try {
+            val pedidoAtualizado = pedidoService.atualizarStatusPagamento(id, body.statusPagamento)
+            ResponseEntity.ok(pedidoAtualizado)
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(404).body(mapOf("erro" to e.message))
+        } catch (e: Exception) {
+            ResponseEntity.status(500).body(mapOf("erro" to "Erro interno inesperado"))
+        }
+    }
+    @GetMapping
+    @Tag(name = "Listagem e Busca de Pedido")
+    fun listarOuBuscarPedidos(
+        @RequestParam(required = false) dataInicio: String?,
+        @RequestParam(required = false) dataFim: String?,
+        @RequestParam(required = false) statusPagamento: String?,
+        @RequestParam(required = false) statusPedido: String?
+    ): ResponseEntity<List<PedidoDTO>> {
+        val pedidos = pedidoService.buscarPedidos(
+            null,
+            dataInicio,
+            dataFim,
+            statusPagamento,
+            statusPedido
+        )
+        return ResponseEntity.ok(pedidos)
     }
 
     @GetMapping("/{id}")
-    fun getOneModelo(@PathVariable id: Int): ResponseEntity<Any> {
-        val pedido = pedidoService.getOnePedido(id)
+    fun detalharPedido(@PathVariable id: Int): ResponseEntity<PedidoDTO> {
+        val pedido = pedidoService.detalharPedido(id)
         return if (pedido != null) {
             ResponseEntity.ok(pedido)
         } else {
-            ResponseEntity.status(404).body("Pedido não encontrado.")
+            ResponseEntity.status(404).build()
         }
     }
 
@@ -78,25 +106,23 @@ class PedidoController(private val pedidoService: PedidoService) {
 
     @PutMapping("/{id}")
     @Tag(name = "Atualização de Pedido")
-    fun updateModelo(@PathVariable id: Int, @RequestBody @Valid atualizacaoPedidoDTO: CadastroPedidoDTO):
-            ResponseEntity<DadosDetalhePedido> {
-
-        try {
-            return ResponseEntity.status(200).body(pedidoService.updatePedido(id, atualizacaoPedidoDTO))
+    fun atualizarPedido(@PathVariable id: Int, @RequestBody pedidoDTO: PedidoDTO): ResponseEntity<PedidoDTO> {
+        return try {
+            ResponseEntity.ok(pedidoService.atualizarPedido(id, pedidoDTO))
         } catch (ex: ValidacaoException) {
-            return ResponseEntity.status(404).build()
+            ResponseEntity.status(404).build()
         }
     }
 
 
     @DeleteMapping("/{id}")
     @Tag(name = "Exclusão de Pedido")
-    fun deletePedido(@PathVariable id: Int): ResponseEntity<Void> {
-        try {
-            pedidoService.deletePedido(id)
-            return ResponseEntity.status(204).build()
+    fun excluirPedido(@PathVariable id: Int): ResponseEntity<Void> {
+        return try {
+            pedidoService.excluirPedido(id)
+            ResponseEntity.noContent().build()
         } catch (ex: ValidacaoException) {
-            return ResponseEntity.status(404).build()
+            ResponseEntity.status(404).build()
         }
     }
 }
