@@ -14,10 +14,16 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     @Transactional
     @Modifying
     @Query(
-        "INSERT INTO caracteristica_detalhe (descricao, hexa_decimal, preco, caracteristica_id_caracteristica) VALUES (:nomeDaCor, :hexaDecimal, :preco, 1)",
+        value = "INSERT INTO caracteristica_detalhe (descricao, hexa_decimal, preco, caracteristica_id_caracteristica) VALUES (:nomeDaCor, :hexaDecimal, :preco, 1)",
         nativeQuery = true
     )
     fun saveCor(nomeDaCor: String?, hexaDecimal: String?, preco: Double)
+
+    @Query(
+        value = "SELECT * FROM caracteristica_detalhe WHERE descricao = :nomeDaCor AND hexa_decimal = :hexaDecimal LIMIT 1",
+        nativeQuery = true
+    )
+    fun findByNomeAndHexa(nomeDaCor: String, hexaDecimal: String): CaracteristicaDetalhe?
 
     @Query("SELECT * FROM caracteristica_detalhe c WHERE c.id_caracteristica_detalhe = :id", nativeQuery = true)
     fun findCorById(id: Int): CaracteristicaDetalhe
@@ -72,6 +78,20 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
         nativeQuery = true
     )
     fun findByCaracteristicaId(idCor: Int): List<CaracteristicaDetalhe>
+
+    @Query(
+        value = "SELECT modelo_id_modelo FROM modelo_caracteristica_detalhe WHERE caracteristica_id_caracteristica_detalhe = :idCor",
+        nativeQuery = true
+    )
+    fun findModeloIdsByCaracteristicaId(idCor: Int): List<Int>
+
+    @Transactional
+    @Modifying
+    @Query(
+        value = "INSERT INTO modelo_caracteristica_detalhe (modelo_id_modelo, caracteristica_id_caracteristica_detalhe) SELECT :idModelo, :idCor WHERE NOT EXISTS (SELECT 1 FROM modelo_caracteristica_detalhe WHERE modelo_id_modelo = :idModelo AND caracteristica_id_caracteristica_detalhe = :idCor)",
+        nativeQuery = true
+    )
+    fun insertModeloCorIfNotExists(idModelo: Int, idCor: Int?)
 
     @Query(
         value = "DELETE FROM modelo_caracteristica_detalhe WHERE caracteristica_id_caracteristica_detalhe = :idCor",

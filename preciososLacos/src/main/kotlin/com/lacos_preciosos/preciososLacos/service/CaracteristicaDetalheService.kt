@@ -1,3 +1,4 @@
+
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
@@ -12,6 +13,19 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import kotlin.collections.map
 
+data class CorCompletaDTO(
+    val idCaracteristicaDetalhe: Int,
+    val descricao: String,
+    val hexaDecimal: String,
+    val preco: Double,
+    val modelos: List<ModeloDTO>
+)
+
+data class ModeloDTO(
+    val idModelo: Int,
+    val nomeModelo: String
+)
+
 @Service
 class CaracteristicaDetalheService(
     private val caracteristicaDetalheRepository: CaracteristicaDetalheRepository
@@ -22,20 +36,40 @@ class CaracteristicaDetalheService(
         return caracteristicaDetalhe
     }
 
-    fun saveCor(cadastroCorDTO: CadastroCorDTO): String {
+    fun saveCor(cadastroCorDTO: CadastroCorDTO): CadastroCorDTO {
         caracteristicaDetalheRepository.saveCor(
             cadastroCorDTO.nomeDaCor,
             cadastroCorDTO.hexaDecimal,
             cadastroCorDTO.preco
         )
-        return ""
+
+        // tentar localizar o registro recém-criado
+        val criado = if (cadastroCorDTO.nomeDaCor != null && cadastroCorDTO.hexaDecimal != null)
+            caracteristicaDetalheRepository.findByNomeAndHexa(cadastroCorDTO.nomeDaCor, cadastroCorDTO.hexaDecimal)
+        else null
+        return if (criado != null) {
+            val modelos = caracteristicaDetalheRepository.findAllModeloByCor(criado.idCaracteristicaDetalhe)
+            CadastroCorDTO(criado.idCaracteristicaDetalhe, criado.descricao, criado.hexaDecimal, criado.preco ?: 0.0, modelos)
+        } else {
+            // fallback: retornar o DTO enviado (sem id)
+            cadastroCorDTO
+        }
     }
 
     fun associateColor(dto: CadastroCorModeloDTO): String {
         dto.listaModelos.forEach { idModelo ->
-            caracteristicaDetalheRepository.insertModeloCor(idModelo, dto.id)
+            caracteristicaDetalheRepository.insertModeloCorIfNotExists(idModelo, dto.id)
         }
         return "Associação entre cor ${dto.id} e modelos realizada com sucesso!"
+    }
+
+    fun replaceModelosForCor(dto: CadastroCorModeloDTO): String {
+        // deleta todas as associações e insere as novas (operacao idempotente do ponto de vista do resultado final)
+        caracteristicaDetalheRepository.deleteByCaracteristicaId(dto.id)
+        dto.listaModelos.forEach { idModelo ->
+            caracteristicaDetalheRepository.insertModeloCorIfNotExists(idModelo, dto.id)
+        }
+        return "Associações atualizadas para cor ${dto.id}"
     }
 
     fun deleteByCaracteristicaId(idCor: Int) {
@@ -72,6 +106,24 @@ class CaracteristicaDetalheService(
         }
 
         return listaCores
+    }
+
+    fun getCorCompleto(id: Int): CorCompletaDTO {
+        val cor = caracteristicaDetalheRepository.findCorById(id)
+            ?: throw ValidacaoException("Cor com esse ID não encontrada")
+        val modelos = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe)
+            .map { ModeloDTO(it.idModelo ?: 0, it.nomeModelo ?: "") }
+        return CorCompletaDTO(
+            cor.idCaracteristicaDetalhe ?: 0,
+            cor.descricao ?: "",
+            cor.hexaDecimal ?: "",
+            cor.preco,
+            modelos
+        )
+    }
+
+    fun getModeloIdsByCor(idCor: Int): List<Int> {
+        return caracteristicaDetalheRepository.findModeloIdsByCaracteristicaId(idCor)
     }
 
     fun getCorById(Id: Int): CaracteristicaDetalhe {

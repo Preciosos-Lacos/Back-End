@@ -1,6 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
+import com.lacos_preciosos.preciososLacos.dto.cor.DadosDetalheCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
@@ -29,9 +30,17 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
     }
 
     @PostMapping("/cor")
-    fun cadastroCor(@RequestBody cadastroCorDTO: CadastroCorDTO): ResponseEntity<String> {
+    fun cadastroCor(@RequestBody cadastroCorDTO: CadastroCorDTO, uriBuilder: UriComponentsBuilder): ResponseEntity<Any> {
         try {
-            return ResponseEntity.ok(caracteristicaDetalheService.saveCor(cadastroCorDTO));
+            val criado = caracteristicaDetalheService.saveCor(cadastroCorDTO)
+            // tentar incluir Location header se tivermos id
+            val id = criado.id
+            return if (id != null) {
+                val uri = uriBuilder.path("/caracteristica-detalhe/cor/{id}").buildAndExpand(id).toUri()
+                ResponseEntity.created(uri).body(criado)
+            } else {
+                ResponseEntity.status(201).body(criado)
+            }
         } catch (ex: ValidacaoException) {
             return ResponseEntity.status(404).build()
         }
@@ -47,10 +56,26 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         }
     }
 
+    @PutMapping("/corModelo")
+    fun substituirAssociacoes(@RequestBody cadastroCorDTO: CadastroCorModeloDTO): ResponseEntity<String> {
+        return try {
+            val msg = caracteristicaDetalheService.replaceModelosForCor(cadastroCorDTO)
+            ResponseEntity.ok(msg)
+        } catch (ex: Exception) {
+            ResponseEntity.status(500).body("Erro ao atualizar associações: ${ex.message}")
+        }
+    }
+
     @DeleteMapping("/corModelo/{idCor}")
     fun deletarPorCaracteristica(@PathVariable idCor: Int): ResponseEntity<String> {
         caracteristicaDetalheService.deleteByCaracteristicaId(idCor)
         return ResponseEntity.ok("Registros deletados com sucesso")
+    }
+
+    @GetMapping("/corModelo/{idCor}")
+    fun buscarModeloIdsPorCaracteristica(@PathVariable idCor: Int): ResponseEntity<List<Int>> {
+        val ids = caracteristicaDetalheService.getModeloIdsByCor(idCor)
+        return ResponseEntity.ok(ids)
     }
 
     @PutMapping("/cor/{id}")
@@ -84,6 +109,12 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         } catch (ex: ValidacaoException) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @GetMapping("cor/{id}/completo")
+    fun buscarCorCompleto(@PathVariable id: Int): ResponseEntity<Any> {
+        val dto = caracteristicaDetalheService.getCorCompleto(id)
+        return ResponseEntity.ok(dto)
     }
 
     @DeleteMapping("/cor/{id}")
