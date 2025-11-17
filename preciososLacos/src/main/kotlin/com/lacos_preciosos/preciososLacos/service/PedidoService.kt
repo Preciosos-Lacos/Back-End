@@ -6,6 +6,8 @@ import com.lacos_preciosos.preciososLacos.dto.pedido.ClienteResumoDTO
 import com.lacos_preciosos.preciososLacos.dto.PedidoResumoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.CadastroPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.DadosDetalhePedido
+import com.lacos_preciosos.preciososLacos.dto.pedido.PedidoResumoCompletoDTO
+import com.lacos_preciosos.preciososLacos.dto.produto.ProdutoDTO
 import com.lacos_preciosos.preciososLacos.model.Pedido
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.repository.PedidoRepository
