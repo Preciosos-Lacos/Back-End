@@ -25,7 +25,6 @@ data class Usuario(
     var nomeCompleto: String = "",
 
     var login: String = "",
-    var email: String = "",
 
     @Column(name = "password")
     var senha: String? = "",
