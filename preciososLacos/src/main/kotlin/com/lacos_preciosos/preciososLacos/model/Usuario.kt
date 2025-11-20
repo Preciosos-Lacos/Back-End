@@ -3,8 +3,6 @@ package com.lacos_preciosos.preciososLacos.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
 import jakarta.persistence.*
-import lombok.Getter
-import lombok.Setter
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -25,7 +23,6 @@ data class Usuario(
     var nomeCompleto: String = "",
 
     var login: String = "",
-    var email: String = "",
 
     @Column(name = "password")
     var senha: String? = "",

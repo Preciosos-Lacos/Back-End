@@ -15,6 +15,7 @@ import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import com.lacos_preciosos.preciososLacos.repository.ProdutoRepository
 import com.lacos_preciosos.preciososLacos.repository.StatusPagamentoRepository
 import com.lacos_preciosos.preciososLacos.repository.StatusPedidoRepository
+import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -26,8 +27,102 @@ class PedidoService(
     val usuarioRepository: UsuarioRepository,
     val produtoRepository: ProdutoRepository,
     val statusPagamentoRepository: StatusPagamentoRepository,
-    val statusPedidoRepository: StatusPedidoRepository
+    val statusPedidoRepository: StatusPedidoRepository,
+    val caracteristicaDetalheRepository: CaracteristicaDetalheRepository
 ) {
+    fun adicionarProdutoAoCarrinho(idUsuario: Int, idProduto: Int): PedidoDTO {
+        val usuario = usuarioRepository.findById(idUsuario).orElseThrow { RuntimeException("Usuário não encontrado") }
+        val produto = produtoRepository.findById(idProduto).orElseThrow { RuntimeException("Produto não encontrado") }
+        val pedidoCarrinho = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario)
+        val pedido = if (pedidoCarrinho != null) {
+            val lista = (pedidoCarrinho.produtos ?: emptyList()) + produto
+            pedidoCarrinho.produtos = lista
+            pedidoCarrinho.total = lista.sumOf { it.preco ?: 0.0 }
+            pedidoCarrinho
+        } else {
+            val novo = Pedido(
+                idPedido = null,
+                dataPedido = java.time.LocalDate.now(),
+                total = produto.preco ?: 0.0,
+                formaPagamento = null,
+                usuario = usuario,
+                statusPedido = null,
+                statusPagamento = null,
+                produtos = listOf(produto),
+                carrinho = true
+            )
+            novo
+        }
+        pedidoRepository.save(pedido)
+        return montarPedidoDTOBasico(pedido)
+    }
+
+    fun obterCarrinhoDoUsuario(idUsuario: Int): PedidoDTO? {
+        val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return null
+        return montarPedidoDTOBasico(pedido)
+    }
+
+    fun removerProdutoDoCarrinho(idUsuario: Int, idProduto: Int): PedidoDTO? {
+        val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return null
+        val listaAtual = pedido.produtos ?: emptyList()
+        val novaLista = listaAtual.filterNot { it.idProduto == idProduto }
+        pedido.produtos = novaLista
+        pedido.total = novaLista.sumOf { it.preco ?: 0.0 }
+        pedidoRepository.save(pedido)
+        return obterCarrinhoDoUsuario(idUsuario)
+    }
+
+    fun listarProdutosCarrinho(idUsuario: Int): List<ProdutoDTO> {
+        val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return emptyList()
+        return pedido.produtos?.map { produto ->
+            val corDesc = produto.cor?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
+            val acabamentoDesc = produto.acabamento?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
+            ProdutoDTO(
+                idProduto = produto.idProduto,
+                idModelo = produto.modelo?.idModelo,
+                nome = produto.nome,
+                colecao = produto.modelo?.nomeModelo,
+                tamanho = produto.tamanho,
+                tipoLaco = produto.tipoLaco,
+                material = produto.material,
+                cor = produto.cor,
+                corDescricao = corDesc,
+                acabamento = produto.acabamento,
+                acabamentoDescricao = acabamentoDesc,
+                foto = produto.modelo?.getFotoBase64(),
+                preco = produto.preco
+            )
+        } ?: emptyList()
+    }
+
+    private fun montarPedidoDTOBasico(pedido: Pedido): PedidoDTO {
+        return PedidoDTO(
+            id = pedido.idPedido,
+            numeroPedido = null,
+            dataPedido = pedido.dataPedido.toString(),
+            valorTotal = pedido.total,
+            formaPagamento = pedido.formaPagamento?.name,
+            statusPagamento = pedido.statusPagamento?.status,
+            statusPedido = pedido.statusPedido?.status,
+            cliente = ClienteResumoDTO(
+                nome = pedido.usuario?.nomeCompleto,
+                telefone = pedido.usuario?.telefone,
+                email = pedido.usuario?.login
+            ),
+            enderecoEntrega = null,
+            itens = pedido.produtos?.map { p ->
+                ItemPedidoDTO(
+                    sku = p.idProduto?.toString(),
+                    nome = p.nome,
+                    quantidade = 1,
+                    preco = p.preco
+                )
+            } ?: emptyList(),
+            modelos = null,
+            tamanho = null,
+            cores = null
+        )
+    }
 
     fun atualizarStatusPedido(id: Int, novoStatus: String): PedidoDTO {
         val pedidoOpt = pedidoRepository.findById(id)
@@ -87,7 +182,6 @@ class PedidoService(
         pedidoRepository.save(pedido)
         return pedidoDTO.copy(id = pedido.idPedido)
     }
-
     fun listarPedidos(): List<PedidoDTO> {
         val listaPedidos = pedidoRepository.findAll()
         return listaPedidos.map { pedido ->
@@ -195,7 +289,7 @@ class PedidoService(
                 cliente = ClienteResumoDTO(
                     nome = pedido.usuario?.nomeCompleto,
                     telefone = pedido.usuario?.telefone,
-                    email = pedido.usuario?.email
+                    email = pedido.usuario?.login
                 ),
                 enderecoEntrega = null,
                 itens = pedido.produtos?.map { produto ->
@@ -258,12 +352,20 @@ class PedidoService(
         val pedido = pedidoRepository.findById(idPedido).orElse(null) ?: return null
 
         val produtosDTO: List<ProdutoDTO> = pedido.produtos?.map { produto ->
+            val corDesc = produto.cor?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
+            val acabamentoDesc = produto.acabamento?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
             ProdutoDTO(
                 idProduto = produto.idProduto,
+                idModelo = produto.modelo?.idModelo,
                 nome = produto.nome,
                 colecao = produto.modelo?.nomeModelo,
                 tamanho = produto.tamanho,
                 tipoLaco = produto.tipoLaco,
+                material = produto.material,
+                cor = produto.cor,
+                corDescricao = corDesc,
+                acabamento = produto.acabamento,
+                acabamentoDescricao = acabamentoDesc,
                 foto = produto.modelo?.getFotoBase64(),
                 preco = produto.preco
             )
