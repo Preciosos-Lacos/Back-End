@@ -19,6 +19,14 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     )
     fun saveCor(nomeDaCor: String?, hexaDecimal: String?, preco: Double)
 
+    @Transactional
+    @Modifying
+    @Query(
+        "INSERT INTO caracteristica_detalhe (descricao, preco, imagem, caracteristica_id_caracteristica) VALUES (:nome, :preco, :foto, 3)",
+        nativeQuery = true
+    )
+    fun saveTipoLaco(nome: String?, preco: Double, foto: ByteArray)
+
     @Query(
         value = "SELECT * FROM caracteristica_detalhe WHERE descricao = :nomeDaCor AND hexa_decimal = :hexaDecimal LIMIT 1",
         nativeQuery = true

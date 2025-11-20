@@ -1,10 +1,10 @@
-
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorModeloDTO
+import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
 import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
@@ -49,11 +49,29 @@ class CaracteristicaDetalheService(
         else null
         return if (criado != null) {
             val modelos = caracteristicaDetalheRepository.findAllModeloByCor(criado.idCaracteristicaDetalhe)
-            CadastroCorDTO(criado.idCaracteristicaDetalhe, criado.descricao, criado.hexaDecimal, criado.preco ?: 0.0, modelos)
+            CadastroCorDTO(
+                criado.idCaracteristicaDetalhe,
+                criado.descricao,
+                criado.hexaDecimal,
+                criado.preco ?: 0.0,
+                modelos
+            )
         } else {
             // fallback: retornar o DTO enviado (sem id)
             cadastroCorDTO
         }
+    }
+
+    fun saveTipoLaco(cadastroTipoLacoDTO: CadastroTipoLacoDTO): String {
+
+        val fotoBytes = java.util.Base64.getDecoder().decode(cadastroTipoLacoDTO.imagemBase64)
+        caracteristicaDetalheRepository.saveTipoLaco(
+            cadastroTipoLacoDTO.nome,
+            cadastroTipoLacoDTO.preco,
+            fotoBytes
+        )
+
+        return "Salvo"
     }
 
     fun associateColor(dto: CadastroCorModeloDTO): String {
@@ -81,7 +99,7 @@ class CaracteristicaDetalheService(
         val cor = caracteristicaDetalheRepository.findById(id)
             .orElseThrow { ValidacaoException("Cor com ID $id não encontrada") }
 
-        if(updateCorDTO.preco != cor.preco && updateCorDTO.preco != 0.0) {
+        if (updateCorDTO.preco != cor.preco && updateCorDTO.preco != 0.0) {
             caracteristicaDetalheRepository.updateCor(id, updateCorDTO.preco)
         }
 

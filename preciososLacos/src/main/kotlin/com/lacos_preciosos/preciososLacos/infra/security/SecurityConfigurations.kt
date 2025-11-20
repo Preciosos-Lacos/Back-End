@@ -30,7 +30,7 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/corModelo").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/cor").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe//cor/{id}/completo").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}/completo").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.PATCH, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.DELETE, "/caracteristica-detalhe/cor/{id}").permitAll()

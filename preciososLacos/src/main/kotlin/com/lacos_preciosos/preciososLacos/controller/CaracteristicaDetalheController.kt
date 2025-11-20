@@ -5,6 +5,7 @@ import com.lacos_preciosos.preciososLacos.dto.cor.DadosDetalheCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
+import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaRepository
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
-@RequestMapping("caracteristica-detalhe")
+@RequestMapping("/caracteristica-detalhe")
 class CaracteristicaDetalheController(private val caracteristicaDetalheService: CaracteristicaDetalheService) {
 
     @PostMapping
@@ -42,6 +43,17 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
                 ResponseEntity.status(201).body(criado)
             }
         } catch (ex: ValidacaoException) {
+            return ResponseEntity.status(404).build()
+        }
+    }
+
+    @PostMapping("/tipo-laco")
+    fun cadastroTipoLaco(@RequestBody cadastroTipoLacoDTO: CadastroTipoLacoDTO): ResponseEntity<Any> {
+
+        try {
+            return ResponseEntity.ok(caracteristicaDetalheService.saveTipoLaco(cadastroTipoLacoDTO))
+        } catch (ex: ValidacaoException) {
+            System.out.println(ex.message)
             return ResponseEntity.status(404).build()
         }
     }
@@ -111,7 +123,7 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         }
     }
 
-    @GetMapping("cor/{id}/completo")
+    @GetMapping("/cor/{id}/completo")
     fun buscarCorCompleto(@PathVariable id: Int): ResponseEntity<Any> {
         val dto = caracteristicaDetalheService.getCorCompleto(id)
         return ResponseEntity.ok(dto)
