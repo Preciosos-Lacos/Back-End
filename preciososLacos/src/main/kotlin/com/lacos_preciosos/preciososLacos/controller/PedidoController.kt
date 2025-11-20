@@ -125,4 +125,35 @@ class PedidoController(private val pedidoService: PedidoService) {
             ResponseEntity.status(404).build()
         }
     }
+
+    // Carrinho: adiciona produto ao carrinho existente ou cria novo pedido carrinho=true
+    @PostMapping("/carrinho")
+    fun adicionarAoCarrinho(@RequestBody body: Map<String, Int>): ResponseEntity<PedidoDTO> {
+        val idUsuario = body["idUsuario"] ?: return ResponseEntity.badRequest().build()
+        val idProduto = body["idProduto"] ?: return ResponseEntity.badRequest().build()
+        return try {
+            val dto = pedidoService.adicionarProdutoAoCarrinho(idUsuario, idProduto)
+            ResponseEntity.status(201).body(dto)
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(404).build()
+        }
+    }
+
+    @GetMapping("/carrinho/{idUsuario}")
+    fun obterCarrinho(@PathVariable idUsuario: Int): ResponseEntity<PedidoDTO> {
+        val dto = pedidoService.obterCarrinhoDoUsuario(idUsuario) ?: return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(dto)
+    }
+
+    @DeleteMapping("/carrinho/{idProduto}/usuario/{idUsuario}")
+    fun removerDoCarrinho(@PathVariable idUsuario: Int, @PathVariable idProduto: Int): ResponseEntity<PedidoDTO> {
+        val dto = pedidoService.removerProdutoDoCarrinho(idUsuario, idProduto) ?: return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(dto)
+    }
+
+    @GetMapping("/carrinho/{idUsuario}/produtos")
+    fun listarProdutosCarrinho(@PathVariable idUsuario: Int): ResponseEntity<List<com.lacos_preciosos.preciososLacos.dto.produto.ProdutoDTO>> {
+        val lista = pedidoService.listarProdutosCarrinho(idUsuario)
+        return if (lista.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(lista)
+    }
 }
