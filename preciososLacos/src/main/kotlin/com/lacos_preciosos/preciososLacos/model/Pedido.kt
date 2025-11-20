@@ -34,9 +34,7 @@ data class Pedido(
         inverseJoinColumns = [JoinColumn(name = "idProduto")]
     )
 
-    var produtos: List<Produto>? = null,
-
-    var carrinho: Boolean = true
+    var produtos: List<Produto>? = null
 ) {
     constructor(dto: CadastroPedidoDTO) : this(
         null,
@@ -46,9 +44,6 @@ data class Pedido(
         null,
         null,
         null,
-        null,
-        dto.carrinho
+        null
     )
-
-
 }
