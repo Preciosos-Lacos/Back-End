@@ -1,6 +1,7 @@
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.produto.CadastroProdutoDTO
+import com.lacos_preciosos.preciososLacos.dto.produto.DadosDetalheProduto
 import com.lacos_preciosos.preciososLacos.model.Produto
 import com.lacos_preciosos.preciososLacos.service.ProdutoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
@@ -17,9 +18,9 @@ class ProdutoController(val produtoService: ProdutoService) {
 // Criando um produto
     @PostMapping
     @Tag(name = "Cadastro de produto")
-    fun cadastrarProduto(@RequestBody novoProduto: CadastroProdutoDTO): ResponseEntity<CadastroProdutoDTO> {
+    fun cadastrarProduto(@RequestBody novoProduto: CadastroProdutoDTO): ResponseEntity<DadosDetalheProduto> {
         val produto = produtoService.save(novoProduto)
-        return ResponseEntity.status(201).body(novoProduto)
+        return ResponseEntity.status(201).body(produto)
     }
 
     //Listando todos os produtos do banco de dados

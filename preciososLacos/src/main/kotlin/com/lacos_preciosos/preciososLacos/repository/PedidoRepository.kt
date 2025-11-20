@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PedidoRepository : JpaRepository<Pedido, Int> {
+    // Retorna o primeiro pedido marcado como carrinho para um usuário
+    fun findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario: Int): Pedido?
 
     @Query(
         value = """

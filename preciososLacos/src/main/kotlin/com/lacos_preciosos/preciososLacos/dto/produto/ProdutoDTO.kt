@@ -2,10 +2,16 @@ package com.lacos_preciosos.preciososLacos.dto.produto
 
 data class ProdutoDTO(
     val idProduto: Int?,
+    val idModelo: Int?,
     val nome: String,
-    val colecao: String?,      // do modelo.nomeModelo
+    val colecao: String?,      // modelo.nomeModelo
     val tamanho: String?,
     val tipoLaco: String?,
-    val foto: String?,         // url da foto (modelo.foto)
+    val material: String?,
+    val cor: Int?,
+    val corDescricao: String?,
+    val acabamento: Int?,
+    val acabamentoDescricao: String?,
+    val foto: String?,         // base64 foto do modelo
     val preco: Double?
 )
