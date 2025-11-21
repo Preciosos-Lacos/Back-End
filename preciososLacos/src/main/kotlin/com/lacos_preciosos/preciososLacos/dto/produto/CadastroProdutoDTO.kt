@@ -4,8 +4,8 @@ data class CadastroProdutoDTO(
     val nome: String,
     val tamanho: String,
     val material: String,
-    val cor: Int?,
-    val acabamento: Int?,
+    val cor: String?,
+    val acabamento: String?,
     val preco: Double,
     val idModelo: Int
 ) {

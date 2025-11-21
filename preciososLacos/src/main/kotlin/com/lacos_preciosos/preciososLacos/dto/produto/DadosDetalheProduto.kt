@@ -7,9 +7,9 @@ data class DadosDetalheProduto(
     var nome: String,
     var tamanho: String,
     var material: String,
-    var cor: Int?,
+    var cor: String?,
     var tipoLaco: String,
-    var acabamento: Int?,
+    var acabamento: String?,
     var preco: Double,
     var idModelo: Int?,
     var fotoModelo: String? = null

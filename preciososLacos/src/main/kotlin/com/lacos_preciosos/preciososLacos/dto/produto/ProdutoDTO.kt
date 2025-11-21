@@ -8,9 +8,9 @@ data class ProdutoDTO(
     val tamanho: String?,
     val tipoLaco: String?,
     val material: String?,
-    val cor: Int?,
+    val cor: String?,
     val corDescricao: String?,
-    val acabamento: Int?,
+    val acabamento: String?,
     val acabamentoDescricao: String?,
     val foto: String?,         // base64 foto do modelo
     val preco: Double?

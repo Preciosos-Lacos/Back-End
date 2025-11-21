@@ -75,8 +75,6 @@ class PedidoService(
     fun listarProdutosCarrinho(idUsuario: Int): List<ProdutoDTO> {
         val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return emptyList()
         return pedido.produtos?.map { produto ->
-            val corDesc = produto.cor?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
-            val acabamentoDesc = produto.acabamento?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
             ProdutoDTO(
                 idProduto = produto.idProduto,
                 idModelo = produto.modelo?.idModelo,
@@ -86,9 +84,9 @@ class PedidoService(
                 tipoLaco = produto.tipoLaco,
                 material = produto.material,
                 cor = produto.cor,
-                corDescricao = corDesc,
+                corDescricao = produto.cor,
                 acabamento = produto.acabamento,
-                acabamentoDescricao = acabamentoDesc,
+                acabamentoDescricao = produto.acabamento,
                 foto = produto.modelo?.getFotoBase64(),
                 preco = produto.preco
             )
@@ -352,8 +350,6 @@ class PedidoService(
         val pedido = pedidoRepository.findById(idPedido).orElse(null) ?: return null
 
         val produtosDTO: List<ProdutoDTO> = pedido.produtos?.map { produto ->
-            val corDesc = produto.cor?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
-            val acabamentoDesc = produto.acabamento?.let { id -> caracteristicaDetalheRepository.findById(id).orElse(null)?.descricao }
             ProdutoDTO(
                 idProduto = produto.idProduto,
                 idModelo = produto.modelo?.idModelo,
@@ -363,9 +359,9 @@ class PedidoService(
                 tipoLaco = produto.tipoLaco,
                 material = produto.material,
                 cor = produto.cor,
-                corDescricao = corDesc,
+                corDescricao = produto.cor,
                 acabamento = produto.acabamento,
-                acabamentoDescricao = acabamentoDesc,
+                acabamentoDescricao = produto.acabamento,
                 foto = produto.modelo?.getFotoBase64(),
                 preco = produto.preco
             )

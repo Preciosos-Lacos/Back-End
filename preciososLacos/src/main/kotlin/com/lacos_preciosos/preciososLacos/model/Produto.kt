@@ -12,12 +12,14 @@ data class Produto(
 
     var tamanho: String = "",
 
-    var cor: Int? = null,
+    @Column(name = "cor", columnDefinition = "VARCHAR(255)")
+    var cor: String? = null,
 
     @Column(name = "tipo_laco")
     var tipoLaco: String = "",
 
-    var acabamento: Int? = null,
+    @Column(name = "acabamento", columnDefinition = "VARCHAR(255)")
+    var acabamento: String? = null,
 
     var preco: Double = 0.0,
 
