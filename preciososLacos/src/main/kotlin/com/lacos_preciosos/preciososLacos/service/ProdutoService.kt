@@ -61,4 +61,14 @@ class ProdutoService(val produtoRepository: ProdutoRepository, val modeloReposit
         }
     }
 
+    fun listarProdutosPromocao(): List<Produto> {
+        // Exemplo: produtos com preço menor que 50 são considerados promoção
+        return produtoRepository.findAll().filter { it.preco < 50.0 }
+    }
+
+    fun listarProdutosDestaque(): List<Produto> {
+        // Exemplo: produtos com preço maior ou igual a 100 são considerados destaque
+        return produtoRepository.findAll().filter { it.preco >= 100.0 }
+    }
+
 }
