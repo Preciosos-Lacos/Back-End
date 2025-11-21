@@ -13,5 +13,6 @@ data class ProdutoDTO(
     val acabamento: String?,
     val acabamentoDescricao: String?,
     val foto: String?,         // base64 foto do modelo
-    val preco: Double?
+    val preco: Double?,
+    // val imagens: List<ImagemDTO>? = null
 )
