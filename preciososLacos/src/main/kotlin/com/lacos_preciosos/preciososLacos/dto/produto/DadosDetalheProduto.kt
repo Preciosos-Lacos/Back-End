@@ -14,3 +14,16 @@ data class DadosDetalheProduto(
     var idModelo: Int?,
     var fotoModelo: String? = null
 )
+{
+    constructor(produto: Produto) : this(
+        produto.idProduto,
+        produto.nome,
+        produto.tamanho,
+        produto.material,
+        produto.cor,
+        produto.tipoLaco,
+        produto.acabamento,
+        produto.preco,
+        produto.modelo?.idModelo
+    )
+}
