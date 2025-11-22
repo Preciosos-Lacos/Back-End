@@ -13,7 +13,7 @@ import org.springframework.boot.runApplication
         io.swagger.v3.oas.annotations.tags.Tag(name = "Listagem de usuário"),
         io.swagger.v3.oas.annotations.tags.Tag(name = "Pesquisar usuário"),
         io.swagger.v3.oas.annotations.tags.Tag(name = "Atualização de usuário"),
-        io.swagger.v3.oas.annotations.tags.Tag(name = "Exclusão de usuário"),
+        io.swagger.v3.oas.annotations.tags.Tag(name = "Exc  lusão de usuário"),
         io.swagger.v3.oas.annotations.tags.Tag(name = "Login de usuário"),
         io.swagger.v3.oas.annotations.tags.Tag(name = "Logoff de usuário"),
         io.swagger.v3.oas.annotations.tags.Tag(name = "Cadastro de Modelo"),

@@ -5,31 +5,27 @@ import jakarta.persistence.*
 
 @Entity
 data class Produto(
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var idProduto: Int? = null,
-
+    var idProduto: Int? = null, 
     var tamanho: String = "",
 
-    var cor: Int? = null,
+    @Column(name = "cor", columnDefinition = "VARCHAR(255)")
+    var cor: String? = null,
 
     @Column(name = "tipo_laco")
     var tipoLaco: String = "",
 
-    var acabamento: Int? = null,
-
+    @Column(name = "acabamento", columnDefinition = "VARCHAR(255)")
+    var acabamento: String? = null,
     var preco: Double = 0.0,
 
     @ManyToOne
     var modelo: Modelo? = null,
-
     val nome: String = "",
-
     val material: String = ""
 
 ) {
-
     constructor(dto: CadastroProdutoDTO) : this(
         null,
         dto.tamanho,
@@ -41,6 +37,4 @@ data class Produto(
         dto.nome,
         dto.material
     )
-
-
 }

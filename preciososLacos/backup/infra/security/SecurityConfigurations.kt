@@ -30,7 +30,7 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/corModelo").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/caracteristica-detalhe/cor").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}/completo").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe//cor/{id}/completo").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.PATCH, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.DELETE, "/caracteristica-detalhe/cor/{id}").permitAll()
@@ -40,18 +40,6 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.GET, "/api/pedidos/search").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/dashboard").permitAll()
                 it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/produtos").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/produtos/promocoes").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/produtos/destaques").permitAll()
-                // Banners
-                it.requestMatchers(HttpMethod.GET, "/banners").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/banners/{id}").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/banners/ativo/home").permitAll()
-                it.requestMatchers(HttpMethod.POST, "/banners/upload").permitAll()
-                it.requestMatchers(HttpMethod.POST, "/banners").permitAll()
-                it.requestMatchers(HttpMethod.PUT, "/banners/{id}").authenticated()
-                it.requestMatchers(HttpMethod.DELETE, "/banners/{id}").authenticated()
-                it.requestMatchers(HttpMethod.PATCH, "/banners/{id}/ativo").permitAll()
                 // Todas as outras precisam de autenticação
                 it.anyRequest().permitAll()
             }

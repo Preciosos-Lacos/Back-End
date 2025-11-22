@@ -23,15 +23,16 @@ class ProdutoController(val produtoService: ProdutoService) {
         return ResponseEntity.status(201).body(produto)
     }
 
-    //Listando todos os produtos do banco de dados
+    //Listando todos os produtos do banco de dados (com foto do modelo)
     @GetMapping
     @Tag(name = "Listagem de produto")
-    fun listarProdutos(): ResponseEntity<List<Produto>> {
-
-        try {
-            return ResponseEntity.status(200).body(produtoService.listarProdutos())
+    fun listarProdutos(): ResponseEntity<List<DadosDetalheProduto>> {
+        return try {
+            val produtos = produtoService.listarProdutos()
+            val produtosDTO = produtos.map { DadosDetalheProduto(it) }
+            ResponseEntity.status(200).body(produtosDTO)
         } catch (ex: ValidacaoException) {
-            return ResponseEntity.status(204).build()
+            ResponseEntity.status(204).build()
         }
     }
 
@@ -60,5 +61,27 @@ class ProdutoController(val produtoService: ProdutoService) {
             return ResponseEntity.status(404).build()
         }
     }
+
+        // Listando produtos em promoção
+        @GetMapping("/promocoes")
+        @Tag(name = "Listagem de produtos em promoção")
+        fun listarProdutosPromocao(): ResponseEntity<List<Produto>> {
+            return try {
+                ResponseEntity.ok(produtoService.listarProdutosPromocao())
+            } catch (ex: Exception) {
+                ResponseEntity.status(204).build()
+            }
+        }
+
+        // Listando produtos em destaque
+        @GetMapping("/destaques")
+        @Tag(name = "Listagem de produtos em destaque")
+        fun listarProdutosDestaque(): ResponseEntity<List<Produto>> {
+            return try {
+                ResponseEntity.ok(produtoService.listarProdutosDestaque())
+            } catch (ex: Exception) {
+                ResponseEntity.status(204).build()
+            }
+        }
 
 }
