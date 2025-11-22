@@ -12,16 +12,4 @@ data class DadosDetalheProduto(
     var acabamento: Int?,
     var preco: Double,
     var idModelo: Int?
-) {
-    constructor(produto: Produto) : this(
-        produto.idProduto,
-        produto.nome,
-        produto.tamanho,
-        produto.material,
-        produto.cor,
-        produto.tipoLaco,
-        produto.acabamento,
-        produto.preco,
-        produto.modelo?.idModelo
-    )
-}
+)
