@@ -85,6 +85,7 @@ class CaracteristicaDetalheService(
             val imagemBytes = row["imagem"] as? ByteArray
 
             DadosTipoLacoDTO(
+                id = row["id"] as Int,
                 descricao = row["descricao"] as String,
                 preco = (row["preco"] as Number).toDouble(),
                 imagem = imagemBytes?.let {
@@ -96,6 +97,15 @@ class CaracteristicaDetalheService(
                     ?: emptyList()
             )
         }
+    }
+
+    fun deleteTipoLaco(id: Int){
+        val tipoLaco = caracteristicaDetalheRepository.findById(id);
+
+        if(tipoLaco.isEmpty()){
+            throw RuntimeException("Tipo de Laco não Encontrado")
+        }
+        caracteristicaDetalheRepository.deleteTipoLaco(id);
     }
 
     fun associateColor(dto: CadastroCorModeloDTO): String {

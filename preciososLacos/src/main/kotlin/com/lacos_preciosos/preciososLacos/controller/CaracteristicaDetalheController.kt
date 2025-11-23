@@ -72,6 +72,16 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         }
     }
 
+    @DeleteMapping("/tipo-laco/{id}")
+    fun deleteTipoLaco(@PathVariable id: Int): ResponseEntity<Any> {
+        try {
+            return ResponseEntity.ok(caracteristicaDetalheService.deleteTipoLaco(id))
+        }
+        catch (ex: Exception){
+            return ResponseEntity.status(404).build()
+        }
+    }
+
     @PostMapping("/corModelo")
     fun associarCorModelo(@RequestBody cadastroCorDTO: CadastroCorModeloDTO): ResponseEntity<String> {
         return try {

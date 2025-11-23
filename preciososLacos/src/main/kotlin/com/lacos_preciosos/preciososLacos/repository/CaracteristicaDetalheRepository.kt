@@ -30,6 +30,7 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     @Query(
         value = """
         SELECT 
+            cd.id_caracteristica_detalhe as id,
             cd.descricao,
             cd.preco,
             cd.imagem,
@@ -46,6 +47,14 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
         nativeQuery = true
     )
     fun getAllTipoLaco(): List<Map<String, Any>>
+
+    @Transactional
+    @Modifying
+    @Query(
+        "UPDATE caracteristica_detalhe SET ativo = FALSE WHERE id_caracteristica_detalhe = :id;",
+        nativeQuery = true
+    )
+    fun deleteTipoLaco(id: Int)
 
 
     @Query(
