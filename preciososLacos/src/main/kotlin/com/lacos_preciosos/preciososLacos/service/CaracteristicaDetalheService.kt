@@ -3,14 +3,13 @@ package com.lacos_preciosos.preciososLacos.service
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
-import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
+import com.lacos_preciosos.preciososLacos.dto.tipoLaco.DadosTipoLacoDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
-import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.util.Base64
 import kotlin.collections.map
 
 data class CorCompletaDTO(
@@ -72,6 +71,31 @@ class CaracteristicaDetalheService(
         )
 
         return "Salvo"
+    }
+
+    fun getAllTipoLaco(): List<DadosTipoLacoDTO> {
+
+        val listTipoLaco = caracteristicaDetalheRepository.getAllTipoLaco()
+
+        if (listTipoLaco.isEmpty()) {
+            throw RuntimeException("Lista vazia")
+        }
+
+        return listTipoLaco.map { row ->
+            val imagemBytes = row["imagem"] as? ByteArray
+
+            DadosTipoLacoDTO(
+                descricao = row["descricao"] as String,
+                preco = (row["preco"] as Number).toDouble(),
+                imagem = imagemBytes?.let {
+                    Base64.getEncoder().encodeToString(it)
+                } ?: "",
+                modelos = (row["modelos"] as? String)
+                    ?.split(",")
+                    ?.map { it.trim() }
+                    ?: emptyList()
+            )
+        }
     }
 
     fun associateColor(dto: CadastroCorModeloDTO): String {

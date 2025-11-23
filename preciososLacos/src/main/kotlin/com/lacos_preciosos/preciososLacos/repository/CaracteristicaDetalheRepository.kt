@@ -22,10 +22,31 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     @Transactional
     @Modifying
     @Query(
-        "INSERT INTO caracteristica_detalhe (descricao, preco, imagem, caracteristica_id_caracteristica) VALUES (:nome, :preco, :foto, 3)",
+        "INSERT INTO caracteristica_detalhe (descricao, preco, imagem, ativo, caracteristica_id_caracteristica) VALUES (:nome, :preco, :foto, true, 3)",
         nativeQuery = true
     )
     fun saveTipoLaco(nome: String?, preco: Double, foto: ByteArray)
+
+    @Query(
+        value = """
+        SELECT 
+            cd.descricao,
+            cd.preco,
+            cd.imagem,
+            GROUP_CONCAT(m.nome_modelo) AS modelos
+        FROM caracteristica_detalhe cd
+        LEFT JOIN modelo_caracteristica_detalhe mcd 
+               ON mcd.caracteristica_id_caracteristica_detalhe = cd.id_caracteristica_detalhe
+        LEFT JOIN modelo m 
+               ON m.id_modelo = mcd.modelo_id_modelo
+        WHERE cd.caracteristica_id_caracteristica = 3
+          AND cd.ativo = TRUE
+        GROUP BY cd.id_caracteristica_detalhe;
+    """,
+        nativeQuery = true
+    )
+    fun getAllTipoLaco(): List<Map<String, Any>>
+
 
     @Query(
         value = "SELECT * FROM caracteristica_detalhe WHERE descricao = :nomeDaCor AND hexa_decimal = :hexaDecimal LIMIT 1",

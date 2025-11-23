@@ -6,6 +6,7 @@ import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
 import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
+import com.lacos_preciosos.preciososLacos.dto.tipoLaco.DadosTipoLacoDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaRepository
@@ -31,7 +32,10 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
     }
 
     @PostMapping("/cor")
-    fun cadastroCor(@RequestBody cadastroCorDTO: CadastroCorDTO, uriBuilder: UriComponentsBuilder): ResponseEntity<Any> {
+    fun cadastroCor(
+        @RequestBody cadastroCorDTO: CadastroCorDTO,
+        uriBuilder: UriComponentsBuilder
+    ): ResponseEntity<Any> {
         try {
             val criado = caracteristicaDetalheService.saveCor(cadastroCorDTO)
             // tentar incluir Location header se tivermos id
@@ -55,6 +59,16 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         } catch (ex: ValidacaoException) {
             System.out.println(ex.message)
             return ResponseEntity.status(404).build()
+        }
+    }
+
+    @GetMapping("/tipo-laco")
+    fun getAllTipoLaco(): ResponseEntity<List<DadosTipoLacoDTO>> {
+        try {
+            return ResponseEntity.ok(caracteristicaDetalheService.getAllTipoLaco())
+        }
+        catch (ex: Exception){
+            return ResponseEntity.status(204).build()
         }
     }
 
