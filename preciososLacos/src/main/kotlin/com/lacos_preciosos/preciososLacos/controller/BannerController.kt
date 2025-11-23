@@ -10,6 +10,9 @@ import java.util.*
 @RestController
 @RequestMapping("/banners")
 class BannerController(val bannerService: BannerService) {
+    @GetMapping("/ativo")
+    fun buscarBannerAtivo(): ResponseEntity<BannerDTO?> =
+        ResponseEntity.ok(bannerService.buscarBannerAtivoParaHome())
 
     @GetMapping
     fun listarBanners(

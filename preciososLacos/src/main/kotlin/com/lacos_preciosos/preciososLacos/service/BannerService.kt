@@ -9,6 +9,14 @@ import java.util.*
 
 @Service
 class BannerService(val bannerRepository: BannerRepository) {
+    // Ativa o banner pelo id e desativa todos os outros
+    private fun ativarSomenteEsteBanner(id: Long) {
+        val todos = bannerRepository.findAll()
+        todos.forEach {
+            it.ativo = (it.id == id)
+            bannerRepository.save(it)
+        }
+    }
 
     fun listarTodos(ativo: Boolean?, data: Date?): List<BannerDTO> {
         return bannerRepository.findByFiltro(ativo, data).map { BannerDTO(it) }
@@ -31,7 +39,11 @@ class BannerService(val bannerRepository: BannerRepository) {
             dataInicio = dto.dataInicio,
             dataFim = dto.dataFim
         )
-        return BannerDTO(bannerRepository.save(banner))
+        val salvo = bannerRepository.save(banner)
+        if (dto.ativo) {
+            ativarSomenteEsteBanner(salvo.id!!)
+        }
+        return BannerDTO(salvo)
     }
 
     fun atualizarBanner(id: Long, dto: BannerDTO): BannerDTO? {
@@ -44,7 +56,11 @@ class BannerService(val bannerRepository: BannerRepository) {
         banner.dataInicio = dto.dataInicio
         banner.dataFim = dto.dataFim
         banner.updatedAt = java.time.LocalDateTime.now()
-        return BannerDTO(bannerRepository.save(banner))
+        val salvo = bannerRepository.save(banner)
+        if (dto.ativo) {
+            ativarSomenteEsteBanner(id)
+        }
+        return BannerDTO(salvo)
     }
 
     fun removerBanner(id: Long) {
@@ -53,9 +69,19 @@ class BannerService(val bannerRepository: BannerRepository) {
 
     fun ativarBanner(id: Long, ativo: Boolean): BannerDTO? {
         val banner = bannerRepository.findById(id).orElse(null) ?: return null
-        banner.ativo = ativo
+        if (ativo) {
+            // Desativa todos os outros
+            val todos = bannerRepository.findAll()
+            todos.forEach {
+                it.ativo = (it.id == id)
+                bannerRepository.save(it)
+            }
+        } else {
+            banner.ativo = false
+            bannerRepository.save(banner)
+        }
         banner.updatedAt = java.time.LocalDateTime.now()
-        return BannerDTO(bannerRepository.save(banner))
+        return BannerDTO(banner)
     }
 
     fun uploadImagem(file: MultipartFile): String {
