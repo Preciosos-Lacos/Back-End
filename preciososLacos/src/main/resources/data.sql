@@ -4,13 +4,15 @@ INSERT INTO tipo_usuario (idTipoUsuario, tipo_usuario) VALUES
 
 INSERT INTO status_pagamento (id_status_pagamento, status) VALUES
     (DEFAULT, 'Pendente'),
-    (DEFAULT, 'Aguardando'),
-    (DEFAULT, 'Concluído');
+    (DEFAULT, 'Pago'),
+    (DEFAULT, 'Cancelado'),
+    (DEFAULT, 'Estornado');
 
 INSERT INTO status_pedido (id_status_pedido, status) VALUES
-    (DEFAULT, 'Aguardando'),
-    (DEFAULT, 'Iniciado'),
-    (DEFAULT, 'Concluído');
+    (DEFAULT, 'Em andamento'),
+    (DEFAULT, 'Entregue'),
+    (DEFAULT, 'Cancelado'),
+    (DEFAULT, 'Concluido');
 
 INSERT INTO caracteristica (id_caracteristica, descricao) VALUES
     (DEFAULT, 'COR'),

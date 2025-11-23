@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query
 
 interface EnderecoRepository : JpaRepository<Endereco, Int> {
 
+    fun findByUsuario_IdUsuario(idUsuario: Int): List<Endereco>
+
     // Create a new Endereco
 //    @Transactional
 //    fun criarEndereco(endereco: Endereco): Endereco {

@@ -18,28 +18,27 @@ data class Endereco (
 
     @field:NotBlank
     @field:Size(min = 8, max = 8)
-    var cep: String,
+    var cep: String = "",
 
     @field:NotBlank
-    var logradouro: String,
+    var logradouro: String = "",
 
     @field:NotBlank
-    var bairro: String,
+    var bairro: String = "",
 
-    @field:NotBlank
-    var numero: Int,
+    @field:NotNull
+    @field:Min(1)
+    var numero: Int = 0,
 
-    @field:NotBlank
     var complemento: String? = null,
 
     @field:NotBlank
-    var localidade: String? = null,
+    var localidade: String? = "",
 
     @field:NotBlank
-    var uf: String? = null,
+    var uf: String? = "",
 
-    @field:NotBlank
-    @OneToOne
+    @ManyToOne
     var usuario: Usuario? = null
 
 

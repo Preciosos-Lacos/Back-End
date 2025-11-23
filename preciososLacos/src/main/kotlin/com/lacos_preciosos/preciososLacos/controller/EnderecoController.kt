@@ -13,6 +13,12 @@ import org.springframework.web.util.UriComponentsBuilder
 @RestController
 @RequestMapping("/enderecos")
 class EnderecoController(private val enderecoService: EnderecoService) {
+    @GetMapping("/usuario/{id}")
+    @Tag(name = "Endereços por Usuário")
+    fun getEnderecosByUsuario(@PathVariable id: Int): ResponseEntity<List<Endereco>> {
+        val enderecos = enderecoService.getEnderecosByUsuario(id)
+        return ResponseEntity.ok(enderecos)
+    }
 
     @PostMapping
     @Tag(name = "Cadastro de Endereço")

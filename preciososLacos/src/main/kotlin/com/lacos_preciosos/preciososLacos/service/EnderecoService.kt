@@ -13,6 +13,10 @@ class EnderecoService(
     private val usuarioRepository: UsuarioRepository
 ) {
 
+    fun getEnderecosByUsuario(usuarioId: Int): List<Endereco> {
+        return enderecoRepository.findByUsuario_IdUsuario(usuarioId)
+    }
+
     fun createEndereco(dto: CadastroEnderecoDTO, usuarioId: Int): Endereco {
         val usuario = usuarioRepository.findById(usuarioId)
             .orElseThrow { ValidacaoException("Usuário não encontrado com ID: $usuarioId") }
