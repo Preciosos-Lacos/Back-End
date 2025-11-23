@@ -22,10 +22,51 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     @Transactional
     @Modifying
     @Query(
-        "INSERT INTO caracteristica_detalhe (descricao, preco, imagem, caracteristica_id_caracteristica) VALUES (:nome, :preco, :foto, 3)",
+        "INSERT INTO caracteristica_detalhe (descricao, preco, imagem, ativo, caracteristica_id_caracteristica) VALUES (:nome, :preco, :foto, true, 3)",
         nativeQuery = true
     )
     fun saveTipoLaco(nome: String?, preco: Double, foto: ByteArray)
+
+    @Query(
+        value = """
+        SELECT 
+            cd.id_caracteristica_detalhe as id,
+            cd.descricao,
+            cd.preco,
+            cd.imagem,
+            GROUP_CONCAT(m.nome_modelo) AS modelos
+        FROM caracteristica_detalhe cd
+        LEFT JOIN modelo_caracteristica_detalhe mcd 
+               ON mcd.caracteristica_id_caracteristica_detalhe = cd.id_caracteristica_detalhe
+        LEFT JOIN modelo m 
+               ON m.id_modelo = mcd.modelo_id_modelo
+        WHERE cd.caracteristica_id_caracteristica = 3
+          AND cd.ativo = TRUE
+        GROUP BY cd.id_caracteristica_detalhe;
+    """,
+        nativeQuery = true
+    )
+    fun getAllTipoLaco(): List<Map<String, Any>>
+
+    @Transactional
+    @Modifying
+    @Query("""
+        UPDATE caracteristica_detalhe SET descricao = :nome, preco = :preco,
+        imagem = CASE 
+                    WHEN :foto IS NOT NULL THEN :foto 
+                    ELSE imagem 
+                 END
+    WHERE id_caracteristica_detalhe = :id""", nativeQuery = true)
+    fun updateTipoLaco(nome: String?, preco: Double, foto: ByteArray?, id: Int): Int
+
+    @Transactional
+    @Modifying
+    @Query(
+        "UPDATE caracteristica_detalhe SET ativo = FALSE WHERE id_caracteristica_detalhe = :id;",
+        nativeQuery = true
+    )
+    fun deleteTipoLaco(id: Int)
+
 
     @Query(
         value = "SELECT * FROM caracteristica_detalhe WHERE descricao = :nomeDaCor AND hexa_decimal = :hexaDecimal LIMIT 1",

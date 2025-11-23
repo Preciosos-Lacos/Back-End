@@ -26,7 +26,9 @@ data class CaracteristicaDetalhe(
 
     var favorito: Boolean?,
 
-    var preco: Double = 0.0
+    var preco: Double = 0.0,
+
+    var ativo: Boolean? = true
 ) {
     constructor() : this(null, null, null, null, null, null, 0.0)
     fun adicionarImagem(imagemBase64: String) {

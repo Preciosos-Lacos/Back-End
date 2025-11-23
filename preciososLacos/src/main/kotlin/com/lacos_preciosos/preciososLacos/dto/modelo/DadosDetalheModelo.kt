@@ -11,7 +11,8 @@ data class DadosDetalheModelo(
     val favorito: Boolean?,
     val ativo: Boolean?,
     val fotoBase64: String?
-) {
+)
+{
     constructor(modelo: Modelo) : this(
         idModelo = modelo.idModelo,
         nomeModelo = modelo.nomeModelo,

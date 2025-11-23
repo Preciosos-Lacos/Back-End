@@ -3,14 +3,13 @@ package com.lacos_preciosos.preciososLacos.service
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
-import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
+import com.lacos_preciosos.preciososLacos.dto.tipoLaco.DadosTipoLacoDTO
 import com.lacos_preciosos.preciososLacos.model.CaracteristicaDetalhe
-import com.lacos_preciosos.preciososLacos.model.Modelo
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.util.Base64
 import kotlin.collections.map
 
 data class CorCompletaDTO(
@@ -72,6 +71,73 @@ class CaracteristicaDetalheService(
         )
 
         return "Salvo"
+    }
+
+    fun getAllTipoLaco(): List<DadosTipoLacoDTO> {
+
+        val listTipoLaco = caracteristicaDetalheRepository.getAllTipoLaco()
+
+        if (listTipoLaco.isEmpty()) {
+            throw RuntimeException("Lista vazia")
+        }
+
+        return listTipoLaco.map { row ->
+            val imagemBytes = row["imagem"] as? ByteArray
+
+            DadosTipoLacoDTO(
+                id = row["id"] as Int,
+                descricao = row["descricao"] as String,
+                preco = (row["preco"] as Number).toDouble(),
+                imagem = imagemBytes?.let {
+                    Base64.getEncoder().encodeToString(it)
+                } ?: "",
+                modelos = (row["modelos"] as? String)
+                    ?.split(",")
+                    ?.map { it.trim() }
+                    ?: emptyList()
+            )
+        }
+    }
+
+    fun updateTipoLaco(dto: CadastroTipoLacoDTO, id: Int): String {
+        try {
+            if (dto.nome.isNullOrBlank())
+                throw IllegalArgumentException("Nome não pode ser vazio.")
+
+            if (dto.preco == null || dto.preco < 0)
+                throw IllegalArgumentException("Preço inválido.")
+
+            // Trata imagem opcional
+            val fotoBytes = try {
+                dto.imagemBase64?.let {
+                    Base64.getDecoder().decode(it)
+                }
+            } catch (ex: IllegalArgumentException) {
+                throw IllegalArgumentException("Imagem Base64 inválida.")
+            }
+
+            val rows = caracteristicaDetalheRepository.updateTipoLaco(
+                dto.nome,
+                dto.preco,
+                fotoBytes,
+                id
+            )
+
+            return if (rows > 0) "Atualizado com sucesso" else "Nenhum registro atualizado"
+
+        } catch (ex: Exception) {
+            throw RuntimeException("Erro ao atualizar tipo laço: ${ex.message}")
+        }
+    }
+
+
+    fun deleteTipoLaco(id: Int) {
+        val tipoLaco = caracteristicaDetalheRepository.findById(id);
+
+        if (tipoLaco.isEmpty()) {
+            throw RuntimeException("Tipo de Laco não Encontrado")
+        }
+        caracteristicaDetalheRepository.deleteTipoLaco(id);
     }
 
     fun associateColor(dto: CadastroCorModeloDTO): String {

@@ -12,9 +12,9 @@ data class DadosDetalheProduto(
     var acabamento: String?,
     var preco: Double,
     var idModelo: Int?,
-    var fotoModelo: String? = null,
-        // var imagens: List<ImagemDTO>? = null
-) {
+    var fotoModelo: String? = null
+)
+{
     constructor(produto: Produto) : this(
         produto.idProduto,
         produto.nome,
@@ -24,7 +24,6 @@ data class DadosDetalheProduto(
         produto.tipoLaco,
         produto.acabamento,
         produto.preco,
-        produto.modelo?.idModelo,
-        produto.modelo?.foto?.let { java.util.Base64.getEncoder().encodeToString(it) },
+        produto.modelo?.idModelo
     )
 }
