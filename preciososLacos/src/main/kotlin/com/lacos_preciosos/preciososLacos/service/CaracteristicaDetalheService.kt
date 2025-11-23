@@ -99,10 +99,42 @@ class CaracteristicaDetalheService(
         }
     }
 
-    fun deleteTipoLaco(id: Int){
+    fun updateTipoLaco(dto: CadastroTipoLacoDTO, id: Int): String {
+        try {
+            if (dto.nome.isNullOrBlank())
+                throw IllegalArgumentException("Nome não pode ser vazio.")
+
+            if (dto.preco == null || dto.preco < 0)
+                throw IllegalArgumentException("Preço inválido.")
+
+            // Trata imagem opcional
+            val fotoBytes = try {
+                dto.imagemBase64?.let {
+                    Base64.getDecoder().decode(it)
+                }
+            } catch (ex: IllegalArgumentException) {
+                throw IllegalArgumentException("Imagem Base64 inválida.")
+            }
+
+            val rows = caracteristicaDetalheRepository.updateTipoLaco(
+                dto.nome,
+                dto.preco,
+                fotoBytes,
+                id
+            )
+
+            return if (rows > 0) "Atualizado com sucesso" else "Nenhum registro atualizado"
+
+        } catch (ex: Exception) {
+            throw RuntimeException("Erro ao atualizar tipo laço: ${ex.message}")
+        }
+    }
+
+
+    fun deleteTipoLaco(id: Int) {
         val tipoLaco = caracteristicaDetalheRepository.findById(id);
 
-        if(tipoLaco.isEmpty()){
+        if (tipoLaco.isEmpty()) {
             throw RuntimeException("Tipo de Laco não Encontrado")
         }
         caracteristicaDetalheRepository.deleteTipoLaco(id);

@@ -50,6 +50,17 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
 
     @Transactional
     @Modifying
+    @Query("""
+        UPDATE caracteristica_detalhe SET descricao = :nome, preco = :preco,
+        imagem = CASE 
+                    WHEN :foto IS NOT NULL THEN :foto 
+                    ELSE imagem 
+                 END
+    WHERE id_caracteristica_detalhe = :id""", nativeQuery = true)
+    fun updateTipoLaco(nome: String?, preco: Double, foto: ByteArray?, id: Int): Int
+
+    @Transactional
+    @Modifying
     @Query(
         "UPDATE caracteristica_detalhe SET ativo = FALSE WHERE id_caracteristica_detalhe = :id;",
         nativeQuery = true

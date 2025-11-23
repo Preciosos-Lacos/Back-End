@@ -72,6 +72,16 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         }
     }
 
+    @PutMapping("/tipo-laco/{id}")
+    fun updateTipoLaco(@RequestBody cadastroTipoLacoDTO: CadastroTipoLacoDTO, @PathVariable id: Int): ResponseEntity<Any> {
+
+        try {
+            return ResponseEntity.ok(caracteristicaDetalheService.updateTipoLaco(cadastroTipoLacoDTO, id))
+        } catch (ex: ValidacaoException) {
+            return ResponseEntity.status(404).build()
+        }
+    }
+
     @DeleteMapping("/tipo-laco/{id}")
     fun deleteTipoLaco(@PathVariable id: Int): ResponseEntity<Any> {
         try {
