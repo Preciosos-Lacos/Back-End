@@ -1,6 +1,10 @@
 package com.lacos_preciosos.preciososLacos.service
 
+import org.slf4j.LoggerFactory
+import org.springframework.transaction.annotation.Transactional
+
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorDTO
+import com.lacos_preciosos.preciososLacos.dto.cor.DadosDetalheCorDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.CadastroCorModeloDTO
 import com.lacos_preciosos.preciososLacos.dto.cor.UpdateCorDTO
 import com.lacos_preciosos.preciososLacos.dto.tipoLaco.CadastroTipoLacoDTO
@@ -25,10 +29,38 @@ data class ModeloDTO(
     val nomeModelo: String
 )
 
+
 @Service
 class CaracteristicaDetalheService(
     private val caracteristicaDetalheRepository: CaracteristicaDetalheRepository
 ) {
+
+    fun desativarCor(id: Int): String {
+        if (!caracteristicaDetalheRepository.existsById(id)) {
+            throw ValidacaoException("Cor com ID $id não encontrada")
+        }
+        caracteristicaDetalheRepository.updateCorAtivo(id, false)
+        return "Cor desativada com sucesso."
+    }
+
+
+    private val logger = LoggerFactory.getLogger(CaracteristicaDetalheService::class.java)
+
+    @Transactional
+    fun ativarCor(id: Int): String {
+        logger.info("[ATIVAR COR] Iniciando ativação da cor com id: $id")
+        try {
+            val cor = caracteristicaDetalheRepository.findById(id)
+                .orElseThrow { ValidacaoException("Cor com ID $id não encontrada") }
+            cor.ativo = true
+            caracteristicaDetalheRepository.save(cor)
+            logger.info("[ATIVAR COR] Cor $id ativada com sucesso.")
+            return "Cor ativada com sucesso."
+        } catch (ex: Exception) {
+            logger.error("[ATIVAR COR] Erro ao ativar cor $id", ex)
+            throw ex
+        }
+    }
 
     fun create(caracteristicaDetalhe: CaracteristicaDetalhe): CaracteristicaDetalhe {
         caracteristicaDetalheRepository.save(caracteristicaDetalhe)
@@ -39,9 +71,9 @@ class CaracteristicaDetalheService(
         caracteristicaDetalheRepository.saveCor(
             cadastroCorDTO.nomeDaCor,
             cadastroCorDTO.hexaDecimal,
-            cadastroCorDTO.preco
+            cadastroCorDTO.preco,
+            cadastroCorDTO.ativo
         )
-
         // tentar localizar o registro recém-criado
         val criado = if (cadastroCorDTO.nomeDaCor != null && cadastroCorDTO.hexaDecimal != null)
             caracteristicaDetalheRepository.findByNomeAndHexa(cadastroCorDTO.nomeDaCor, cadastroCorDTO.hexaDecimal)
@@ -172,23 +204,27 @@ class CaracteristicaDetalheService(
         return "Cor atualizada com sucesso!"
     }
 
-    fun getTodasAsCores(): List<CadastroCorDTO> {
-
+    fun getTodasAsCores(): List<DadosDetalheCorDTO> {
         val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAllCores();
-        val listaCores = ArrayList<CadastroCorDTO>()
-
+        val listaCores = ArrayList<DadosDetalheCorDTO>()
         listaCaracteristicas.forEach { cor ->
             val listModels = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe)
-            val dto = CadastroCorDTO(
-                cor.idCaracteristicaDetalhe,
-                cor.descricao,
-                cor.hexaDecimal,
-                cor.preco ?: 0.0, // previne erro de null
-                listModels
+            val modelosResumo = listModels.map { modelo ->
+                com.lacos_preciosos.preciososLacos.dto.cor.ModeloResumoDTO(
+                    modelo.idModelo ?: 0,
+                    modelo.nomeModelo ?: ""
+                )
+            }
+            val dto = DadosDetalheCorDTO(
+                id = cor.idCaracteristicaDetalhe,
+                nomeDaCor = cor.descricao,
+                hexaDecimal = cor.hexaDecimal,
+                preco = cor.preco ?: 0.0,
+                modelos = modelosResumo,
+                ativo = cor.ativo
             )
             listaCores.add(dto)
         }
-
         return listaCores
     }
 
@@ -224,7 +260,7 @@ class CaracteristicaDetalheService(
         if (!caracteristicaDetalheRepository.existsById(id)) {
             throw ValidacaoException("Cor com ID $id não encontrada")
         }
-        caracteristicaDetalheRepository.deleteById(id)
+        caracteristicaDetalheRepository.updateCorAtivo(id, false)
     }
 
     fun getAllCaracteristicas(): List<CaracteristicaDetalhe> {

@@ -8,7 +8,8 @@ data class CadastroCorDTO(@field:NotBlank
                           val nomeDaCor: String?,
                           val hexaDecimal: String?,
                           val preco: Double,
-                          val listaModelos: List<Modelo>
+                          val listaModelos: List<Modelo>,
+                          val ativo: Boolean = true
 ){
     companion object
 }

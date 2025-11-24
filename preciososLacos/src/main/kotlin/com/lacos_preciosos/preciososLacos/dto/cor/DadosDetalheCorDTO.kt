@@ -5,5 +5,6 @@ data class DadosDetalheCorDTO(
     val nomeDaCor: String?,
     val hexaDecimal: String?,
     val preco: Double,
-    val modelos: List<ModeloResumoDTO>
+    val modelos: List<ModeloResumoDTO>,
+    val ativo: Boolean? = true
 )

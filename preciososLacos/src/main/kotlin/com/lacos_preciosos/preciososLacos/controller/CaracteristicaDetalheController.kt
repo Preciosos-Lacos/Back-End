@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/caracteristica-detalhe")
+@CrossOrigin(origins = ["http://localhost:3000"], allowedHeaders = ["*"], allowCredentials = "true")
 class CaracteristicaDetalheController(private val caracteristicaDetalheService: CaracteristicaDetalheService) {
 
     @PostMapping
@@ -166,10 +167,24 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
     @DeleteMapping("/cor/{id}")
     fun excluirCor(@PathVariable id: Int): ResponseEntity<String> {
         return try {
-            caracteristicaDetalheService.deleteCor(id)
-            ResponseEntity.ok("Cor excluída com sucesso.")
+            val msg = caracteristicaDetalheService.desativarCor(id)
+            ResponseEntity.ok(msg)
+        } catch (ex: Exception) {
+            ResponseEntity.status(404).body("Erro ao desativar a cor: ${ex.message}")
+        }
+    }
+
+    @PatchMapping("/cor/{id}/ativar")
+    fun ativarCor(@PathVariable id: Int): ResponseEntity<String> {
+        println("[CONTROLLER] PATCH /cor/$id/ativar chamado")
+        return try {
+            val msg = caracteristicaDetalheService.ativarCor(id)
+            ResponseEntity.ok(msg)
         } catch (ex: ValidacaoException) {
-            ResponseEntity.status(404).body("Erro ao excluir a cor: ${ex.message}")
+            ResponseEntity.status(404).body("Erro ao reativar a cor: ${ex.message}")
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            ResponseEntity.status(500).body("Erro interno ao reativar a cor: ${ex.message}")
         }
     }
 
