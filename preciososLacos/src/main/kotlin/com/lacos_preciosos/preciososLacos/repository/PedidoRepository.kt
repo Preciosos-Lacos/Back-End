@@ -1,4 +1,3 @@
-
 package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.Pedido
@@ -339,4 +338,32 @@ ORDER BY DATE(p.data_pedido)
         nativeQuery = true
     )
     fun listarPedidosDoUsuario(idUsuario: Int): List<Map<String, Any>>
+
+    @Query(
+        value = """
+        SELECT 
+            p.id_pedido AS idPedido,
+            p.carrinho AS carrinho,
+            pr.id_produto AS idProduto,
+            pr.nome AS nomeProduto,
+            pr.preco AS precoProduto,
+            m.id_modelo AS idModelo,
+            m.nome_modelo AS nomeModelo,
+            m.foto AS fotoModelo,
+            cd.id_caracteristica_detalhe AS idCaracteristicaDetalhe,
+            cd.descricao AS detalheCaracteristica,
+            c.descricao AS nomeCaracteristica
+        FROM pedido p
+        LEFT JOIN pedido_produto pp ON p.id_pedido = pp.id_pedido
+        LEFT JOIN produto pr ON pr.id_produto = pp.id_produto
+        LEFT JOIN modelo m ON pr.modelo_id_modelo = m.id_modelo
+        LEFT JOIN modelo_caracteristica_detalhe mcd ON mcd.modelo_id_modelo = m.id_modelo
+        LEFT JOIN caracteristica_detalhe cd ON cd.id_caracteristica_detalhe = mcd.caracteristica_id_caracteristica_detalhe
+        LEFT JOIN caracteristica c ON cd.caracteristica_id_caracteristica = c.id_caracteristica
+        WHERE p.usuario_id_usuario = :idUsuario AND p.carrinho = true
+        ORDER BY pr.id_produto
+        """,
+        nativeQuery = true
+    )
+    fun buscarCarrinhoDetalhadoPorUsuario(idUsuario: Int): List<Map<String, Any>>
 }
