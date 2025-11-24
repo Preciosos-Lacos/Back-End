@@ -1,7 +1,6 @@
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.pedido.PedidoDTO
-import com.lacos_preciosos.preciososLacos.dto.pedido.ItemPedidoDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.StatusPagamentoDTO
 import com.lacos_preciosos.preciososLacos.service.PedidoService
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
@@ -155,5 +154,15 @@ class PedidoController(private val pedidoService: PedidoService) {
     fun listarProdutosCarrinho(@PathVariable idUsuario: Int): ResponseEntity<List<com.lacos_preciosos.preciososLacos.dto.produto.ProdutoDTO>> {
         val lista = pedidoService.listarProdutosCarrinho(idUsuario)
         return if (lista.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(lista)
+    }
+
+    @GetMapping("/meus")
+    fun listarMeusPedidos(): ResponseEntity<Any> {
+        return try {
+            val lista = pedidoService.listarMeusPedidos()
+            if (lista.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(lista)
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(401).body(mapOf("erro" to (e.message ?: "Não autenticado")))
+        }
     }
 }

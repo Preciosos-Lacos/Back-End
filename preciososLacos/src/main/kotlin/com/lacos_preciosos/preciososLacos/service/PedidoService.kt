@@ -20,6 +20,10 @@ import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import com.lacos_preciosos.preciososLacos.dto.pedido.ListaPedidosDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.ItemPedidoDetalheDTO
+import com.lacos_preciosos.preciososLacos.dto.pedido.CaracteristicaItemDTO
+import org.springframework.security.core.context.SecurityContextHolder
 
 @Service
 class PedidoService(
@@ -379,6 +383,76 @@ class PedidoService(
             statusPedido = pedido.statusPedido?.status,
             produtos = produtosDTO
         )
+    }
+
+    fun listarMeusPedidos(): List<ListaPedidosDTO> {
+        val authentication = SecurityContextHolder.getContext().authentication
+        val principal = authentication?.principal
+        val username = when (principal) {
+            is org.springframework.security.core.userdetails.UserDetails -> principal.username
+            is String -> principal
+            else -> null
+        } ?: throw RuntimeException("Usuário não autenticado")
+
+        val usuario = usuarioRepository.findByEmail(username)
+        val rows = pedidoRepository.listarPedidosDoUsuario(usuario.idUsuario!!)
+        if (rows.isEmpty()) return emptyList()
+
+        // Agrupamento por pedido -> produto -> caracteristicas
+        val pedidosMap = mutableMapOf<Int, MutableMap<Int, MutableList<Map<String, Any>>>>()
+        rows.forEach { row ->
+            val idPedido = (row["idPedido"] as Number).toInt()
+            val idProduto = (row["idProduto"] as Number).toInt()
+            val pedidoGroup = pedidosMap.getOrPut(idPedido) { mutableMapOf() }
+            val produtoGroup = pedidoGroup.getOrPut(idProduto) { mutableListOf() }
+            produtoGroup.add(row)
+        }
+
+        return pedidosMap.entries.map { (idPedido, produtosMap) ->
+            val primeiraLinhaPedido = produtosMap.values.first().first()
+            val dataPedido = primeiraLinhaPedido["dataPedido"].toString().substring(0, 10) // assume LocalDateTime/String
+            val statusPedido = primeiraLinhaPedido["statusPedido"]?.toString()
+            val statusPagamento = primeiraLinhaPedido["statusPagamento"]?.toString()
+            val totalPedido = (primeiraLinhaPedido["totalPedido"] as Number).toDouble()
+
+            val itens = produtosMap.entries.map { (idProduto, linhasProduto) ->
+                val base = linhasProduto.first()
+                val nomeProduto = base["nomeProduto"]?.toString()
+                val precoProduto = (base["precoProduto"] as? Number)?.toDouble()
+                val nomeModelo = base["nomeModelo"]?.toString()
+                val fotoModeloBytes = base["fotoModelo"] as? ByteArray
+                val imagemBase64 = fotoModeloBytes?.let { java.util.Base64.getEncoder().encodeToString(it) }
+
+                // Características únicas por (nomeCaracteristica, detalheCaracteristica)
+                val caracteristicas = linhasProduto.filter { it["nomeCaracteristica"] != null && it["detalheCaracteristica"] != null }
+                    .map { r ->
+                        CaracteristicaItemDTO(
+                            nome = r["nomeCaracteristica"].toString(),
+                            detalhe = r["detalheCaracteristica"].toString()
+                        )
+                    }
+                    .distinctBy { it.nome + "|" + it.detalhe }
+
+                ItemPedidoDetalheDTO(
+                    idProduto = idProduto,
+                    nome = nomeProduto,
+                    modelo = nomeModelo,
+                    quantidade = 1, // não há quantidade na join table atual
+                    preco = precoProduto,
+                    imagens = imagemBase64?.let { listOf(it) } ?: emptyList(),
+                    caracteristicas = caracteristicas
+                )
+            }
+
+            ListaPedidosDTO(
+                idPedido = idPedido,
+                data = dataPedido,
+                statusPedido = statusPedido,
+                statusPagamento = statusPagamento,
+                total = totalPedido,
+                itens = itens
+            )
+        }.sortedBy { it.idPedido }
     }
 
 }
