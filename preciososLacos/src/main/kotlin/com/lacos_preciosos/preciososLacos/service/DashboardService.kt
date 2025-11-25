@@ -14,6 +14,22 @@ class DashboardService(val pedidoRepository: PedidoRepository) {
         return listaPedidos
     }
 
+    fun listarPedidosPaginados(page: Int, size: Int): Map<String, Any> {
+        val offset = (page - 1) * size
+
+        val pedidos = pedidoRepository.findPedidosPaginados(offset, size)
+        val total = pedidoRepository.countPedidos()
+
+        return mapOf(
+            "pedidos" to pedidos,
+            "total" to total,
+            "page" to page,
+            "size" to size,
+            "totalPages" to (total + size - 1) / size
+        )
+    }
+
+
     fun resumoGeral(): Map<String, Any> {
         val pedidos24hHoje = pedidoRepository.countPedidosUltimas24h()
         val pedidos24hOntem = pedidoRepository.countPedidosOntem()
