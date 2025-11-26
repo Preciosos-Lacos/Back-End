@@ -20,6 +20,19 @@ class DashboardController(private val dashboardService: DashboardService) {
         }
     }
 
+    @GetMapping("/paginado")
+    fun listarPedidosPaginados(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "10") size: Int
+    ): ResponseEntity<Map<String, Any>> {
+        return try {
+            ResponseEntity.ok(dashboardService.listarPedidosPaginados(page, size))
+        } catch (ex: Exception) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+
     @GetMapping("/resumo")
     fun resumoGeral(): ResponseEntity<Map<String, Any>> {
         return try {

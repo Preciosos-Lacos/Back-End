@@ -65,8 +65,7 @@ class CheckoutService(
             val nomeProduto = base["nomeProduto"]?.toString()
             val precoUnitario = (base["precoProduto"] as? Number)?.toDouble() ?: 0.0
             val nomeModelo = base["nomeModelo"]?.toString()
-            val fotoBytes = base["fotoModelo"] as? ByteArray
-            val fotoBase64 = fotoBytes?.let { java.util.Base64.getEncoder().encodeToString(it) }
+            val fotoBase64 = com.lacos_preciosos.preciososLacos.utils.ImageUtils.toBase64(base["fotoModelo"])
 
             val quantidade = linhasProduto.size
             val precoTotal = precoUnitario * quantidade

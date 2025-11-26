@@ -420,8 +420,7 @@ class PedidoService(
                 val nomeProduto = base["nomeProduto"]?.toString()
                 val precoProduto = (base["precoProduto"] as? Number)?.toDouble()
                 val nomeModelo = base["nomeModelo"]?.toString()
-                val fotoModeloBytes = base["fotoModelo"] as? ByteArray
-                val imagemBase64 = fotoModeloBytes?.let { java.util.Base64.getEncoder().encodeToString(it) }
+                val imagemBase64 = com.lacos_preciosos.preciososLacos.utils.ImageUtils.toBase64(base["fotoModelo"])
 
                 // Características únicas por (nomeCaracteristica, detalheCaracteristica)
                 val caracteristicas = linhasProduto.filter { it["nomeCaracteristica"] != null && it["detalheCaracteristica"] != null }
