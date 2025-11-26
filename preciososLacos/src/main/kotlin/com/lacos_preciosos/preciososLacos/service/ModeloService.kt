@@ -1,3 +1,4 @@
+
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.modelo.*
@@ -10,6 +11,34 @@ import java.util.*
 
 @Service
 class ModeloService(private val modeloRepository: ModeloRepository, val usuarioRepository: UsuarioRepository) {
+
+    // Função para catálogo dos mais vendidos ou aleatórios
+    fun modelosCatalogoMaisVendidos(): List<ModeloCatalogoDTO> {
+        val maisVendidos = modeloRepository.findMaisVendidos()
+        val modelos = if (maisVendidos.isNotEmpty()) maisVendidos else modeloRepository.findAleatorios()
+        return modelos.map { modelo ->
+            ModeloCatalogoDTO(
+                idModelo = modelo.idModelo,
+                nome = modelo.nomeModelo,
+                preco = modelo.preco,
+                colecao = modelo.nomeModelo, // ajuste se necessário
+                fotoModelo = modelo.getFotoBase64()
+            )
+        }
+    }
+
+    // Função para catálogo: retorna imagem base64, nome, preco, colecao
+    fun modelosCatalogo(): List<ModeloCatalogoDTO> {
+        return modeloRepository.findAll().map { modelo ->
+            ModeloCatalogoDTO(
+                idModelo = modelo.idModelo,
+                nome = modelo.nomeModelo,
+                preco = modelo.preco,
+                colecao = modelo.nomeModelo, // Se colecao for outro campo, ajuste aqui
+                fotoModelo = modelo.getFotoBase64()
+            )
+        }
+    }
 
     fun getAllModelos(): List<DadosDetalheModelo> {
         return modeloRepository.findAll().map { DadosDetalheModelo(it) }

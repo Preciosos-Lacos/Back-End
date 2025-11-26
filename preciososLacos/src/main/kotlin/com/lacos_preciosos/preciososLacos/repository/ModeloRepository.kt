@@ -1,3 +1,4 @@
+
 package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.Modelo
@@ -10,6 +11,25 @@ import org.springframework.data.jpa.repository.Query
 import java.util.*
 
 interface ModeloRepository : JpaRepository<Modelo, Int> {
+
+    // Buscar os modelos mais vendidos (top 6)
+    @Query("""
+        SELECT m.* FROM modelo m
+        JOIN produto p ON m.id_modelo = p.modelo_id_modelo
+        JOIN pedido_produto pp ON p.id_produto = pp.id_produto
+        GROUP BY m.id_modelo
+        ORDER BY COUNT(pp.id_produto) DESC
+        LIMIT 6
+    """, nativeQuery = true)
+    fun findMaisVendidos(): List<Modelo>
+
+    // Buscar 6 modelos aleatórios
+    @Query("""
+        SELECT * FROM modelo
+        ORDER BY RAND()
+        LIMIT 6
+    """, nativeQuery = true)
+    fun findAleatorios(): List<Modelo>
 
     fun findByNomeModeloContainingIgnoreCase(nomeModelo: String): Optional<Modelo>
 
