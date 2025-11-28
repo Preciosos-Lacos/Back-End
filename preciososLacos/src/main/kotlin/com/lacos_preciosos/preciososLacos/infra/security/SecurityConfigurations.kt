@@ -24,6 +24,8 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
             .cors { }
             .authorizeHttpRequests {
                 // Rotas públicas
+                it.requestMatchers(HttpMethod.GET, "/pedidos").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/pedidos/**").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/modelos").permitAll()

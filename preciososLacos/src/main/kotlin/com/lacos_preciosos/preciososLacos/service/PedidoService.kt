@@ -18,15 +18,18 @@ import com.lacos_preciosos.preciososLacos.repository.StatusPedidoRepository
 import com.lacos_preciosos.preciososLacos.repository.CaracteristicaDetalheRepository
 import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import org.springframework.stereotype.Service
+import org.slf4j.LoggerFactory
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import com.lacos_preciosos.preciososLacos.dto.pedido.ListaPedidosDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.ItemPedidoDetalheDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.CaracteristicaItemDTO
 import org.springframework.security.core.context.SecurityContextHolder
+import org.slf4j.Logger
 
 @Service
 class PedidoService(
+    private val logger: Logger = LoggerFactory.getLogger(PedidoService::class.java),
     val pedidoRepository: PedidoRepository,
     val usuarioRepository: UsuarioRepository,
     val produtoRepository: ProdutoRepository,
@@ -130,6 +133,7 @@ class PedidoService(
         val pedidoOpt = pedidoRepository.findById(id)
         if (pedidoOpt.isEmpty) throw RuntimeException("Pedido não encontrado")
         val pedido = pedidoOpt.get()
+        val statusAntigo = pedido.statusPedido?.status
         // Normaliza para o padrão do banco
         val statusNormalizado = when (novoStatus.uppercase()) {
             "INICIADO" -> "Em Processamento"
@@ -140,6 +144,7 @@ class PedidoService(
         if (statusPedido == null) throw RuntimeException("Status de pedido inválido")
         pedido.statusPedido = statusPedido
         pedidoRepository.save(pedido)
+        logger.info("Pedido $id: statusPedido de '$statusAntigo' para '${pedido.statusPedido?.status}'")
         return detalharPedido(id)!!
     }
 
@@ -159,6 +164,7 @@ class PedidoService(
         if (statusPagamento == null) throw RuntimeException("Status de pagamento inválido")
         pedido.statusPagamento = statusPagamento
         pedidoRepository.save(pedido)
+        logger.info("Pedido $id atualizado para statusPagamento: ${pedido.statusPagamento?.status}")
         return detalharPedido(id)!!
     }
 
@@ -223,13 +229,7 @@ class PedidoService(
         val pedidoOpt = pedidoRepository.findById(id)
         if (pedidoOpt.isEmpty) return null
         val pedido = pedidoOpt.get()
-        val statusPagamentoNormalizado = when (pedido.statusPagamento?.status?.uppercase()) {
-            "APROVADO", "PAGO", "CONCLUIDO" -> "Aprovado"
-            "PENDENTE", "AGUARDANDO" -> "Pendente"
-            "RECUSADO" -> "Recusado"
-            "ESTORNADO" -> "Estornado"
-            else -> pedido.statusPagamento?.status ?: "Aguardando"
-        }
+        val statusPagamentoNormalizado = pedido.statusPagamento?.status ?: "Aguardando"
         return PedidoDTO(
             id = pedido.idPedido,
             numeroPedido = null,
@@ -266,20 +266,7 @@ class PedidoService(
         val hoje = java.time.LocalDate.now()
         return pedidos.map { pedido ->
             val dataEntrega = pedido.dataPedido
-            val statusPag = when (pedido.statusPagamento?.status?.uppercase()) {
-                "APROVADO", "PAGO", "CONCLUIDO" -> "Aprovado"
-                "RECUSADO" -> "Recusado"
-                "ESTORNADO" -> "Estornado"
-                "PENDENTE", "AGUARDANDO" -> {
-                    if (dataEntrega != null && dataEntrega.isBefore(hoje)) {
-                        "Atrasado"
-                    } else {
-                        "Pendente"
-                    }
-                }
-
-                else -> pedido.statusPagamento?.status ?: "Aguardando"
-            }
+            val statusPag = pedido.statusPagamento?.status ?: "Aguardando"
             PedidoDTO(
                 id = pedido.idPedido,
                 numeroPedido = null,

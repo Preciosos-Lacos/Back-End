@@ -32,7 +32,9 @@ class SecurityFilter(
         "/banners/upload",
         "/uploads",
         "/enderecos",
-        "/enderecos/"
+        "/enderecos/",
+        "/pedidos",
+        "/pedidos/"
     )
 
     override fun doFilterInternal(

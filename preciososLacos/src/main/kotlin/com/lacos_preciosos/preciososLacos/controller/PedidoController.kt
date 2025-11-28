@@ -47,6 +47,7 @@ class PedidoController(private val pedidoService: PedidoService) {
             ResponseEntity.status(500).body(mapOf("erro" to "Erro interno inesperado"))
         }
     }
+    
     @GetMapping
     @Tag(name = "Listagem e Busca de Pedido")
     fun listarOuBuscarPedidos(
