@@ -35,6 +35,7 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}/completo").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.PATCH, "/caracteristica-detalhe/cor/{id}").permitAll()
+                it.requestMatchers(HttpMethod.PATCH, "/caracteristica-detalhe/cor/{id}/ativar").permitAll()
                 it.requestMatchers(HttpMethod.DELETE, "/caracteristica-detalhe/cor/{id}").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/api/pedidos").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/api/pedidos/").permitAll()

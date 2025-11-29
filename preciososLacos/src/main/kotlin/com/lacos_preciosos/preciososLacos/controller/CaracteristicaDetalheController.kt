@@ -133,6 +133,16 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
         }
     }
 
+        @PatchMapping("/cor/{id}/ativar")
+        fun ativarCor(@PathVariable id: Int): ResponseEntity<String> {
+            return try {
+                caracteristicaDetalheService.ativarCor(id)
+                ResponseEntity.ok("Cor ativada com sucesso")
+            } catch (ex: Exception) {
+                ResponseEntity.status(404).body("Erro ao ativar cor: ${ex.message}")
+            }
+        }
+
     @GetMapping("/cor")
     fun buscarTodasAsCores(): ResponseEntity<Any> {
         return try {
@@ -167,9 +177,9 @@ class CaracteristicaDetalheController(private val caracteristicaDetalheService: 
     fun excluirCor(@PathVariable id: Int): ResponseEntity<String> {
         return try {
             caracteristicaDetalheService.deleteCor(id)
-            ResponseEntity.ok("Cor excluída com sucesso.")
+            ResponseEntity.ok("Cor desativada com sucesso.")
         } catch (ex: ValidacaoException) {
-            ResponseEntity.status(404).body("Erro ao excluir a cor: ${ex.message}")
+            ResponseEntity.status(404).body("Erro ao desativar a cor: ${ex.message}")
         }
     }
 

@@ -36,6 +36,7 @@ class CaracteristicaDetalheService(
     }
 
     fun saveCor(cadastroCorDTO: CadastroCorDTO): CadastroCorDTO {
+        // Salvar cor, ativo já é true na query do repositório
         caracteristicaDetalheRepository.saveCor(
             cadastroCorDTO.nomeDaCor,
             cadastroCorDTO.hexaDecimal,
@@ -53,7 +54,8 @@ class CaracteristicaDetalheService(
                 criado.descricao,
                 criado.hexaDecimal,
                 criado.preco ?: 0.0,
-                modelos
+                modelos,
+                ativo = 1 // sempre 1 ao cadastrar
             )
         } else {
             // fallback: retornar o DTO enviado (sem id)
@@ -173,18 +175,19 @@ class CaracteristicaDetalheService(
     }
 
     fun getTodasAsCores(): List<CadastroCorDTO> {
-
         val listaCaracteristicas: List<CaracteristicaDetalhe> = caracteristicaDetalheRepository.findAllCores();
         val listaCores = ArrayList<CadastroCorDTO>()
 
         listaCaracteristicas.forEach { cor ->
             val listModels = caracteristicaDetalheRepository.findAllModeloByCor(cor.idCaracteristicaDetalhe)
+            val ativoInt = if (cor.ativo == true) 1 else 0
             val dto = CadastroCorDTO(
                 cor.idCaracteristicaDetalhe,
                 cor.descricao,
                 cor.hexaDecimal,
                 cor.preco ?: 0.0, // previne erro de null
-                listModels
+                listModels,
+                ativo = ativoInt
             )
             listaCores.add(dto)
         }
@@ -205,6 +208,13 @@ class CaracteristicaDetalheService(
             modelos
         )
     }
+    
+        fun ativarCor(id: Int) {
+            val cor = caracteristicaDetalheRepository.findById(id)
+                .orElseThrow { ValidacaoException("Cor com ID $id não encontrada") }
+            cor.ativo = true
+            caracteristicaDetalheRepository.save(cor)
+        }
 
     fun getModeloIdsByCor(idCor: Int): List<Int> {
         return caracteristicaDetalheRepository.findModeloIdsByCaracteristicaId(idCor)
@@ -221,10 +231,12 @@ class CaracteristicaDetalheService(
     }
 
     fun deleteCor(id: Int) {
-        if (!caracteristicaDetalheRepository.existsById(id)) {
+        val cor = caracteristicaDetalheRepository.findById(id).orElse(null)
+        if (cor == null) {
             throw ValidacaoException("Cor com ID $id não encontrada")
         }
-        caracteristicaDetalheRepository.deleteById(id)
+        cor.ativo = false
+        caracteristicaDetalheRepository.save(cor)
     }
 
     fun getAllCaracteristicas(): List<CaracteristicaDetalhe> {
