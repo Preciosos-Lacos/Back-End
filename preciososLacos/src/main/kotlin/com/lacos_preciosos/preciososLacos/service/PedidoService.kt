@@ -37,6 +37,11 @@ class PedidoService(
     val statusPedidoRepository: StatusPedidoRepository,
     val caracteristicaDetalheRepository: CaracteristicaDetalheRepository
 ) {
+
+    fun getUltimoPedidoUsuario(idUsuario: Int): PedidoDTO? {
+        val pedido = pedidoRepository.findTopByUsuarioIdUsuarioOrderByIdPedidoDesc(idUsuario)
+        return if (pedido != null) montarPedidoDTOBasico(pedido) else null
+    }
     fun adicionarProdutoAoCarrinho(idUsuario: Int, idProduto: Int): PedidoDTO {
         val usuario = usuarioRepository.findById(idUsuario).orElseThrow { RuntimeException("Usuário não encontrado") }
         val produto = produtoRepository.findById(idProduto).orElseThrow { RuntimeException("Produto não encontrado") }
