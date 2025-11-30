@@ -24,8 +24,12 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
             .cors { }
             .authorizeHttpRequests {
                 // Rotas públicas
+                // Permitir listagem pública de pedidos e detalhes por id, mas exigir autenticação
+                // para rotas que dependem do usuário autenticado (ex: /pedidos/meus)
                 it.requestMatchers(HttpMethod.GET, "/pedidos").permitAll()
-                it.requestMatchers(HttpMethod.GET, "/pedidos/**").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/pedidos/{id}").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/pedidos/resumo/{idPedido}").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/pedidos/resumo-completo/{idPedido}").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/modelos").permitAll()
@@ -56,7 +60,7 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
                 it.requestMatchers(HttpMethod.DELETE, "/banners/{id}").authenticated()
                 it.requestMatchers(HttpMethod.PATCH, "/banners/{id}/ativo").permitAll()
                 // Todas as outras precisam de autenticação
-                it.anyRequest().permitAll()
+                it.anyRequest().authenticated()
             }
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
