@@ -9,7 +9,6 @@ data class CaracteristicaDetalhe(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @field:NotBlank
     var idCaracteristicaDetalhe: Int? = null,
     
     @field:NotBlank

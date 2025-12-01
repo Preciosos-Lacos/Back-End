@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface PedidoRepository : JpaRepository<Pedido, Int> {
+    fun findTopByUsuarioIdUsuarioOrderByIdPedidoDesc(idUsuario: Int): Pedido?
+
     // Retorna o primeiro pedido marcado como carrinho para um usuário
     fun findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario: Int): Pedido?
 
@@ -56,6 +58,37 @@ interface PedidoRepository : JpaRepository<Pedido, Int> {
         nativeQuery = true
     )
     fun findAllPedidos(): List<Map<String, Any>>
+
+    @Query(
+        value = """
+        SELECT 
+            u.nome_completo AS nomeCliente,
+            u.telefone AS telefone,
+            DATE_FORMAT(p.data_pedido, '%d %b %Y') AS dataPedido,
+            p.total AS total,
+            CASE p.forma_pagamento 
+                WHEN 1 THEN 'Débito'
+                WHEN 2 THEN 'Crédito'
+                ELSE 'Outro'
+            END AS formaPagamento,
+            sp.status AS statusPagamento,
+            st.status AS statusPedido
+        FROM pedido p
+        JOIN usuario u ON p.usuario_id_usuario = u.id_usuario
+        JOIN status_pagamento sp ON p.status_pagamento_id_status_pagamento = sp.id_status_pagamento
+        JOIN status_pedido st ON p.status_pedido_id_status_pedido = st.id_status_pedido
+        ORDER BY p.id_pedido
+        LIMIT :size OFFSET :offset
+    """,
+        nativeQuery = true
+    )
+    fun findPedidosPaginados(offset: Int, size: Int): List<Map<String, Any>>
+
+    @Query(
+        value = """ SELECT COUNT(*) FROM pedido """,
+        nativeQuery = true
+    )
+    fun countPedidos(): Int
 
     @Query(
         value = """
@@ -116,50 +149,60 @@ ORDER BY DATE(p.data_pedido)
     )
     fun countPedidosUltimas24h(): Int
 
-    @Query("""
+    @Query(
+        """
     SELECT COUNT(*) 
     FROM pedido 
     WHERE DATE(data_pedido) = CURDATE() - INTERVAL 1 DAY
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun countPedidosOntem(): Int
 
-    @Query("""
+    @Query(
+        """
     SELECT COUNT(*) 
     FROM pedido 
     WHERE status_pedido_id_status_pedido = (
         SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
     )
     AND DATEDIFF(CURDATE(), data_pedido) <= 7
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun countEntregasProgramadas(): Int
 
-    @Query("""
+    @Query(
+        """
     SELECT COUNT(*) 
     FROM pedido 
     WHERE status_pedido_id_status_pedido = (
         SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
     )
     AND DATEDIFF(CURDATE(), data_pedido) > 7
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun countEntregasAtrasadas(): Int
 
-    @Query("""
+    @Query(
+        """
     SELECT IFNULL(AVG(DATEDIFF(CURDATE(), data_pedido) - 7), 0)
     FROM pedido 
     WHERE status_pedido_id_status_pedido = (
         SELECT id_status_pedido FROM status_pedido WHERE status = 'Em andamento'
     )
     AND DATEDIFF(CURDATE(), data_pedido) > 7
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun atrasoMedioDias(): Double
 
-    @Query("""
+    @Query(
+        """
     SELECT COUNT(*) 
     FROM pedido 
     WHERE status_pagamento_id_status_pagamento = (
         SELECT id_status_pagamento FROM status_pagamento WHERE status = 'Pendente'
     )
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun countPedidosPendentes(): Int
 
     @Query(
@@ -171,11 +214,13 @@ ORDER BY DATE(p.data_pedido)
     )
     fun totalVendasDia(): Double
 
-    @Query("""
+    @Query(
+        """
     SELECT IFNULL(SUM(total), 0)
     FROM pedido 
     WHERE DATE(data_pedido) = CURDATE() - INTERVAL 1 DAY
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun totalVendasOntem(): Double
 
     @Query(
@@ -187,11 +232,13 @@ ORDER BY DATE(p.data_pedido)
     )
     fun ticketMedio(): Double
 
-    @Query("""
+    @Query(
+        """
     SELECT IFNULL(AVG(total), 0)
     FROM pedido 
     WHERE DATE(data_pedido) BETWEEN CURDATE() - INTERVAL 13 DAY AND CURDATE() - INTERVAL 7 DAY
-""", nativeQuery = true)
+""", nativeQuery = true
+    )
     fun ticketMedioSemanaPassada(): Double
 
 
@@ -279,7 +326,7 @@ ORDER BY DATE(p.data_pedido)
     ): List<Map<String, Any>>
 
     @Query(
-    value = """
+        value = """
         SELECT 
             DATE_FORMAT(p.data_pedido, '%a') AS dia_semana,
             SUM(p.total) AS total
@@ -293,7 +340,7 @@ ORDER BY DATE(p.data_pedido)
         GROUP BY DATE_FORMAT(p.data_pedido, '%a')
         ORDER BY MIN(p.data_pedido)
     """,
-    nativeQuery = true
+        nativeQuery = true
     )
     fun listarVendasFiltradas(
         dataInicio: String?,
@@ -342,26 +389,48 @@ ORDER BY DATE(p.data_pedido)
     @Query(
         value = """
         SELECT 
-            p.id_pedido AS idPedido,
-            p.carrinho AS carrinho,
-            pr.id_produto AS idProduto,
-            pr.nome AS nomeProduto,
-            pr.preco AS precoProduto,
-            m.id_modelo AS idModelo,
-            m.nome_modelo AS nomeModelo,
-            m.foto AS fotoModelo,
-            cd.id_caracteristica_detalhe AS idCaracteristicaDetalhe,
-            cd.descricao AS detalheCaracteristica,
-            c.descricao AS nomeCaracteristica
-        FROM pedido p
-        LEFT JOIN pedido_produto pp ON p.id_pedido = pp.id_pedido
-        LEFT JOIN produto pr ON pr.id_produto = pp.id_produto
-        LEFT JOIN modelo m ON pr.modelo_id_modelo = m.id_modelo
-        LEFT JOIN modelo_caracteristica_detalhe mcd ON mcd.modelo_id_modelo = m.id_modelo
-        LEFT JOIN caracteristica_detalhe cd ON cd.id_caracteristica_detalhe = mcd.caracteristica_id_caracteristica_detalhe
-        LEFT JOIN caracteristica c ON cd.caracteristica_id_caracteristica = c.id_caracteristica
-        WHERE p.usuario_id_usuario = :idUsuario AND p.carrinho = true
-        ORDER BY pr.id_produto
+    p.id_pedido AS idPedido,
+    p.carrinho AS carrinho,
+    pr.id_produto AS idProduto,
+    pr.nome AS nomeProduto,
+    pr.preco AS precoProduto,
+    m.id_modelo AS idModelo,
+    m.nome_modelo AS nomeModelo,
+    m.foto AS fotoModelo,
+
+    -- AGRUPA AS CARACTERÍSTICAS EM UM JSON ARRAY
+    CONCAT(
+        '[', 
+        GROUP_CONCAT(
+            DISTINCT CONCAT(
+                '{',
+                    '"idCaracteristicaDetalhe":', cd.id_caracteristica_detalhe, ',',
+                    '"detalheCaracteristica":"', cd.descricao, '",',
+                    '"nomeCaracteristica":"', c.descricao, '"',
+                '}'
+            ) 
+            SEPARATOR ','
+        ),
+        ']'
+    ) AS caracteristicas
+
+FROM pedido p
+LEFT JOIN pedido_produto pp ON p.id_pedido = pp.id_pedido
+LEFT JOIN produto pr ON pr.id_produto = pp.id_produto
+LEFT JOIN modelo m ON pr.modelo_id_modelo = m.id_modelo
+LEFT JOIN modelo_caracteristica_detalhe mcd ON mcd.modelo_id_modelo = m.id_modelo
+LEFT JOIN caracteristica_detalhe cd ON cd.id_caracteristica_detalhe = mcd.caracteristica_id_caracteristica_detalhe
+LEFT JOIN caracteristica c ON cd.caracteristica_id_caracteristica = c.id_caracteristica
+
+WHERE p.usuario_id_usuario = :idUsuario 
+  AND p.carrinho = true
+
+GROUP BY 
+    p.id_pedido,
+    pr.id_produto,
+    m.id_modelo
+
+ORDER BY pr.id_produto
         """,
         nativeQuery = true
     )

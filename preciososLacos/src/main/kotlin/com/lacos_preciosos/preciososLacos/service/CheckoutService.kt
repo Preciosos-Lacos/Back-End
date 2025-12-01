@@ -125,6 +125,7 @@ class CheckoutService(
     @Transactional
     fun finalizarPedido(request: FinalizarPedidoRequest): Map<String, Any?> {
         val idUsuario = request.idUsuario ?: throw IllegalArgumentException("idUsuario é obrigatório")
+        val endereco = enderecoRepository.findByUsuario_IdUsuario(idUsuario).firstOrNull()
         val formaPagamentoInt = request.formaPagamento ?: throw IllegalArgumentException("formaPagamento é obrigatório")
         val frete = request.frete ?: 15.0
 
@@ -134,12 +135,18 @@ class CheckoutService(
         val pedidoCarrinho = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario)
             ?: throw IllegalArgumentException("Nenhum carrinho encontrado para o usuário")
 
-        // Recalcula subtotal com base nos produtos atuais do carrinho
-        val produtos = pedidoCarrinho.produtos ?: emptyList()
-        if (produtos.isEmpty()) {
+        // Recalcula subtotal com base nos dados detalhados do carrinho
+        val rows = pedidoRepository.buscarCarrinhoDetalhadoPorUsuario(idUsuario)
+        println("[DEBUG] buscarCarrinhoDetalhadoPorUsuario retornou ${rows.size} linhas para usuario $idUsuario")
+        rows.forEachIndexed { idx, row ->
+            val preco = row["precoProduto"]
+            println("[DEBUG] Linha $idx: precoProduto = $preco | dados = $row")
+        }
+        if (rows.isEmpty()) {
             throw IllegalArgumentException("Carrinho vazio")
         }
-        val subtotal = produtos.sumOf { it.preco }
+        val subtotal = rows.sumOf { (it["precoProduto"] as? Number)?.toDouble() ?: 0.0 }
+        println("[DEBUG] Subtotal calculado: $subtotal | Frete: $frete | Total: ${subtotal + frete}")
         val total = subtotal + frete
 
         // Determinar status de pagamento pendente e status de pedido em andamento
@@ -175,7 +182,12 @@ class CheckoutService(
             "id" to (pedidoCarrinho.idPedido ?: 0),
             "total" to total,
             "statusPagamento" to pedidoCarrinho.statusPagamento?.status,
-            "statusPedido" to pedidoCarrinho.statusPedido?.status
+            "statusPedido" to pedidoCarrinho.statusPedido?.status,
+            "formaPagamento" to pedidoCarrinho.formaPagamento?.tipo,
+            "formaEnvio" to "Enviado pela fornecedora Preciosos Laços",
+            "cepEntrega" to (endereco?.cep ?: "Não especificado"),
+            "dataPedido" to pedidoCarrinho.dataPedido?.toString(),
+            "prazoEntrega" to "5 a 7 dias úteis"
         )
     }
 }

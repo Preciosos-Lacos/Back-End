@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/pedidos")
 class PedidoController(private val pedidoService: PedidoService) {
+    @GetMapping("/ultimo/{idUsuario}")
+    fun getUltimoPedidoUsuario(@PathVariable idUsuario: Int): ResponseEntity<PedidoDTO> {
+        val pedido = pedidoService.getUltimoPedidoUsuario(idUsuario)
+        return if (pedido != null) ResponseEntity.ok(pedido) else ResponseEntity.notFound().build()
+    }
 
     @PostMapping
     @Tag(name = "Cadastro de Pedido")
@@ -47,6 +52,7 @@ class PedidoController(private val pedidoService: PedidoService) {
             ResponseEntity.status(500).body(mapOf("erro" to "Erro interno inesperado"))
         }
     }
+    
     @GetMapping
     @Tag(name = "Listagem e Busca de Pedido")
     fun listarOuBuscarPedidos(

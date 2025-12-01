@@ -1,3 +1,4 @@
+
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
@@ -15,15 +16,35 @@ import org.springframework.web.util.UriComponentsBuilder
 @RequestMapping("/modelos")
 class ModeloController(private val modeloService: ModeloService) {
 
+    @GetMapping("/catalogo/maisVendidos")
+    @Tag(name = "Catálogo de modelos mais vendidos")
+    fun modelosCatalogoMaisVendidos(): ResponseEntity<List<ModeloCatalogoDTO>> {
+        val lista = modeloService.modelosCatalogoMaisVendidos()
+        return if (lista.isEmpty()) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.ok(lista)
+        }
+    }
+
+    @GetMapping("/catalogo")
+    @Tag(name = "Catálogo de modelos")
+    fun modelosCatalogo(): ResponseEntity<List<ModeloCatalogoDTO>> {
+        val lista = modeloService.modelosCatalogo()
+        return if (lista.isEmpty()) {
+            ResponseEntity.noContent().build()
+        } else {
+            ResponseEntity.ok(lista)
+        }
+    }
     @PostMapping
     @Tag(name = "Cadastro de Modelo")
     fun createModelo(
         @RequestBody @Valid criacaoModeloDTO: CadastroModeloDTO,
         uriBuilder: UriComponentsBuilder
     ): ResponseEntity<DadosDetalheModelo> {
-
-        var modelo = modeloService.createModelo(criacaoModeloDTO)
-        var uri = uriBuilder.path("/modelos/{id}").buildAndExpand(modelo.idModelo).toUri()
+        val modelo = modeloService.createModelo(criacaoModeloDTO)
+        val uri = uriBuilder.path("/modelos/{id}").buildAndExpand(modelo.idModelo).toUri()
         return ResponseEntity.created(uri).body(modelo)
     }
 

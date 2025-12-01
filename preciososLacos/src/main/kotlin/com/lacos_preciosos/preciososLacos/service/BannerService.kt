@@ -52,6 +52,9 @@ class BannerService(val bannerRepository: BannerRepository) {
     }
 
     fun ativarBanner(id: Long, ativo: Boolean): BannerDTO? {
+        if (ativo) {
+            bannerRepository.desativarTodos()
+        }
         val banner = bannerRepository.findById(id).orElse(null) ?: return null
         banner.ativo = ativo
         banner.updatedAt = java.time.LocalDateTime.now()

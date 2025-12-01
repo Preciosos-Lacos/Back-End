@@ -17,23 +17,23 @@ class SecurityFilter(
     private val usuarioRepository: UsuarioRepository
 ) : OncePerRequestFilter() {
 
-    private val rotasPublicas = listOf(
-        "/usuarios/login",
-        "/usuarios",
-        "/caracteristica-detalhe/cor",
-        "/modelos",
-        "/corModelo",
-        "/dashboard",
-        "/produtos",
-        "/produtos/promocoes",
-        "/produtos/destaques",
-        "/banners",
-        "/banners/ativo/home",
-        "/banners/upload",
-        "/uploads",
-        "/enderecos",
-        "/enderecos/"
-    )
+        private val rotasPublicas = listOf(
+            "/usuarios/login",
+            "/usuarios",
+            "/caracteristica-detalhe/cor",
+            "/modelos",
+            "/corModelo",
+            "/dashboard",
+            "/produtos",
+            "/produtos/promocoes",
+            "/produtos/destaques",
+            "/banners",
+            "/banners/ativo/home",
+            "/banners/upload",
+            "/uploads",
+            "/enderecos",
+            "/enderecos/"
+        )
 
     override fun doFilterInternal(
         request: HttpServletRequest,
