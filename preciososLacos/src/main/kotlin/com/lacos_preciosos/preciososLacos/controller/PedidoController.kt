@@ -137,6 +137,20 @@ class PedidoController(private val pedidoService: PedidoService) {
             ResponseEntity.status(404).build()
         }
     }
+    
+    // Decrementa uma unidade do produto no carrinho (se existir)
+    @PostMapping("/carrinho/decrement")
+    fun decrementarUmaUnidade(@RequestBody body: Map<String, Int>): ResponseEntity<PedidoDTO> {
+        val idUsuario = body["idUsuario"] ?: return ResponseEntity.badRequest().build()
+        val idProduto = body["idProduto"] ?: return ResponseEntity.badRequest().build()
+        return try {
+            val dto = pedidoService.removerUmaUnidadeDoCarrinho(idUsuario, idProduto)
+            if (dto == null) ResponseEntity.noContent().build() else ResponseEntity.ok(dto)
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(404).build()
+
+        }
+    }
 
     @GetMapping("/carrinho/{idUsuario}")
     fun obterCarrinho(@PathVariable idUsuario: Int): ResponseEntity<PedidoDTO> {

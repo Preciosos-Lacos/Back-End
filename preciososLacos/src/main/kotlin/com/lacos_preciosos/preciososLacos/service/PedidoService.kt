@@ -76,6 +76,21 @@ class PedidoService(
         return obterCarrinhoDoUsuario(idUsuario)
     }
 
+    // Remove apenas uma unidade do produto no carrinho (se existir múltiplas entradas)
+    fun removerUmaUnidadeDoCarrinho(idUsuario: Int, idProduto: Int): PedidoDTO? {
+        val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return null
+        val listaAtual = pedido.produtos ?: emptyList()
+        val mutable = listaAtual.toMutableList()
+        val index = mutable.indexOfFirst { it.idProduto == idProduto }
+        if (index >= 0) {
+            mutable.removeAt(index)
+            pedido.produtos = mutable.toList()
+            pedido.total = pedido.produtos?.sumOf { it.preco ?: 0.0 } ?: 0.0
+            pedidoRepository.save(pedido)
+        }
+        return obterCarrinhoDoUsuario(idUsuario)
+    }
+
     fun listarProdutosCarrinho(idUsuario: Int): List<ProdutoDTO> {
         val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return emptyList()
         return pedido.produtos?.map { produto ->
