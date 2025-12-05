@@ -63,4 +63,18 @@ class UsuarioService(
 
         return updates
     }
+
+    fun updateFoto(id: Int, foto: String): String {
+        var existe = usuarioRepository.findById(id)
+
+        if (existe.isEmpty) {
+            throw ValidacaoException("Modelo não encontrado")
+        } else {
+            println("Foto: " + foto)
+            val fotoBytes = java.util.Base64.getDecoder().decode(foto)
+            usuarioRepository.updateFoto(id, fotoBytes)
+            return "Atualizado";
+        }
+    }
+
 }

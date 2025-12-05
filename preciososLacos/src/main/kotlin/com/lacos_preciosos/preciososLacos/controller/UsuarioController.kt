@@ -1,20 +1,24 @@
 package com.lacos_preciosos.preciososLacos.controller
 
+import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.AtualizarSenhaDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.AutenticacaoUsuarioDTO
 import com.lacos_preciosos.preciososLacos.dto.usuario.CadastroUsuarioDTO
+import com.lacos_preciosos.preciososLacos.dto.usuario.UsuarioDTO
 import com.lacos_preciosos.preciososLacos.model.Usuario
 import com.lacos_preciosos.preciososLacos.repository.UsuarioRepository
 import com.lacos_preciosos.preciososLacos.service.TokenService
 import com.lacos_preciosos.preciososLacos.service.UsuarioService
+import com.lacos_preciosos.preciososLacos.validacao.ValidacaoException
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
-import java.util.Optional
+import java.util.Base64
 
 @RestController
 @RequestMapping("/usuarios")
@@ -50,9 +54,25 @@ class UsuarioController(
     //Listando um usuário do banco de dados
     @GetMapping("/{id}")
     @Tag(name = "Listagem de usuário")
-    fun listarUsuariosporId(@PathVariable id: Int): ResponseEntity<Optional<Usuario?>?> {
-        val usuarios = repositorio.findById(id);
-        return ResponseEntity.status(200).body(usuarios)
+    fun listarUsuariosporId(@PathVariable id: Int): ResponseEntity<UsuarioDTO> {
+        val usuario = repositorio.findById(id)
+
+        if (usuario.isEmpty) return ResponseEntity.notFound().build()
+
+        val u = usuario.get()
+
+        val fotoBase64 = u.fotoPerfil?.let { Base64.getEncoder().encodeToString(it) }
+
+        val dto = UsuarioDTO(
+            idUsuario = u.idUsuario,
+            nomeCompleto = u.nomeCompleto,
+            login = u.login,
+            telefone = u.telefone,
+            cpf = u.cpf,
+            foto = fotoBase64
+        )
+
+        return ResponseEntity.ok(dto)
     }
 
     @GetMapping("/login/{login}")
@@ -65,7 +85,6 @@ class UsuarioController(
         else
             ResponseEntity.status(404).body(null)) as ResponseEntity<Usuario?>
     }
-
 
 
     @GetMapping("/pesquisar")
@@ -101,16 +120,29 @@ class UsuarioController(
         }
     }
 
+    @PatchMapping("/{id}/foto")
+    @Tag(name = "Atualização de foto")
+    fun updateFoto(
+        @PathVariable id: Int,
+        @RequestBody @Valid imagemDTO: ImagemDTO
+    ): ResponseEntity<Any> {
+        try {
+            return ResponseEntity.ok(usuarioService.updateFoto(id, imagemDTO.imagemBase64))
+        } catch (ex: ValidacaoException) {
+            return ResponseEntity.notFound().build()
+        }
+    }
+
     @PutMapping("/atualizar/{login}")
     fun updateDados(
         @RequestParam(required = false) nome: String?, @RequestParam(required = false) telefone: String?,
         @RequestParam(required = false) cpf: String?, @RequestParam(required = false) email: String?,
-        @RequestParam(required = false) senha: String?, @PathVariable login: String): ResponseEntity<Int?> {
+        @RequestParam(required = false) senha: String?, @PathVariable login: String
+    ): ResponseEntity<Int?> {
 
-        return try{
-            ResponseEntity.ok(usuarioService.updateDados(nome, telefone, cpf,  email, senha, login))
-        }
-        catch (ex: Exception){
+        return try {
+            ResponseEntity.ok(usuarioService.updateDados(nome, telefone, cpf, email, senha, login))
+        } catch (ex: Exception) {
             ResponseEntity.notFound().build()
         }
     }
