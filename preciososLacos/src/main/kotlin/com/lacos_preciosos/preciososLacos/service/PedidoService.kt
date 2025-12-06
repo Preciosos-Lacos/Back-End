@@ -102,6 +102,24 @@ class PedidoService(
     fun listarProdutosCarrinho(idUsuario: Int): List<ProdutoDTO> {
         val pedido = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario) ?: return emptyList()
         return pedido.produtos?.map { produto ->
+            // Resolve corDescricao / acabamentoDescricao: produto.cor/acabamento pode ser o texto
+            // ou um ID (string com número). Se for ID, buscamos a descrição em caracteristicaDetalhe.
+            fun resolveDescricao(valor: String?): String? {
+                if (valor == null) return null
+                val id = valor.toIntOrNull()
+                return if (id != null) {
+                    try {
+                        val det = caracteristicaDetalheRepository.findById(id)
+                        if (det.isPresent) det.get().descricao else valor
+                    } catch (e: Exception) {
+                        // fallback para o valor bruto se não encontrado
+                        valor
+                    }
+                } else {
+                    valor
+                }
+            }
+
             ProdutoDTO(
                 idProduto = produto.idProduto,
                 idModelo = produto.modelo?.idModelo,
@@ -111,9 +129,9 @@ class PedidoService(
                 tipoLaco = produto.tipoLaco,
                 material = produto.material,
                 cor = produto.cor,
-                corDescricao = produto.cor,
+                corDescricao = resolveDescricao(produto.cor),
                 acabamento = produto.acabamento,
-                acabamentoDescricao = produto.acabamento,
+                acabamentoDescricao = resolveDescricao(produto.acabamento),
                 foto = produto.modelo?.getFotoBase64(),
                 preco = produto.preco
             )
@@ -361,6 +379,21 @@ class PedidoService(
         val pedido = pedidoRepository.findById(idPedido).orElse(null) ?: return null
 
         val produtosDTO: List<ProdutoDTO> = pedido.produtos?.map { produto ->
+            fun resolveDescricao(valor: String?): String? {
+                if (valor == null) return null
+                val id = valor.toIntOrNull()
+                return if (id != null) {
+                    try {
+                        val det = caracteristicaDetalheRepository.findById(id)
+                        if (det.isPresent) det.get().descricao else valor
+                    } catch (e: Exception) {
+                        valor
+                    }
+                } else {
+                    valor
+                }
+            }
+
             ProdutoDTO(
                 idProduto = produto.idProduto,
                 idModelo = produto.modelo?.idModelo,
@@ -370,9 +403,9 @@ class PedidoService(
                 tipoLaco = produto.tipoLaco,
                 material = produto.material,
                 cor = produto.cor,
-                corDescricao = produto.cor,
+                corDescricao = resolveDescricao(produto.cor),
                 acabamento = produto.acabamento,
-                acabamentoDescricao = produto.acabamento,
+                acabamentoDescricao = resolveDescricao(produto.acabamento),
                 foto = produto.modelo?.getFotoBase64(),
                 preco = produto.preco
             )
