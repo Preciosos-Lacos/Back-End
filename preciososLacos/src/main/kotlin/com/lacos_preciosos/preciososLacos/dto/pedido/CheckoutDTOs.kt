@@ -1,5 +1,7 @@
 package com.lacos_preciosos.preciososLacos.dto.pedido
 
+// NOTE: Avoid top-level import to prevent ordering issues; use fully-qualified type for usuario field.
+
 // DTO para característica de um item no checkout
 
 data class CheckoutCaracteristicaDTO(
@@ -9,14 +11,19 @@ data class CheckoutCaracteristicaDTO(
 
 // DTO para o endereço no checkout (espelha o modelo Endereco, mas só com campos necessários)
 
+// NOTE: Adicionado campos idEndereco e usuario para atender ao contrato do front-end.
+// Campos novos: idEndereco: Int?, usuario: com.lacos_preciosos.preciososLacos.dto.usuario.UsuarioResponseDTO?
+
 data class CheckoutEnderecoDTO(
-    val logradouro: String?,
-    val numero: Int?,
-    val complemento: String?,
-    val bairro: String?,
-    val localidade: String?,
-    val uf: String?,
-    val cep: String?
+    val idEndereco: Int? = null,
+    val cep: String? = null,
+    val logradouro: String? = null,
+    val bairro: String? = null,
+    val numero: Int? = null,
+    val complemento: String? = null,
+    val localidade: String? = null,
+    val uf: String? = null,
+    val usuario: com.lacos_preciosos.preciososLacos.dto.usuario.UsuarioResponseDTO? = null
 )
 
 // DTO para item de produto no checkout

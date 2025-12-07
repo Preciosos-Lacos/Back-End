@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
+// Import para mapear usuario para DTO de resposta
+import com.lacos_preciosos.preciososLacos.dto.usuario.UsuarioResponseDTO
+
 @Service
 class CheckoutService(
     private val pedidoRepository: PedidoRepository,
@@ -101,15 +104,30 @@ class CheckoutService(
         val endereco = enderecoRepository.findByUsuario_IdUsuario(idUsuario).firstOrNull()
         println("[DEBUG] Endereco encontrado: $endereco")
         val enderecoDTO = endereco?.let {
-            println("[DEBUG] CEP do endereco: ${it.cep}")
+            println("[DEBUG] CEP do endereco: ${'$'}{it.cep}")
+            println("[DEBUG] Endereco.idEndereco = ${'$'}{it.idEndereco} | usuario.idUsuario = ${'$'}{it.usuario?.idUsuario}")
             CheckoutEnderecoDTO(
+                idEndereco = it.idEndereco,
                 logradouro = it.logradouro,
                 numero = it.numero,
                 complemento = it.complemento,
                 bairro = it.bairro,
                 localidade = it.localidade,
                 uf = it.uf,
-                cep = it.cep
+                cep = it.cep,
+                usuario = it.usuario?.let { u ->
+                    UsuarioResponseDTO(
+                        idUsuario = u.idUsuario,
+                        nomeCompleto = u.nomeCompleto,
+                        login = u.login,
+                        senha = null,
+                        cpf = u.cpf,
+                        telefone = u.telefone,
+                        role = u.role,
+                        data_cadastro = u.data_cadastro.toString(),
+                        fotoPerfil = u.getFotoPerfilBase64()
+                    )
+                }
             )
         }
 

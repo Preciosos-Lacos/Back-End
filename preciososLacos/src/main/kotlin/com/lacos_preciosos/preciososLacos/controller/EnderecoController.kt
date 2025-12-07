@@ -46,9 +46,33 @@ class EnderecoController(private val enderecoService: EnderecoService) {
     fun updateEndereco(
         @PathVariable id: Int,
         @RequestBody @Valid dto: CadastroEnderecoDTO
-    ): ResponseEntity<Endereco> {
+    ): ResponseEntity<com.lacos_preciosos.preciososLacos.dto.endereco.EnderecoResponseDTO> {
         return try {
-            ResponseEntity.ok(enderecoService.updateEndereco(id, dto))
+            val updated = enderecoService.updateEndereco(id, dto)
+            val dtoResp = com.lacos_preciosos.preciososLacos.dto.endereco.EnderecoResponseDTO(
+                idEndereco = updated.idEndereco,
+                cep = updated.cep,
+                logradouro = updated.logradouro,
+                bairro = updated.bairro,
+                numero = updated.numero,
+                complemento = updated.complemento,
+                localidade = updated.localidade ?: "",
+                uf = updated.uf ?: "",
+                usuario = updated.usuario?.let { u ->
+                    com.lacos_preciosos.preciososLacos.dto.usuario.UsuarioResponseDTO(
+                        idUsuario = u.idUsuario,
+                        nomeCompleto = u.nomeCompleto,
+                        login = u.login,
+                        senha = null,
+                        cpf = u.cpf,
+                        telefone = u.telefone,
+                        role = u.role,
+                        data_cadastro = u.data_cadastro.toString(),
+                        fotoPerfil = u.getFotoPerfilBase64()
+                    )
+                }
+            )
+            ResponseEntity.ok(dtoResp)
         } catch (ex: ValidacaoException) {
             ResponseEntity.notFound().build()
         }
