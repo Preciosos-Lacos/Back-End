@@ -21,6 +21,14 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
 
     @Transactional
     @Modifying
+    @Query(
+        value = "INSERT INTO caracteristica_detalhe (descricao, hexa_decimal, preco, ativo, caracteristica_id_caracteristica) VALUES (:nomeDaCor, :hexaDecimal, :preco, :ativo, 1)",
+        nativeQuery = true
+    )
+    fun saveCor(nomeDaCor: String?, hexaDecimal: String?, preco: Double, ativo: Boolean)
+
+    @Transactional
+    @Modifying
     @Query("UPDATE caracteristica_detalhe SET ativo = :ativo WHERE id_caracteristica_detalhe = :id", nativeQuery = true)
     fun updateCorAtivo(id: Int, ativo: Boolean)
 
