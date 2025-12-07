@@ -36,6 +36,8 @@ class BannerController(val bannerService: BannerService) {
 
     @DeleteMapping("/{id}")
     fun removerBanner(@PathVariable id: Long): ResponseEntity<Void> {
+        val auth = org.springframework.security.core.context.SecurityContextHolder.getContext().authentication
+        println("[BANNER] Tentando excluir banner id=$id pelo usuário: ${auth?.name} | Authorities: ${auth?.authorities}")
         bannerService.removerBanner(id)
         return ResponseEntity.noContent().build()
     }

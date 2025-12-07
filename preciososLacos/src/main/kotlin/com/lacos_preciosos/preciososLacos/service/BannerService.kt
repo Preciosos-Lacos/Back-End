@@ -19,6 +19,8 @@ class BannerService(val bannerRepository: BannerRepository) {
     }
 
     fun criarBanner(dto: BannerDTO): BannerDTO {
+        // Desativa todos os outros banners
+        bannerRepository.desativarTodos()
         // Define a ordem automaticamente: maior ordem + 1
         val maiorOrdem = bannerRepository.findAll().maxOfOrNull { it.ordem } ?: 0
         val novaOrdem = maiorOrdem + 1
@@ -27,7 +29,7 @@ class BannerService(val bannerRepository: BannerRepository) {
             imagemUrl = dto.imagemUrl,
             linkDestino = dto.linkDestino,
             ordem = novaOrdem,
-            ativo = dto.ativo,
+            ativo = true, // Sempre ativo ao criar
             dataInicio = dto.dataInicio,
             dataFim = dto.dataFim
         )

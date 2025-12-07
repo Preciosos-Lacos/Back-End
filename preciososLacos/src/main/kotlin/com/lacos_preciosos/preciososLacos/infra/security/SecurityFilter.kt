@@ -41,33 +41,48 @@ class SecurityFilter(
         filterChain: FilterChain
     ) {
         val path = request.servletPath
-
         // Permitir OPTIONS (CORS preflight)
         if (request.method == HttpMethod.OPTIONS.name()) {
             filterChain.doFilter(request, response)
             return
         }
 
-        // Ignorar JWT para rotas públicas
-        if (rotasPublicas.any { path.startsWith(it) }) {
+        // Ignorar JWT apenas para rotas públicas exatas
+        // Permitir acesso público a qualquer arquivo dentro de /uploads
+        if (path.startsWith("/uploads")) {
+            println("[SECURITY] Arquivo público acessado: $path")
+            filterChain.doFilter(request, response)
+            return
+        }
+        if (rotasPublicas.any { path == it }) {
+            println("[SECURITY] Rota pública acessada: $path")
             filterChain.doFilter(request, response)
             return
         }
 
         val tokenJWT = recuperarToken(request)
         if (tokenJWT == null) {
+                println("[SECURITY] Token ausente ou inválido para path: $path")
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Token ausente")
             return
         }
 
         val subject = tokenService.getSubject(tokenJWT)
+            println("[SECURITY] Subject extraído do token: $subject")
         val usuario = usuarioRepository.findByLogin(subject)
+            println("[SECURITY] Usuário encontrado: $usuario para login: $subject")
 
         if (usuario != null) {
+            if (usuario is com.lacos_preciosos.preciososLacos.model.Usuario) {
+                println("[SECURITY] Authorities do usuário: ${usuario.role} -> ${usuario.getAuthorities()}")
+            } else {
+                println("[SECURITY] Authorities do usuário: (tipo UserDetails genérico) -> ${usuario.authorities}")
+            }
             val authentication =
                 UsernamePasswordAuthenticationToken(usuario, null, usuario.authorities)
             SecurityContextHolder.getContext().authentication = authentication
         } else {
+                println("[SECURITY] Usuário não encontrado para login: $subject")
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Usuário inválido")
             return
         }
