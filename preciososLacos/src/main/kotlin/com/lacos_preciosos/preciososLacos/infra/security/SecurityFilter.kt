@@ -54,6 +54,12 @@ class SecurityFilter(
             filterChain.doFilter(request, response)
             return
         }
+
+        if (rotasPublicas.any { path.startsWith(it) }) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         if (rotasPublicas.any { path == it }) {
             println("[SECURITY] Rota pública acessada: $path")
             filterChain.doFilter(request, response)
