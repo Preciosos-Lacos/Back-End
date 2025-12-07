@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class PedidoResumoCompletoDTO(
     val idPedido: Long,
+    val idUsuario: Int?,
     val nomeCliente: String?,
     val telefone: String?,
     val dataPedido: LocalDate?,
@@ -16,5 +17,7 @@ data class PedidoResumoCompletoDTO(
     val formaPagamento: TipoPagamento?,
     val statusPagamento: String?,
     val statusPedido: String?,
-    val produtos: List<ProdutoDTO>
+    val produtos: List<ProdutoDTO>,
+    val cepEntrega: String?,
+    val formaEnvio: String?
 )

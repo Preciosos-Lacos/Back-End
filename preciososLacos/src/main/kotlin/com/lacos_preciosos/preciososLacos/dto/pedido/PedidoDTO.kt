@@ -13,7 +13,7 @@ data class PedidoDTO(
     val itens: List<ItemPedidoDTO>,
     val modelos: List<String>?,
     val tamanho: String?,
-    val cores: String?
+    val cores: String?,
 )
 
 data class ClienteResumoDTO(

@@ -36,7 +36,13 @@ data class Pedido(
 
     var produtos: List<Produto>? = null,
 
-    var carrinho: Boolean = true
+    var carrinho: Boolean = true,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "endereco_id_endereco")
+    var endereco: Endereco? = null,
+
+    var formaEnvio: String? = null
 ) {
     constructor(dto: CadastroPedidoDTO) : this(
         null,
@@ -47,6 +53,8 @@ data class Pedido(
         null,
         null,
         null,
-        dto.carrinho
+        dto.carrinho,
+        null,
+        null,
     )
 }

@@ -12,6 +12,16 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/pedidos")
 class PedidoController(private val pedidoService: PedidoService) {
+        @PostMapping("/carrinho/multiplos")
+        fun adicionarProdutosAoCarrinho(@RequestBody request: com.lacos_preciosos.preciososLacos.dto.pedido.AdicionarProdutosCarrinhoRequest): ResponseEntity<PedidoDTO> {
+            return try {
+                val pedido = pedidoService.adicionarProdutosAoCarrinho(request)
+                ResponseEntity.ok(pedido)
+            } catch (e: Exception) {
+                ResponseEntity.status(400).body(null)
+            }
+        }
+        
     @GetMapping("/ultimo/{idUsuario}")
     fun getUltimoPedidoUsuario(@PathVariable idUsuario: Int): ResponseEntity<PedidoDTO> {
         val pedido = pedidoService.getUltimoPedidoUsuario(idUsuario)

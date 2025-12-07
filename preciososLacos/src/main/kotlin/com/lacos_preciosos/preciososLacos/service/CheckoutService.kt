@@ -32,6 +32,7 @@ class CheckoutService(
     fun obterCheckout(idUsuario: Int): CheckoutResumoDTO {
         val usuario: Usuario = usuarioRepository.findById(idUsuario)
             .orElseThrow { IllegalArgumentException("Usuário não encontrado") }
+        println("[DEBUG] Usuario encontrado: $usuario")
 
         // Garante que exista um pedido carrinho=true para o usuário
         var pedidoCarrinho = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(idUsuario)
@@ -98,7 +99,9 @@ class CheckoutService(
 
         // Endereço principal (primeiro endereço do usuário, se existir)
         val endereco = enderecoRepository.findByUsuario_IdUsuario(idUsuario).firstOrNull()
+        println("[DEBUG] Endereco encontrado: $endereco")
         val enderecoDTO = endereco?.let {
+            println("[DEBUG] CEP do endereco: ${it.cep}")
             CheckoutEnderecoDTO(
                 logradouro = it.logradouro,
                 numero = it.numero,
@@ -110,7 +113,7 @@ class CheckoutService(
             )
         }
 
-        return CheckoutResumoDTO(
+        val checkoutResumo = CheckoutResumoDTO(
             idPedido = pedidoCarrinho.idPedido!!,
             carrinho = true,
             produtos = itens,
@@ -120,12 +123,32 @@ class CheckoutService(
             total = total,
             formasPagamento = formasPagamentoFixas
         )
+        println("[DEBUG] CheckoutResumoDTO gerado: $checkoutResumo")
+        return checkoutResumo
     }
 
     @Transactional
     fun finalizarPedido(request: FinalizarPedidoRequest): Map<String, Any?> {
+            // Definir forma de envio padrão
+            val formaEnvioPadrao = "Correio"
         val idUsuario = request.idUsuario ?: throw IllegalArgumentException("idUsuario é obrigatório")
-        val endereco = enderecoRepository.findByUsuario_IdUsuario(idUsuario).firstOrNull()
+        val idEndereco = request.idEndereco
+        val cepEnviado = request.cep
+        val endereco = if (idEndereco != null) {
+            val end = enderecoRepository.findById(idEndereco).orElse(null)
+            if (end != null && cepEnviado != null && cepEnviado.isNotBlank()) {
+                end.cep = cepEnviado
+                enderecoRepository.save(end)
+            }
+            end
+        } else {
+            val end = enderecoRepository.findByUsuario_IdUsuario(idUsuario).firstOrNull()
+            if (end != null && cepEnviado != null && cepEnviado.isNotBlank()) {
+                end.cep = cepEnviado
+                enderecoRepository.save(end)
+            }
+            end
+        }
         val formaPagamentoInt = request.formaPagamento ?: throw IllegalArgumentException("formaPagamento é obrigatório")
         val frete = request.frete ?: 15.0
 
@@ -161,6 +184,8 @@ class CheckoutService(
         pedidoCarrinho.statusPagamento = statusPagamentoPendente
         pedidoCarrinho.statusPedido = statusPedidoEmAndamento
         pedidoCarrinho.formaPagamento = TipoPagamento.getTipoPagamento(formaPagamentoInt.toString())
+            pedidoCarrinho.formaEnvio = formaEnvioPadrao
+        pedidoCarrinho.endereco = endereco
 
         pedidoRepository.save(pedidoCarrinho)
 

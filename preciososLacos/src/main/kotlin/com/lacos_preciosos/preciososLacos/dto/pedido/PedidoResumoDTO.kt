@@ -5,5 +5,5 @@ data class PedidoResumoDTO(
     val total: String,
     val formaPagamento: String,
     val formaEnvio: String,
-    val cepEntrega: String
+    // val cepEntrega removido: agora o endereço é obtido via relacionamento
 )

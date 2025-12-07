@@ -26,6 +26,7 @@ import com.lacos_preciosos.preciososLacos.dto.pedido.ItemPedidoDetalheDTO
 import com.lacos_preciosos.preciososLacos.dto.pedido.CaracteristicaItemDTO
 import org.springframework.security.core.context.SecurityContextHolder
 import org.slf4j.Logger
+import com.lacos_preciosos.preciososLacos.dto.pedido.AdicionarProdutosCarrinhoRequest
 
 @Service
 class PedidoService(
@@ -52,17 +53,18 @@ class PedidoService(
             pedidoCarrinho.total = lista.sumOf { it.preco ?: 0.0 }
             pedidoCarrinho
         } else {
-            val novo = Pedido(
-                idPedido = null,
-                dataPedido = java.time.LocalDate.now(),
-                total = produto.preco ?: 0.0,
-                formaPagamento = null,
-                usuario = usuario,
-                statusPedido = null,
-                statusPagamento = null,
-                produtos = listOf(produto),
-                carrinho = true
-            )
+                val novo = Pedido(
+                    idPedido = null,
+                    dataPedido = java.time.LocalDate.now(),
+                    total = produto.preco ?: 0.0,
+                    formaPagamento = null,
+                    usuario = usuario,
+                    statusPedido = null,
+                    statusPagamento = null,
+                    produtos = listOf(produto),
+                    carrinho = true,
+                    formaEnvio = "Correios"
+                )
             novo
         }
         pedidoRepository.save(pedido)
@@ -134,7 +136,7 @@ class PedidoService(
                 telefone = pedido.usuario?.telefone,
                 email = pedido.usuario?.login
             ),
-            enderecoEntrega = null,
+            enderecoEntrega = pedido.endereco?.cep,
             itens = pedido.produtos?.map { p ->
                 ItemPedidoDTO(
                     sku = p.idProduto?.toString(),
@@ -145,7 +147,7 @@ class PedidoService(
             } ?: emptyList(),
             modelos = null,
             tamanho = null,
-            cores = null
+            cores = null,
         )
     }
 
@@ -189,60 +191,8 @@ class PedidoService(
     }
 
     fun criarPedido(pedidoDTO: PedidoDTO): PedidoDTO {
-        val usuarioOptional = usuarioRepository.findById(pedidoDTO.id ?: 0)
-        if (usuarioOptional.isEmpty) {
-            throw RuntimeException("Usuário com esse ID não foi encontrado")
-        }
-        val produtos: List<Produto> = pedidoDTO.itens.map { item ->
-            produtoRepository.findById(item.sku?.toIntOrNull() ?: 0)
-                .orElseThrow { RuntimeException("Produto com SKU ${item.sku} não foi encontrado") }
-        }
-        val pedido = Pedido(
-            idPedido = null,
-            dataPedido = java.time.LocalDate.now(),
-            total = pedidoDTO.valorTotal,
-            formaPagamento = null,
-            usuario = usuarioOptional.get(),
-            statusPedido = null,
-            statusPagamento = null,
-            produtos = produtos
-        )
-        pedidoRepository.save(pedido)
-        return pedidoDTO.copy(id = pedido.idPedido)
-    }
-    fun listarPedidos(): List<PedidoDTO> {
-        val listaPedidos = pedidoRepository.findAll()
-        return listaPedidos.map { pedido ->
-            val statusPagamentoNormalizado = when (pedido.statusPagamento?.status?.uppercase()) {
-                "APROVADO", "PAGO", "CONCLUIDO" -> "Aprovado"
-                "PENDENTE", "AGUARDANDO" -> "Pendente"
-                "RECUSADO" -> "Recusado"
-                "ESTORNADO" -> "Estornado"
-                else -> pedido.statusPagamento?.status ?: "Aguardando"
-            }
-            PedidoDTO(
-                id = pedido.idPedido,
-                numeroPedido = null,
-                dataPedido = pedido.dataPedido.toString(),
-                valorTotal = pedido.total,
-                formaPagamento = pedido.formaPagamento?.name,
-                statusPagamento = statusPagamentoNormalizado,
-                statusPedido = pedido.statusPedido?.status,
-                cliente = null,
-                enderecoEntrega = null,
-                itens = pedido.produtos?.map { produto ->
-                    ItemPedidoDTO(
-                        sku = produto.idProduto?.toString(),
-                        nome = produto.nome,
-                        quantidade = 1,
-                        preco = produto.preco
-                    )
-                } ?: emptyList(),
-                modelos = null,
-                tamanho = null,
-                cores = null
-            )
-        }
+        // TODO: Implementar lógica de criação de pedido conforme novo modelo
+        throw NotImplementedError("Função criarPedido ainda não implementada corretamente após refatoração do modelo.")
     }
 
     fun detalharPedido(id: Int): PedidoDTO? {
@@ -270,7 +220,7 @@ class PedidoService(
             } ?: emptyList(),
             modelos = null,
             tamanho = null,
-            cores = null
+            cores = null,
         )
     }
 
@@ -325,7 +275,6 @@ class PedidoService(
             total = r["total"]?.toString() ?: "R$0,00",
             formaPagamento = r["formaPagamento"]?.toString() ?: "Desconhecida",
             formaEnvio = r["formaEnvio"]?.toString() ?: "Vendedor",
-            cepEntrega = r["cepEntrega"]?.toString() ?: "00000000"
         )
     }
 
@@ -343,6 +292,7 @@ class PedidoService(
             produtoRepository.findById(item.sku?.toIntOrNull() ?: 0)
                 .orElseThrow { RuntimeException("Produto com SKU ${item.sku} não foi encontrado") }
         }
+        pedido.formaEnvio = "Correios"
         pedidoRepository.save(pedido)
         return pedidoDTO.copy(id = pedido.idPedido)
     }
@@ -380,6 +330,7 @@ class PedidoService(
 
         return PedidoResumoCompletoDTO(
             idPedido = pedido.idPedido?.toLong() ?: 0L,
+            idUsuario = pedido.usuario?.idUsuario,
             nomeCliente = pedido.usuario?.nomeCompleto,
             telefone = pedido.usuario?.telefone,
             dataPedido = pedido.dataPedido,
@@ -388,7 +339,9 @@ class PedidoService(
             formaPagamento = pedido.formaPagamento,
             statusPagamento = pedido.statusPagamento?.status,
             statusPedido = pedido.statusPedido?.status,
-            produtos = produtosDTO
+            produtos = produtosDTO,
+            cepEntrega = pedido.endereco?.cep,
+            formaEnvio = "Correios"
         )
     }
 
@@ -461,4 +414,34 @@ class PedidoService(
         }.sortedBy { it.idPedido }
     }
 
+    @Transactional
+    fun adicionarProdutosAoCarrinho(request: AdicionarProdutosCarrinhoRequest): PedidoDTO {
+        val usuario = usuarioRepository.findById(request.idUsuario).orElseThrow { RuntimeException("Usuário não encontrado") }
+        val pedidoCarrinho = pedidoRepository.findFirstByUsuarioIdUsuarioAndCarrinhoTrue(request.idUsuario)
+        val novaLista = mutableListOf<Produto>()
+        request.produtos.forEach { prodReq ->
+            val produto = produtoRepository.findById(prodReq.idProduto).orElseThrow { RuntimeException("Produto não encontrado") }
+            repeat(prodReq.quantidade) { novaLista.add(produto) }
+        }
+        val pedido = if (pedidoCarrinho != null) {
+            pedidoCarrinho.produtos = novaLista
+            pedidoCarrinho.total = novaLista.sumOf { it.preco ?: 0.0 }
+            pedidoCarrinho
+        } else {
+            Pedido(
+                idPedido = null,
+                dataPedido = java.time.LocalDate.now(),
+                total = novaLista.sumOf { it.preco ?: 0.0 },
+                formaPagamento = null,
+                usuario = usuario,
+                statusPedido = null,
+                statusPagamento = null,
+                produtos = novaLista,
+                carrinho = true,
+                formaEnvio = "Correios"
+            )
+        }
+        pedidoRepository.save(pedido)
+        return montarPedidoDTOBasico(pedido)
+    }
 }

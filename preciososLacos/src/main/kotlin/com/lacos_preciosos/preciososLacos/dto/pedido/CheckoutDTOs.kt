@@ -50,5 +50,7 @@ data class CheckoutResumoDTO(
 data class FinalizarPedidoRequest(
     val idUsuario: Int?,
     val formaPagamento: Int?,
-    val frete: Double?
+    val frete: Double?,
+    val idEndereco: Int?,
+    val cep: String?
 )
