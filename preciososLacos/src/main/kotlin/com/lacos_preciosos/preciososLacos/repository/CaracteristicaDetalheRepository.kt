@@ -40,6 +40,27 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
     )
     fun saveTipoLaco(nome: String?, preco: Double, foto: ByteArray)
 
+    @Query(value = "SELECT LAST_INSERT_ID()", nativeQuery = true)
+    fun getLastInsertedId(): Int
+
+    @Transactional
+    @Modifying
+    @Query(
+        value = """
+        INSERT INTO modelo_caracteristica_detalhe (modelo_id_modelo, caracteristica_id_caracteristica_detalhe)
+        SELECT :idModelo, :idTipo
+        WHERE NOT EXISTS (
+            SELECT 1 FROM modelo_caracteristica_detalhe
+            WHERE modelo_id_modelo = :idModelo
+              AND caracteristica_id_caracteristica_detalhe = :idTipo
+        )
+    """,
+        nativeQuery = true
+    )
+    fun insertModeloTipoIfNotExists(idModelo: Int, idTipo: Int)
+
+
+
     @Query(
         value = """
         SELECT 

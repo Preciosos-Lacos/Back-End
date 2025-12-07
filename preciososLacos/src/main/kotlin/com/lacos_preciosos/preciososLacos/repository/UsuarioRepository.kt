@@ -61,6 +61,11 @@ interface UsuarioRepository: JpaRepository<Usuario, Int> {
     @Modifying
     @Query("UPDATE usuario u SET u.password = :senha WHERE u.login = :login", nativeQuery = true)
     fun updateSenha(senha: String, login: String): Int
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE usuario u SET u.foto_perfil = :foto WHERE u.id_usuario = :idUsuario", nativeQuery = true)
+    fun updateFoto(idUsuario: Int?, foto: ByteArray): Int
 }
 
 

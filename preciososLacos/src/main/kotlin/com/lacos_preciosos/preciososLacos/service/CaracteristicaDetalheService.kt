@@ -63,17 +63,29 @@ class CaracteristicaDetalheService(
         }
     }
 
-    fun saveTipoLaco(cadastroTipoLacoDTO: CadastroTipoLacoDTO): String {
+    fun saveTipoLaco(dto: CadastroTipoLacoDTO): String {
 
-        val fotoBytes = java.util.Base64.getDecoder().decode(cadastroTipoLacoDTO.imagemBase64)
+        val fotoBytes = Base64.getDecoder().decode(dto.imagemBase64)
+
         caracteristicaDetalheRepository.saveTipoLaco(
-            cadastroTipoLacoDTO.nome,
-            cadastroTipoLacoDTO.preco,
+            dto.nome,
+            dto.preco,
             fotoBytes
         )
 
-        return "Salvo"
+        val idTipoLaco = caracteristicaDetalheRepository.getLastInsertedId()
+
+        println("Id dos Modelos: ${dto.modelosIds}")
+        dto.modelosIds?.forEach { idModelo ->
+            caracteristicaDetalheRepository.insertModeloTipoIfNotExists(
+                idModelo,
+                idTipoLaco
+            )
+        }
+
+        return "Tipo de laço salvo e modelos associados!"
     }
+
 
     fun getAllTipoLaco(): List<DadosTipoLacoDTO> {
 
