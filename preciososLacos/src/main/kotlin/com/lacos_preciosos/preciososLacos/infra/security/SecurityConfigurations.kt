@@ -24,6 +24,10 @@ class SecurityConfigurations(private val securityFilter: SecurityFilter) {
             .cors { }
             .authorizeHttpRequests {
                 // Rotas públicas
+
+                it.requestMatchers(HttpMethod.GET, "/swagger-ui").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/v3/api-docs").permitAll()
+
                 it.requestMatchers(HttpMethod.GET, "/pedidos").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/pedidos/**").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/usuarios").permitAll()

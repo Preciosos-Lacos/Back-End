@@ -18,6 +18,8 @@ class SecurityFilter(
 ) : OncePerRequestFilter() {
 
         private val rotasPublicas = listOf(
+            "/v3/api-docs",
+            "/swagger-ui",
             "/usuarios/login",
             "/usuarios",
             "/caracteristica-detalhe/cor",
