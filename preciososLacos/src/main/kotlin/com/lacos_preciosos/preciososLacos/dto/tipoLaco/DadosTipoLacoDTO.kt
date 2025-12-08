@@ -5,5 +5,6 @@ data class DadosTipoLacoDTO(
     var descricao: String?,
     var preco: Double,
     var imagem: String,
-    var modelos: List<String>
+    var modelos: List<String>,
+    var ativo: Boolean?
 )

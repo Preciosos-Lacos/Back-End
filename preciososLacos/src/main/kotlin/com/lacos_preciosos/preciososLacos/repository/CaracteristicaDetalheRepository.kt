@@ -68,6 +68,7 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
             cd.descricao,
             cd.preco,
             cd.imagem,
+            cd.ativo,
             GROUP_CONCAT(m.nome_modelo) AS modelos
         FROM caracteristica_detalhe cd
         LEFT JOIN modelo_caracteristica_detalhe mcd 
@@ -75,7 +76,6 @@ interface CaracteristicaDetalheRepository : JpaRepository<CaracteristicaDetalhe,
         LEFT JOIN modelo m 
                ON m.id_modelo = mcd.modelo_id_modelo
         WHERE cd.caracteristica_id_caracteristica = 3
-          AND cd.ativo = TRUE
         GROUP BY cd.id_caracteristica_detalhe;
     """,
         nativeQuery = true

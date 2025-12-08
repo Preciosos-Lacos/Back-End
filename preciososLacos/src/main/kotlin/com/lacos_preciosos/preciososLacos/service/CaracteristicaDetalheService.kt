@@ -108,7 +108,8 @@ class CaracteristicaDetalheService(
                 modelos = (row["modelos"] as? String)
                     ?.split(",")
                     ?.map { it.trim() }
-                    ?: emptyList()
+                    ?: emptyList(),
+                ativo = row["ativo"] as Boolean?
             )
         }
     }
