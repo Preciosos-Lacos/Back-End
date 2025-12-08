@@ -1,4 +1,3 @@
-
 package com.lacos_preciosos.preciososLacos.service
 
 import com.lacos_preciosos.preciososLacos.dto.modelo.*
@@ -140,5 +139,16 @@ class ModeloService(private val modeloRepository: ModeloRepository, val usuarioR
 
     fun getFavoritosByUsuario(idUsuario: Int): List<Modelo> {
         return modeloRepository.findFavoritosByUsuario(idUsuario)
+    }
+
+    // Novo método para atualizar o campo "ativo"
+    fun setAtivo(idModelo: Int, ativo: Boolean): Modelo {
+        val existe = modeloRepository.existsById(idModelo)
+        if (!existe) {
+            throw ValidacaoException("Modelo não encontrado")
+        }
+
+        modeloRepository.updateAtivo(idModelo, ativo)
+        return modeloRepository.findById(idModelo).orElseThrow { ValidacaoException("Modelo não encontrado") }
     }
 }

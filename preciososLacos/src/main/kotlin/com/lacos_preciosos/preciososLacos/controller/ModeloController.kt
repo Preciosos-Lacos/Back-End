@@ -1,4 +1,3 @@
-
 package com.lacos_preciosos.preciososLacos.controller
 
 import com.lacos_preciosos.preciososLacos.dto.imagem.ImagemDTO
@@ -158,5 +157,19 @@ class ModeloController(private val modeloService: ModeloService) {
     fun getFavoritosByUsuario(@PathVariable idUsuario: Int): ResponseEntity<List<Modelo>> {
         val favoritos = modeloService.getFavoritosByUsuario(idUsuario)
         return if (favoritos.isEmpty()) ResponseEntity.noContent().build() else ResponseEntity.ok(favoritos)
+    }
+
+    @PatchMapping("/{id}/ativo")
+    @Tag(name = "Atualização de ativo do modelo")
+    fun atualizarAtivo(
+        @PathVariable id: Int,
+        @RequestBody @Valid dto: AtualizaAtivoDTO
+    ): ResponseEntity<Modelo> {
+        return try {
+            val modeloAtualizado = modeloService.setAtivo(id, dto.ativo)
+            ResponseEntity.ok(modeloAtualizado)
+        } catch (ex: ValidacaoException) {
+            ResponseEntity.notFound().build()
+        }
     }
 }

@@ -1,4 +1,3 @@
-
 package com.lacos_preciosos.preciososLacos.repository
 
 import com.lacos_preciosos.preciososLacos.model.Modelo
@@ -55,6 +54,12 @@ interface ModeloRepository : JpaRepository<Modelo, Int> {
     @Modifying
     @Query("UPDATE Modelo m SET m.foto = :foto WHERE m.idModelo = :idModelo")
     fun updateFoto(idModelo: Int?, foto: ByteArray): Int
+
+    // Novo método para atualizar o campo `ativo`
+    @Transactional
+    @Modifying
+    @Query("UPDATE Modelo m SET m.ativo = :ativo WHERE m.idModelo = :idModelo")
+    fun updateAtivo(idModelo: Int, ativo: Boolean): Int
 
     @Query(
         value = "SELECT m.* FROM modelo m JOIN favorito_modelo f ON m.id_modelo = f.id_modelo WHERE f.id_usuario = :idUsuario",
